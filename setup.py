@@ -41,7 +41,11 @@ dev_requirements = [
 
 requirements = [
     "cdp-backend>=3.0.3",
-    "click==8.0.2",  # pin to fix CI bugs
+    "nltk>=3.6",
+    "pandas>=1.4.1",
+    # Version pins set by cdp-backend
+    "fireo",
+    "gcsfs",
 ]
 
 extra_requirements = {
