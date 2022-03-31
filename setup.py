@@ -41,6 +41,7 @@ dev_requirements = [
 
 requirements = [
     "cdp-backend>=3.0.3",
+    "click==8.0.2",  # pin to fix CI bugs
 ]
 
 extra_requirements = {
