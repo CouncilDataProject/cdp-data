@@ -25,9 +25,14 @@ test_requirements = [
     "tox>=3.15.2",
 ]
 
+plot_requirements = [
+    "altair>=4.2.0",
+]
+
 dev_requirements = [
     *setup_requirements,
     *test_requirements,
+    *plot_requirements,
     "bump2version>=1.0.1",
     "coverage>=5.1",
     "jupyterlab>=3.2.8",
@@ -37,10 +42,6 @@ dev_requirements = [
     "sphinx_rtd_theme>=0.5.1",
     "twine>=3.1.1",
     "wheel>=0.34.2",
-]
-
-plot_requirements = [
-    "altair>=4.2.0",
 ]
 
 requirements = [
