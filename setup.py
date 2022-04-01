@@ -39,6 +39,10 @@ dev_requirements = [
     "wheel>=0.34.2",
 ]
 
+plot_requirements = [
+    "altair>=4.2.0",
+]
+
 requirements = [
     "cdp-backend>=3.0.3",
     "nltk>=3.6",
@@ -52,9 +56,11 @@ extra_requirements = {
     "setup": setup_requirements,
     "test": test_requirements,
     "dev": dev_requirements,
+    "plot": plot_requirements,
     "all": [
         *requirements,
         *dev_requirements,
+        *plot_requirements,
     ],
 }
 
