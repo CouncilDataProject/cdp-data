@@ -5,13 +5,13 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Union
-from tqdm.contrib.concurrent import thread_map
 
 import fireo
 import pandas as pd
 from cdp_backend.database import models as db_models
 from google.auth.credentials import AnonymousCredentials
 from google.cloud.firestore import Client
+from tqdm.contrib.concurrent import thread_map
 
 from .utils import db_utils
 
