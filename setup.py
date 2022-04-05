@@ -48,6 +48,7 @@ requirements = [
     "cdp-backend>=3.0.3",
     "nltk>=3.6",
     "pandas>=1.4.1",
+    "tqdm>=4.63.1",
     # Version pins set by cdp-backend
     "fireo",
     "gcsfs",
