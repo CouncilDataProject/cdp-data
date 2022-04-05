@@ -12,6 +12,9 @@ from cdp_backend.utils.string_utils import clean_text
 from google.auth.credentials import AnonymousCredentials
 from google.cloud.firestore import Client
 from nltk.stem import SnowballStemmer
+from tqdm.contrib.concurrent import thread_map
+
+from .utils import db_utils
 
 ###############################################################################
 
@@ -34,6 +37,7 @@ def _stem_n_gram(n_gram: str) -> str:
     # Split and stem each
     return " ".join([stemmer.stem(span) for span in n_gram.split()])
 
+
 # TODO:
 # Write function to compute full ngram history not "relevancy over time"
 #
@@ -51,7 +55,7 @@ def _stem_n_gram(n_gram: str) -> str:
 #
 # TF-IDF shows the deviation from normal whereas percent of total shows
 # trends in total discussion of Ngram
- 
+
 
 def get_ngram_relevancy_history(
     ngram: str,
@@ -132,21 +136,12 @@ def get_ngram_relevancy_history(
     # Get event details for each reference
     # Because we pulled from the index, there should never be duplicate
     # event calls so we are safe to just apply the whole df
-    try:
-        # Register `pandas.progress_apply` and `pandas.Series.map_apply`
-        from tqdm import tqdm
-
-        tqdm.pandas(desc="Event attachment")
-
-        ngram_history["event"] = ngram_history.progress_apply(
-            lambda row: row.event_ref.get(),
-            axis=1,
-        )
-    except ImportError:
-        ngram_history["event"] = ngram_history.apply(
-            lambda row: row.event_ref.get(),
-            axis=1,
-        )
+    # Register `pandas.progress_apply` and `pandas.Series.map_apply`
+    log.info("Attaching event metadata to each ngram history datum")
+    ngram_history["event"] = thread_map(
+        db_utils.load_from_model_reference,
+        ngram_history.event_ref,
+    )
 
     # Unpack event cols
     ngram_history["event_datetime"] = ngram_history.apply(
@@ -159,6 +154,7 @@ def get_ngram_relevancy_history(
 
     return ngram_history
 
+
 def compute_ngram_usage_history(
     ngram: str,
     infrastructure_slug: str,
@@ -170,4 +166,3 @@ def compute_ngram_usage_history(
     Pull transcript and event data for the provided infrastructure
     and compute ngram usage over time.
     """
-    pass
