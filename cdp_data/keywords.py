@@ -162,3 +162,82 @@ def compute_ngram_usage_history(
     Pull transcript and event data for the provided infrastructure
     and compute ngram usage over time.
     """
+
+
+def prepare_ngram_history_plotting_data(
+    data: pd.DataFrame,
+    ngram_col: str = "query_gram",
+    value_col: str = "value",
+    dt_col: str = "event_datetime",
+) -> pd.DataFrame:
+    """
+    Prepare an ngram history DataFrame specifically for plotting.
+    This function will subset the DataFrame to just the provided columns,
+    will only store a single value for each day if there are multiple
+    (keeping the max value), and finally filling all missing days with zero values.
+
+    Parameters
+    ----------
+    data: pd.DataFrame
+        The data to prepare for plotting.
+    ngram_col: str
+        The column name for which the "ngram" is stored.
+        Default: "query_gram"
+    value_col: str
+        The column name for which the value of each ngram is stored.
+        Default: "value"
+    dt_col: str
+        The column name for which the datetime is stored.
+        Default: "event_datetime"
+
+    Returns
+    -------
+    prepared: pd.DataFrame
+        The subset and missing dates filled DataFrame.
+
+    See Also
+    --------
+    get_ngram_relevancy_history
+    """
+    # Select down to just the columns we want
+    # Reset index
+    # Sort values by datetime
+    subset = (
+        data[[ngram_col, value_col, dt_col]]
+        .sort_values([ngram_col, dt_col])
+        .reset_index(drop=True)
+    )
+
+    # First group data by ngram and date and use max for the day
+    subset[dt_col] = pd.to_datetime(subset[dt_col])
+    subset = (
+        subset.groupby([ngram_col, pd.Grouper(key=dt_col, freq="D")])
+        .max()
+        .reset_index()
+    ).replace([None])
+
+    # Fill missing dates with zeros for each query gram
+    def fill_dates(df: pd.DataFrame) -> pd.DataFrame:
+        return df.reindex(
+            pd.date_range(
+                df.index.min(),
+                df.index.max(),
+                name=dt_col,
+            ),
+            fill_value=0,
+        )
+
+    # Set index to the datetime column
+    # Groupby the ngram col
+    #     1. to make it so we don't lose the ngram col value
+    #     2. to make it so we each ngram has their own complete datetime range
+    # Apply the function to add missing dates
+    # Drop the ngram col on the grouped data
+    # Reset the index to ungroup the data by ngram (thus regaining the ngram column)
+    return (
+        subset.set_index(dt_col)
+        .groupby(ngram_col)
+        .apply(fill_dates)
+        .drop(ngram_col, axis=1)
+        .reset_index()
+    )
