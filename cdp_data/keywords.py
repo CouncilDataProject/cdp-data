@@ -5,14 +5,10 @@ import logging
 from datetime import datetime
 from typing import Optional, Union
 
-import fireo
 import pandas as pd
 from cdp_backend.database import models as db_models
 from cdp_backend.utils.string_utils import clean_text
-from google.auth.credentials import AnonymousCredentials
-from google.cloud.firestore import Client
 from nltk.stem import SnowballStemmer
-from tqdm.contrib.concurrent import thread_map
 
 from .utils import db_utils
 
@@ -59,10 +55,10 @@ def _stem_n_gram(n_gram: str) -> str:
 
 def get_ngram_relevancy_history(
     ngram: str,
-    infrastructure_slug: str,
     strict: bool = False,
     start_datetime: Optional[Union[str, datetime]] = None,
     end_datetime: Optional[Union[str, datetime]] = None,
+    infrastructure_slug: Optional[str] = None,
 ) -> pd.DataFrame:
     """
     Pull an n-gram's relevancy history from a CDP database.
@@ -71,8 +67,6 @@ def get_ngram_relevancy_history(
     ----------
     ngram: str
         The unigram, bigram, or trigram to retrieve history for.
-    infrastructure_slug: str
-        The CDP infrastructure slug to connect to.
     strict: bool
         Should the provided ngram be used for a strict "unstemmed_gram" query or not.
         Default: False (stem and clean the ngram before querying)
@@ -82,6 +76,9 @@ def get_ngram_relevancy_history(
     end_datetime: Optional[Union[str, datetime]]
         The latest possible datetime for ngram history to be retrieved for.
         If provided as a string, the datetime should be in ISO format.
+    infrastructure_slug: Optional[str]
+        The optional CDP infrastructure slug to connect to.
+        Default: None (you are managing the database connection yourself)
 
     Returns
     -------
@@ -101,9 +98,8 @@ def get_ngram_relevancy_history(
     cdp_data.keywords.compute_ngram_usage_history
     """
     # Connect to infra
-    fireo.connection(
-        client=Client(project=infrastructure_slug, credentials=AnonymousCredentials())
-    )
+    if infrastructure_slug:
+        db_utils.connect_to_database(infrastructure_slug)
 
     # Begin partial query
     keywords_collection = db_models.IndexedEventGram.collection
@@ -138,9 +134,10 @@ def get_ngram_relevancy_history(
     # event calls so we are safe to just apply the whole df
     # Register `pandas.progress_apply` and `pandas.Series.map_apply`
     log.info("Attaching event metadata to each ngram history datum")
-    ngram_history["event"] = thread_map(
-        db_utils.load_from_model_reference,
-        ngram_history.event_ref,
+    ngram_history = db_utils.load_model_from_pd_columns(
+        ngram_history,
+        join_id_col="id",
+        model_ref_col="event_ref",
     )
 
     # Unpack event cols
@@ -149,8 +146,7 @@ def get_ngram_relevancy_history(
         axis=1,
     )
 
-    # Drop non-needed cols
-    ngram_history = ngram_history.drop(["event_ref"], axis=1)
+    # TODO: add data agg by num days
 
     return ngram_history
 

@@ -6,12 +6,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional, Union
 
-import fireo
 import pandas as pd
 from cdp_backend.database import models as db_models
-from google.auth.credentials import AnonymousCredentials
-from google.cloud.firestore import Client
-from tqdm.contrib.concurrent import thread_map
 
 from .utils import db_utils
 
@@ -27,7 +23,6 @@ DEFAULT_DATASET_STORAGE_DIR = Path(".").resolve() / "councildataproject" / "data
 
 
 def get_session_dataset(
-    infrastructure_slug: str,
     start_datetime: Optional[Union[str, datetime]] = None,
     end_datetime: Optional[Union[str, datetime]] = None,
     attach_event_metadata: bool = False,
@@ -36,14 +31,14 @@ def get_session_dataset(
     store_video: bool = False,
     store_audio: bool = False,
     cache_dir: Union[str, Path] = DEFAULT_DATASET_STORAGE_DIR,
+    infrastructure_slug: Optional[str] = None,
 ) -> pd.DataFrame:
     """
     Get a dataset of sessions from a CDP infrastructure.
     """
     # Connect to infra
-    fireo.connection(
-        client=Client(project=infrastructure_slug, credentials=AnonymousCredentials())
-    )
+    if infrastructure_slug:
+        db_utils.connect_to_database(infrastructure_slug)
 
     # Begin partial query
     query = db_models.Session.collection
@@ -66,11 +61,11 @@ def get_session_dataset(
     # Handle basic event metadata attachment
     if attach_event_metadata:
         log.info("Attaching event metadata to each session datum")
-        sessions["event"] = thread_map(
-            db_utils.load_from_model_reference,
-            sessions.event_ref,
+        sessions = db_utils.load_model_from_pd_columns(
+            sessions,
+            join_id_col="id",
+            model_ref_col="event_ref",
         )
-        sessions = sessions.drop(["event_ref"], axis=1)
 
     # We only need to handle cache dir and more if any extras are True
     if not any(
