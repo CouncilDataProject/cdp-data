@@ -110,3 +110,6 @@ ENV/
 
 # VSCode
 .vscode
+
+# Cached datasets
+cdp-datasets/
