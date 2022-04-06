@@ -2,15 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Union
-from dataclasses_json import dataclass_json
-from dataclasses import dataclass
-from gcsfs import GCSFileSystem
 
 import pandas as pd
 from cdp_backend.database import models as db_models
+from dataclasses_json import dataclass_json
+from gcsfs import GCSFileSystem
 from tqdm.contrib.concurrent import thread_map
 
 from .utils import connect_to_infrastructure, db_utils
