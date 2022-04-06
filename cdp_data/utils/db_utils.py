@@ -2,23 +2,24 @@
 # -*- coding: utf-8 -*-
 
 from dataclasses import dataclass
-from dataclasses_json import dataclass_json
 from functools import lru_cache
 
 import fireo
-from fireo.models import Model
 import pandas as pd
-from tqdm.contrib.concurrent import thread_map
-import fireo
+from dataclasses_json import dataclass_json
+from fireo.models import Model
 from google.auth.credentials import AnonymousCredentials
 from google.cloud.firestore import Client
+from tqdm.contrib.concurrent import thread_map
 
 ###############################################################################
+
 
 @dataclass
 class ModelRefJoiner:
     join_id: str
     model_ref: fireo.queries.query_wrapper.ReferenceDocLoader
+
 
 @dataclass_json
 @dataclass
@@ -26,12 +27,14 @@ class ModelJoiner:
     join_id: str
     model: Model
 
+
 ###############################################################################
+
 
 def connect_to_database(infrastructure_slug: str) -> None:
     """
-    Simple function to connect FireO to the correct database and to shorten
-    code due to a lot of required imports.
+    Simple function to shorten how many imports and code it takes to connect
+    to a CDP database.
     """
     fireo.connection(
         client=Client(
@@ -52,7 +55,7 @@ def load_from_model_reference(
     ----------
     model_ref: fireo.queries.query_wrapper.ReferenceDocLoader
         The model reference to load.
-    
+
     Returns
     -------
     model: Model
@@ -69,6 +72,7 @@ def load_from_model_reference(
     """
     return model_ref.get()
 
+
 def load_model_from_reference_joiner(
     ref_joiner: ModelRefJoiner,
 ) -> ModelJoiner:
@@ -79,7 +83,7 @@ def load_model_from_reference_joiner(
     ----------
     ref_joiner: ModelRefJoiner
         The join id string and the model ref to load.
-    
+
     Returns
     -------
     model_joiner: ModelJoiner
@@ -102,8 +106,9 @@ def load_model_from_reference_joiner(
     """
     return ModelJoiner(
         join_id=ref_joiner.join_id,
-        model=load_from_model_reference(ref_joiner.model_ref)
+        model=load_from_model_reference(ref_joiner.model_ref),
     )
+
 
 def load_model_from_pd_columns(
     data: pd.DataFrame,
@@ -128,7 +133,7 @@ def load_model_from_pd_columns(
         After loading and joining all models to the DataFrame, should the original
         `model_ref_col` be dropped.
         Default: True (drop the original `model_ref_column`)
-    
+
     Returns
     -------
     data: pd.DataFrame
@@ -145,7 +150,7 @@ def load_model_from_pd_columns(
     This function loads all models using a threadpool. Because of this threading,
     the order of the rows may be different from the original DataFrame to the result
     DataFrame.
-    
+
     Additionally, this function utilizes an LRU cache during model loading.
 
     Examples
@@ -181,9 +186,7 @@ def load_model_from_pd_columns(
     )
 
     # Convert to dataframe
-    models_to_join = pd.DataFrame([
-        j.to_dict() for j in loaded_models
-    ])
+    models_to_join = pd.DataFrame([j.to_dict() for j in loaded_models])
 
     # Rename column to collection name
     models_to_join = models_to_join.rename(
@@ -193,9 +196,9 @@ def load_model_from_pd_columns(
 
     # Join and return
     joined = data.join(models_to_join.set_index("join_id"), on=join_id_col)
-    
+
     # Handle model ref drop
     if drop_original_model_ref:
         joined = joined.drop([model_ref_col], axis=1)
-    
+
     return joined
