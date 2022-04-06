@@ -50,6 +50,7 @@ requirements = [
     "pandas>=1.4.1",
     "tqdm>=4.63.1",
     # Version pins set by cdp-backend
+    "dataclasses_json",
     "fireo",
     "gcsfs",
 ]
