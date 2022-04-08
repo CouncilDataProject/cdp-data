@@ -2,13 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from collections import Counter
 from datetime import datetime
+from functools import partial
+from pathlib import Path
 from typing import Optional, Union
 
 import pandas as pd
 from cdp_backend.database import models as db_models
+from cdp_backend.pipeline.transcript_model import Transcript
 from cdp_backend.utils.string_utils import clean_text
 from nltk.stem import SnowballStemmer
+from tqdm.contrib.concurrent import process_map
 
 from .utils import db_utils
 
@@ -106,6 +111,8 @@ def get_ngram_relevancy_history(
 
     # TODO:
     # Add datetime filtering
+    if start_datetime or end_datetime:
+        log.warning("`start_datetime` and `end_datetime` not implemented")
 
     # Determine strict query or stemmed query
     if strict:
@@ -151,17 +158,48 @@ def get_ngram_relevancy_history(
     return ngram_history
 
 
+def _count_transcript_grams(
+    transcript_path: Path,
+    strict: bool,
+) -> Counter:
+    # Load transcript
+    with open(transcript_path, "r") as open_f:
+        transcript = Transcript.from_json(open_f.read())
+
+    # Start a counter
+    counter: Counter = Counter()
+
+    # For each sentence in transcript,
+    # clean or not (based off strict),
+    # count each cleaned or not gram
+    for sentence in transcript.sentences:
+        for word in sentence.words:
+            counter.update([word.text])
+
+    # TODO:
+    # need to count unigrams, bigrams, and trigrams
+
+    return counter
+
+
 def compute_ngram_usage_history(
     ngram: str,
-    infrastructure_slug: str,
+    data: pd.DataFrame,
     strict: bool = False,
-    start_datetime: Optional[Union[str, datetime]] = None,
-    end_datetime: Optional[Union[str, datetime]] = None,
+    transcript_path_col: str = "transcript_path",
 ) -> pd.DataFrame:
     """
-    Pull transcript and event data for the provided infrastructure
-    and compute ngram usage over time.
+    From a session dataset with transcripts available, compute an ngram's usage history.
     """
+    # Construct partial for threaded counter func
+    counter_func = partial(_count_transcript_grams, strict=strict)
+
+    # Count all uni, bi, and trigrams in transcripts
+    counters = process_map(
+        counter_func,
+        data[transcript_path_col],
+    )
+    return counters
 
 
 def prepare_ngram_history_plotting_data(
