@@ -158,6 +158,16 @@ def get_session_dataset(
 
     # TODO:
     # Handle metadata reversal to ingestion model
+    if store_full_metadata:
+        log.warning("`store_full_metadata` not implemented")
+
+    # Handle video
+    if store_video:
+        log.warning("`store_video` not implemented")
+
+    # Handle audio
+    if store_audio:
+        log.warning("`store_audio` not implemented")
 
     # Pull transcript info
     if store_transcript:
