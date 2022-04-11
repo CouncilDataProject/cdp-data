@@ -113,3 +113,6 @@ ENV/
 
 # Cached datasets
 cdp-datasets/
+
+# Project specific
+keyword_usage.csv
