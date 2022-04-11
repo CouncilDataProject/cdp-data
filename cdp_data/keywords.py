@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from dataclasses import dataclass
 import logging
 from collections import Counter
 from datetime import datetime
@@ -13,6 +14,7 @@ from cdp_backend.database import models as db_models
 from cdp_backend.pipeline.transcript_model import Transcript
 from cdp_backend.utils.string_utils import clean_text
 from nltk.stem import SnowballStemmer
+from nltk import ngrams
 from tqdm.contrib.concurrent import process_map
 
 from .utils import db_utils
@@ -20,6 +22,16 @@ from .utils import db_utils
 ###############################################################################
 
 log = logging.getLogger(__name__)
+
+###############################################################################
+
+
+@dataclass
+class NgramUsageProcessingParameters:
+    session_id: str
+    session_datetime: datetime
+    transcript_path: Path
+
 
 ###############################################################################
 
@@ -159,11 +171,11 @@ def get_ngram_relevancy_history(
 
 
 def _count_transcript_grams(
-    transcript_path: Path,
+    processing_params: NgramUsageProcessingParameters,
     strict: bool,
-) -> Counter:
+) -> pd.DataFrame:
     # Load transcript
-    with open(transcript_path, "r") as open_f:
+    with open(processing_params.transcript_path, "r") as open_f:
         transcript = Transcript.from_json(open_f.read())
 
     # Start a counter
@@ -173,33 +185,78 @@ def _count_transcript_grams(
     # clean or not (based off strict),
     # count each cleaned or not gram
     for sentence in transcript.sentences:
-        for word in sentence.words:
-            counter.update([word.text])
+        # Stopwords removed
+        words = [
+            clean_text(
+                word.text,
+                clean_stop_words=True,
+                clean_emojis=True,
+            )
+            for word in sentence.words
+        ]
+        words = [word for word in words if len(word) > 0]
 
-    # TODO:
-    # need to count unigrams, bigrams, and trigrams
+        # Create ngrams
+        for i in range(1, 4):
+            for gram in ngrams(words, i):
+                if strict:
+                    counter.update([_stem_n_gram(" ".join(gram))])
+                else:
+                    counter.update([" ".join(gram)])
 
-    return counter
+    # Convert to dataframe
+    counts = pd.DataFrame.from_dict(counter, orient="index").reset_index()
+    counts = counts.rename(columns={"index": "ngram", 0: "count"})
+
+    # Add columns
+    counts["session_id"] = processing_params.session_id
+    counts["session_datetime"] = processing_params.session_datetime
+
+    return counts
 
 
 def compute_ngram_usage_history(
-    ngram: str,
     data: pd.DataFrame,
     strict: bool = False,
-    transcript_path_col: str = "transcript_path",
 ) -> pd.DataFrame:
     """
     From a session dataset with transcripts available, compute an ngram's usage history.
     """
+    # Ensure stopwords are downloaded
+    # Do this once to ensure that we don't enter a race condition
+    # with multiple workers trying to download / read overtop one another
+    # later on.
+    try:
+        from nltk.corpus import stopwords
+
+        stopwords.words("english")
+    except LookupError:
+        import nltk
+
+        nltk.download("stopwords")
+        log.info("Downloaded nltk stopwords")
+        from nltk.corpus import stopwords
+
+        stopwords.words("english")
+
     # Construct partial for threaded counter func
     counter_func = partial(_count_transcript_grams, strict=strict)
 
     # Count all uni, bi, and trigrams in transcripts
-    counters = process_map(
-        counter_func,
-        data[transcript_path_col],
+    counts = pd.concat(
+        process_map(
+            counter_func,
+            [
+                NgramUsageProcessingParameters(
+                    session_id=row.id,
+                    session_datetime=row.session_datetime,
+                    transcript_path=row.transcript_path,
+                )
+                for _, row in data.iterrows()
+            ],
+        )
     )
-    return counters
+    return counts
 
 
 def prepare_ngram_history_plotting_data(
