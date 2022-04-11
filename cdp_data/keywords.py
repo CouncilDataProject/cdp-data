@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from dataclasses import dataclass
 import logging
 from collections import Counter
+from dataclasses import dataclass
 from datetime import datetime
 from functools import partial
 from pathlib import Path
@@ -13,8 +13,8 @@ import pandas as pd
 from cdp_backend.database import models as db_models
 from cdp_backend.pipeline.transcript_model import Transcript
 from cdp_backend.utils.string_utils import clean_text
-from nltk.stem import SnowballStemmer
 from nltk import ngrams
+from nltk.stem import SnowballStemmer
 from tqdm.contrib.concurrent import process_map
 
 from .utils import db_utils
