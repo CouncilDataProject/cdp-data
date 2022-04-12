@@ -7,10 +7,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from functools import partial
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 import pandas as pd
-import seaborn as sns
 from cdp_backend.database import models as db_models
 from cdp_backend.pipeline.transcript_model import Transcript
 from cdp_backend.utils.string_utils import clean_text
@@ -22,15 +21,13 @@ from tqdm.contrib.concurrent import process_map
 from . import datasets
 from .utils import db_utils
 
+if TYPE_CHECKING:
+    import seaborn as sns
+
 ###############################################################################
 
 # Logging
 log = logging.getLogger(__name__)
-
-###############################################################################
-
-# Styling
-sns.set_theme(color_codes=True)
 
 ###############################################################################
 # Constants / Support Classes
@@ -622,7 +619,8 @@ def plot_ngram_usage_histories(
     ngram: Union[str, List[str]],
     gram_usage: pd.DataFrame,
     strict: bool = False,
-) -> sns.FacetGrid:
+    lmplot_kws: Dict[str, Any] = {},
+) -> "sns.FacetGrid":
     """
     Select and plot specific ngram usage histories from the provided gram usage
     DataFrame.
@@ -642,6 +640,8 @@ def plot_ngram_usage_histories(
     strict: bool
         Should all ngrams be stemmed or left unstemmed for a more strict usage history.
         Default: False (stem and clean all grams in the dataset)
+    lmplot_kws: Dict[str, Any]
+        Any extra kwargs to provide to sns.lmplot.
 
     Returns
     -------
@@ -654,6 +654,10 @@ def plot_ngram_usage_histories(
     cdp_data.keywords.compute_ngram_usage_history
         Function to generate ngram usage history DataFrame.
     """
+    import seaborn as sns
+
+    sns.set_theme(color_codes=True)
+
     # Always cast ngram to list for easier API
     if isinstance(ngram, str):
         ngram = [ngram]
@@ -692,6 +696,7 @@ def plot_ngram_usage_histories(
         scatter_kws={"alpha": 0.2},
         aspect=1.6,
         data=gram_histories,
+        **lmplot_kws,
     )
     grid.add_legend()
 
