@@ -12,7 +12,14 @@ setup_requirements = [
     "pytest-runner>=5.2",
 ]
 
+plot_requirements = [
+    "seaborn>=0.11.2",
+    # Widgets
+    "ipywidgets>=7.7.0",
+]
+
 test_requirements = [
+    *plot_requirements,
     "black>=22.3.0",
     "codecov>=2.1.4",
     "flake8>=3.8.3",
@@ -25,16 +32,9 @@ test_requirements = [
     "tox>=3.15.2",
 ]
 
-plot_requirements = [
-    "seaborn>=0.11.2",
-    # Widgets
-    "ipywidgets>=7.7.0",
-]
-
 dev_requirements = [
     *setup_requirements,
     *test_requirements,
-    *plot_requirements,
     "bump2version>=1.0.1",
     "coverage>=5.1",
     "jupyterlab>=3.2.8",
