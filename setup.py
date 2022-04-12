@@ -26,7 +26,6 @@ test_requirements = [
 ]
 
 plot_requirements = [
-    "altair>=4.2.0",
     "seaborn>=0.11.2",
     # Widgets
     "ipywidgets>=7.7.0",
