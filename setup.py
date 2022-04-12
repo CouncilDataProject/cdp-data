@@ -27,6 +27,9 @@ test_requirements = [
 
 plot_requirements = [
     "altair>=4.2.0",
+    "seaborn>=0.11.2",
+    # Widgets
+    "ipywidgets>=7.7.0",
 ]
 
 dev_requirements = [
@@ -37,9 +40,10 @@ dev_requirements = [
     "coverage>=5.1",
     "jupyterlab>=3.2.8",
     "m2r2>=0.2.7",
+    "pyarrow>=7.0.0",
     "pytest-runner>=5.2",
     "Sphinx>=3.4.3",
-    "sphinx_rtd_theme>=0.5.1",
+    "furo>=2022.4.7",
     "twine>=3.1.1",
     "wheel>=0.34.2",
 ]
