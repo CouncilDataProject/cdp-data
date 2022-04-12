@@ -16,14 +16,14 @@ from tqdm.contrib.concurrent import thread_map
 
 
 @dataclass
-class ModelRefJoiner:
+class _ModelRefJoiner:
     join_id: str
     model_ref: fireo.queries.query_wrapper.ReferenceDocLoader
 
 
 @dataclass_json
 @dataclass
-class ModelJoiner:
+class _ModelJoiner:
     join_id: str
     model: Model
 
@@ -73,9 +73,9 @@ def load_from_model_reference(
     return model_ref.get()
 
 
-def load_model_from_reference_joiner(
-    ref_joiner: ModelRefJoiner,
-) -> ModelJoiner:
+def _load_model_from_reference_joiner(
+    ref_joiner: _ModelRefJoiner,
+) -> _ModelJoiner:
     """
     Load a CDP database model from a ModelRefJoiner.
 
@@ -104,7 +104,7 @@ def load_model_from_reference_joiner(
     `cdp_data.utils.db_utils.load_from_model_reference` function to load the full
     database model which itself uses an LRU cache.
     """
-    return ModelJoiner(
+    return _ModelJoiner(
         join_id=ref_joiner.join_id,
         model=load_from_model_reference(ref_joiner.model_ref),
     )
@@ -119,7 +119,7 @@ def load_model_from_pd_columns(
     """
     Load a model reference and attach the loaded model back to the original DataFrame.
 
-    Paramaters
+    Parameters
     ----------
     data: pd.DataFrame
         The DataFrame which contains a model ReferenceDocLoader to fetch and reattach
@@ -175,9 +175,9 @@ def load_model_from_pd_columns(
     """
     # Get models
     loaded_models = thread_map(
-        load_model_from_reference_joiner,
+        _load_model_from_reference_joiner,
         [
-            ModelRefJoiner(
+            _ModelRefJoiner(
                 join_id=row[join_id_col],
                 model_ref=row[model_ref_col],
             )

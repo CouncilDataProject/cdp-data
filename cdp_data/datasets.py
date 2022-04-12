@@ -13,6 +13,7 @@ from dataclasses_json import dataclass_json
 from gcsfs import GCSFileSystem
 from tqdm.contrib.concurrent import thread_map
 
+from .constants import DEFAULT_DATASET_STORAGE_DIR
 from .utils import connect_to_infrastructure, db_utils
 
 ###############################################################################
@@ -21,13 +22,9 @@ log = logging.getLogger(__name__)
 
 ###############################################################################
 
-DEFAULT_DATASET_STORAGE_DIR = Path(".").resolve() / "cdp-datasets"
-
-###############################################################################
-
 
 @dataclass
-class TranscriptFetchParams:
+class _TranscriptFetchParams:
     session_id: str
     session_key: str
     event_id: str
@@ -38,15 +35,15 @@ class TranscriptFetchParams:
 
 @dataclass_json
 @dataclass
-class MatchingTranscript:
+class _MatchingTranscript:
     session_key: str
     transcript: db_models.Transcript
     transcript_path: Path
 
 
 def _get_matching_db_transcript(
-    fetch_params: TranscriptFetchParams,
-) -> MatchingTranscript:
+    fetch_params: _TranscriptFetchParams,
+) -> _MatchingTranscript:
     # Get DB transcript
     db_transcript = (
         db_models.Transcript.collection.filter(
@@ -87,7 +84,7 @@ def _get_matching_db_transcript(
     else:
         fetch_params.fs.get(db_transcript_file.uri, str(save_path))
 
-    return MatchingTranscript(
+    return _MatchingTranscript(
         session_key=fetch_params.session_key,
         transcript=db_transcript,
         transcript_path=save_path,
@@ -103,10 +100,91 @@ def get_session_dataset(
     transcript_selection: str = "confidence",
     store_video: bool = False,
     store_audio: bool = False,
-    cache_dir: Union[str, Path] = DEFAULT_DATASET_STORAGE_DIR,
+    cache_dir: Optional[Union[str, Path]] = None,
 ) -> pd.DataFrame:
     """
     Get a dataset of sessions from a CDP infrastructure.
+
+    Parameters
+    ----------
+    infrastructure_slug: str
+        The CDP infrastructure to connect to and pull sessions for.
+    start_datetime: Optional[Union[str, datetime]]
+        An optional datetime that the session dataset will start at.
+        Default: None (no datetime beginning bound on the dataset)
+    end_datetime: Optional[Union[str, datetime]]
+        An optional datetime that the session dataset will end at.
+        Default: None (no datetime end bound on the dataset)
+    store_full_metadata: bool
+        Should a JSON file of the full event metadata be stored to disk and a
+        path to the stored JSON file be added to the returned DataFrame.
+        Default: False (do not request extra data and store to disk)
+        **Currently not implemented**
+    store_transcript: bool
+        Should a session transcript be requested and stored to disk and a path
+        to the stored transcript JSON file be added to the returned DataFrame.
+        Default: False (do not request extra data and do not store the transcript)
+    transcript_selection: str
+        How should the single transcript be selected.
+        Options: "confidence" for transcript with the highest confidence value,
+        "created" for the most recently created transcript.
+        Default: "confidence" (Return the single highest confidence
+        transcript per session)
+    store_video: bool
+        Should the session video be requested and stored to disk and a path to the
+        stored video file be added to the returned DataFrame.
+        Default: False (do not request and store the video)
+    store_audio: bool
+        Should the session audio be requested and stored to disk and a path to the
+        stored audio file be added to the returned DataFrame.
+        Default: False (do not request and store the audio)
+    cache_dir: Optional[Union[str, Path]]
+        An optional directory path to cache the dataset. Directory is created if it
+        does not exist.
+        Default: "./cdp-datasets"
+
+    Returns
+    -------
+    dataset: pd.DataFrame
+        The dataset with all additions requested.
+
+    Notes
+    -----
+    All file additions (transcript, full event metadata, video, audio, etc.) are cached
+    to disk to avoid multiple downloads. If you use the same cache directory multiple
+    times over the course of multiple runs, no new data will be downloaded, but the
+    existing files will be used. Caching is done by simply file existence not by a
+    content hash comparison.
+
+    Datasets are cached with the following structure::
+
+        {cache-dir}/
+        └── {infrastructure_slug}
+            ├── event-{event-id-0}
+            │   ├── metadata.json
+            │   └── session-{session-id-0}
+            │       ├── audio.wav
+            │       ├── transcript.json
+            │       └── video.mp4
+            ├── event-{event-id-1}
+            │   ├── metadata.json
+            │   └── session-{session-id-0}
+            │       ├── audio.wav
+            │       ├── transcript.json
+            │       └── video.mp4
+            ├── event-{event-id-2}
+            │   ├── metadata.json
+            │   └── session-{session-id-0}
+            │       ├── audio.wav
+            │       ├── transcript.json
+            │       └── video.mp4
+            │   └── session-{session-id-1}
+            │       ├── audio.wav
+            │       ├── transcript.json
+            │       └── video.mp4
+
+    To clean a whole dataset or specific events or sessions simply delete the
+    associated directory.
     """
     # Connect to infra
     fs = connect_to_infrastructure(infrastructure_slug)
@@ -149,6 +227,8 @@ def get_session_dataset(
         return sessions
 
     # Handle cache dir
+    if not cache_dir:
+        cache_dir = DEFAULT_DATASET_STORAGE_DIR
     if isinstance(cache_dir, str):
         cache_dir = Path(cache_dir).resolve()
 
@@ -176,7 +256,7 @@ def get_session_dataset(
         fetched_transcript_infos = thread_map(
             _get_matching_db_transcript,
             [
-                TranscriptFetchParams(
+                _TranscriptFetchParams(
                     session_id=row.id,
                     session_key=row.key,
                     event_id=row.event.id,
