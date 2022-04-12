@@ -68,6 +68,7 @@ instance/
 # Sphinx documentation
 docs/_build/
 docs/cdp_data.*rst
+docs/modules.rst
 
 # PyBuilder
 target/
@@ -110,3 +111,10 @@ ENV/
 
 # VSCode
 .vscode
+
+# Cached datasets
+cdp-datasets/
+
+# Project specific
+*keyword_usage.parquet
+test-generated-*-plot.pdf

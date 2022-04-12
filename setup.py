@@ -12,8 +12,15 @@ setup_requirements = [
     "pytest-runner>=5.2",
 ]
 
+plot_requirements = [
+    "seaborn>=0.11.2",
+    # Widgets
+    "ipywidgets>=7.7.0",
+]
+
 test_requirements = [
-    "black>=19.10b0",
+    *plot_requirements,
+    "black>=22.3.0",
     "codecov>=2.1.4",
     "flake8>=3.8.3",
     "flake8-debugger>=3.2.1",
@@ -32,25 +39,34 @@ dev_requirements = [
     "coverage>=5.1",
     "jupyterlab>=3.2.8",
     "m2r2>=0.2.7",
+    "pyarrow>=7.0.0",
     "pytest-runner>=5.2",
     "Sphinx>=3.4.3",
-    "sphinx_rtd_theme>=0.5.1",
+    "furo>=2022.4.7",
     "twine>=3.1.1",
     "wheel>=0.34.2",
 ]
 
 requirements = [
     "cdp-backend>=3.0.3",
-    "click==8.0.2",  # pin to fix CI bugs
+    "nltk>=3.6",
+    "pandas>=1.4.1",
+    "tqdm>=4.63.1",
+    # Version pins set by cdp-backend
+    "dataclasses_json",
+    "fireo",
+    "gcsfs",
 ]
 
 extra_requirements = {
     "setup": setup_requirements,
     "test": test_requirements,
     "dev": dev_requirements,
+    "plot": plot_requirements,
     "all": [
         *requirements,
         *dev_requirements,
+        *plot_requirements,
     ],
 }
 
@@ -87,6 +103,6 @@ setup(
     url="https://github.com/CouncilDataProject/cdp-data",
     # Do not edit this string manually, always use bumpversion
     # Details in CONTRIBUTING.rst
-    version="0.0.2",
+    version="0.0.0",
     zip_safe=False,
 )
