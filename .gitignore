@@ -68,6 +68,7 @@ instance/
 # Sphinx documentation
 docs/_build/
 docs/cdp_data.*rst
+docs/modules.rst
 
 # PyBuilder
 target/
@@ -115,4 +116,4 @@ ENV/
 cdp-datasets/
 
 # Project specific
-keyword_usage.csv
+*keyword_usage.parquet
