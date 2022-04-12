@@ -7,27 +7,37 @@ from dataclasses import dataclass
 from datetime import datetime
 from functools import partial
 from pathlib import Path
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 import pandas as pd
+import seaborn as sns
 from cdp_backend.database import models as db_models
 from cdp_backend.pipeline.transcript_model import Transcript
 from cdp_backend.utils.string_utils import clean_text
 from nltk import ngrams
 from nltk.stem import SnowballStemmer
+from tqdm import tqdm
 from tqdm.contrib.concurrent import process_map
 
+from . import datasets
 from .utils import db_utils
 
 ###############################################################################
 
+# Logging
 log = logging.getLogger(__name__)
 
 ###############################################################################
 
+# Styling
+sns.set_theme(color_codes=True)
+
+###############################################################################
+# Constants / Support Classes
+
 
 @dataclass
-class NgramUsageProcessingParameters:
+class _NgramUsageProcessingParameters:
     session_id: str
     session_datetime: datetime
     transcript_path: Path
@@ -49,25 +59,6 @@ def _stem_n_gram(n_gram: str) -> str:
 
     # Split and stem each
     return " ".join([stemmer.stem(span) for span in n_gram.split()])
-
-
-# TODO:
-# Write function to compute full ngram history not "relevancy over time"
-#
-# From Google Ngram Viewer:
-# https://books.google.com/ngrams/info
-# This shows trends in three ngrams from 1960 to 2015: "nursery school"
-# (a 2-gram or bigram), "kindergarten" (a 1-gram or unigram), and
-# "child care" (another bigram). What the y-axis shows is this: of all the bigrams
-# contained in our sample of books written in English and published in the
-# United States, what percentage of them are "nursery school" or "child care"?
-# Of all the unigrams, what percentage of them are "kindergarten"? Here, you can
-# see that use of the phrase "child care" started to rise in the late 1960s,
-# overtaking "nursery school" around 1970 and then "kindergarten" around 1973.
-# It peaked shortly after 1990 and has been falling steadily since.
-#
-# TF-IDF shows the deviation from normal whereas percent of total shows
-# trends in total discussion of Ngram
 
 
 def get_ngram_relevancy_history(
@@ -103,16 +94,18 @@ def get_ngram_relevancy_history(
         A pandas DataFrame of all IndexedEventGrams that match the provided ngram query
         (stemmed or unstemmed).
 
+    See Also
+    --------
+    cdp_data.keywords.compute_ngram_usage_history
+        Compute all ngrams usage history for a specific CDP session dataset.
+        Useful for comparing how much discussion is comprised of specific ngrams.
+
     Notes
     -----
     This function pulls the TF-IDF (or other future indexed values) score for the
     provided ngram over time. This is a measure of relevancy to a document and not
     the same as Google's NGram Viewer which shows what percentage of literature
     used the term.
-
-    See Also
-    --------
-    cdp_data.keywords.compute_ngram_usage_history
     """
     # Connect to infra
     if infrastructure_slug:
@@ -165,34 +158,94 @@ def get_ngram_relevancy_history(
         axis=1,
     )
 
-    # TODO: add data agg by num days
-
     return ngram_history
 
 
-def _prepare_ngram_history_plotting_data(
+def prepare_ngram_history_plotting_data(
     data: pd.DataFrame,
     ngram_col: str,
     value_col: str,
     dt_col: str,
+    keep_cols: List[str] = [],
 ) -> pd.DataFrame:
+    """
+    A utility function to prepare ngram history data for plotting.
+
+    Parameters
+    ----------
+    data: pd.DataFrame
+        The data to prepare for plotting.
+    ngram_col: str
+        The column name for which the "ngram" is stored.
+        Generally this is the column for which plots are split to small multiples.
+        For example, a single plot for "police", "housing", etc.
+    value_col: str
+        The column name for which the value of each ngram is stored.
+    dt_col: str
+        The column name for which the datetime is stored.
+    keep_cols: List[str]
+        Any extra columns to keep.
+
+    Returns
+    -------
+    plot_data: pd.DataFrame
+        The grouped, sorted, and datetime formatted data ready for plotting.
+
+    See Also
+    --------
+    prepare_ngram_relevancy_history_plotting_data
+        Function to prepare specifically ngram relevancy history data for plotting.
+    prepare_ngram_usage_history_plotting_data
+        Function to prepare specifically ngram usage history data for plotting.
+    """
     # Select down to just the columns we want
     # Reset index
     # Sort values by datetime
     subset = (
-        data[[ngram_col, value_col, dt_col]]
+        data[[ngram_col, value_col, dt_col, *keep_cols]]
         .sort_values([ngram_col, dt_col])
         .reset_index(drop=True)
     )
 
-    # First group data by ngram and date and use max for the day
+    # Ensure the date col is a datetime / pd.Timestamp
     subset[dt_col] = pd.to_datetime(subset[dt_col])
-    subset = (
-        subset.groupby([ngram_col, pd.Grouper(key=dt_col, freq="D")])
-        .max()
-        .reset_index()
-    ).replace([None])
 
+    # Also create a column of the timestamp value
+    subset["timestamp_posix"] = subset[dt_col].apply(
+        lambda timestamp: timestamp.timestamp()
+    )
+
+    return subset
+
+
+def fill_history_data_with_zeros(
+    data: pd.DataFrame,
+    ngram_col: str,
+    dt_col: str,
+) -> pd.DataFrame:
+    """
+    A utility function to fill ngram history data with zeros for all missing dates.
+
+    Parameters
+    ----------
+    data: pd.DataFrame
+        The ngram history data to fill dates for.
+    ngram_col: str
+        The column name for which the "ngram" is stored.
+    dt_col: str
+        The column name for which the datetime is stored.
+
+    Returns
+    -------
+    data: pd.DataFrame
+        A DataFrame filled with the original data and filled in with any missing dates
+        with their values being set to zero.
+
+    See Also
+    --------
+    prepare_ngram_history_plotting_data
+        Subsets to plotting only columns and ensures values are sorted and grouped.
+    """
     # Fill missing dates with zeros for each query gram
     def fill_dates(df: pd.DataFrame) -> pd.DataFrame:
         return df.reindex(
@@ -212,7 +265,7 @@ def _prepare_ngram_history_plotting_data(
     # Drop the ngram col on the grouped data
     # Reset the index to ungroup the data by ngram (thus regaining the ngram column)
     return (
-        subset.set_index(dt_col)
+        data.set_index(dt_col)
         .groupby(ngram_col)
         .apply(fill_dates)
         .drop(ngram_col, axis=1)
@@ -227,10 +280,10 @@ def prepare_ngram_relevancy_history_plotting_data(
     dt_col: str = "event_datetime",
 ) -> pd.DataFrame:
     """
-    Prepare an ngram history DataFrame specifically for plotting.
-    This function will subset the DataFrame to just the provided columns,
+    Prepare an ngram relevancy history DataFrame specifically for plotting.
+    This function will subset the DataFrame to just the provided columns and
     will only store a single value for each day if there are multiple
-    (keeping the max value), and finally filling all missing days with zero values.
+    (keeping the max value).
 
     Parameters
     ----------
@@ -249,22 +302,31 @@ def prepare_ngram_relevancy_history_plotting_data(
     Returns
     -------
     prepared: pd.DataFrame
-        The subset and missing dates filled DataFrame.
+        The subset and max selected dataset reading for plotting.
 
     See Also
     --------
     get_ngram_relevancy_history
+        The dataset retrival function which should generally paired with this function.
     """
-    return _prepare_ngram_history_plotting_data(
+    # Basic preparation
+    data = prepare_ngram_history_plotting_data(
         data=data,
         ngram_col=ngram_col,
         value_col=value_col,
         dt_col=dt_col,
     )
 
+    # Keep max for date
+    data = (
+        data.groupby([ngram_col, pd.Grouper(key=dt_col, freq="D")]).max().reset_index()
+    ).replace([None])
+
+    return data
+
 
 def _count_transcript_grams(
-    processing_params: NgramUsageProcessingParameters,
+    processing_params: _NgramUsageProcessingParameters,
     ngram_size: int,
     strict: bool,
 ) -> pd.DataFrame:
@@ -308,13 +370,52 @@ def _count_transcript_grams(
     return counts
 
 
-def compute_ngram_usage_history(
+def _compute_ngram_usage_history(
     data: pd.DataFrame,
     ngram_size: int = 1,
     strict: bool = False,
 ) -> pd.DataFrame:
     """
-    From a session dataset with transcripts available, compute an ngram's usage history.
+    Compute all ngrams usage history for the provided session dataset.
+    This data can be used to plot how much of a CDP instance's discussion is comprised
+    of specific keywords.
+
+    Parameters
+    ----------
+    data: pd.DataFrame
+        The session dataset to process and compute history for.
+    ngram_size: int
+        The ngram size to use for counting and calculating usage.
+        Default: 1 (unigrams)
+    strict: bool
+        Should all ngrams be stemmed or left unstemmed for a more strict usage history.
+        Default: False (stem and clean all grams in the dataset)
+
+    Returns
+    -------
+    ngram_history: pd.DataFrame
+        A pandas DataFrame of all found ngrams (stemmed and cleaned or unstemmed and
+        uncleaned) from the data and their counts for each session and their percentage
+        of use as a percent of their use for the day over the sum of all other ngrams
+        used that day.
+
+    Notes
+    -----
+    This function calculates the counts and percentage of each ngram used for a day
+    over the sum of all other ngrams used that day's discussion(s). This is close but
+    not exactly the same as Google's NGram Viewer.
+    https://books.google.com/ngrams
+
+    If you want to compare multiple ngrams against each other, such comparisons should
+    all be created from the same dataset produced by this function.
+    Specifically, you should not try to compare a unigram against a bigram for example.
+
+    See Also
+    --------
+    cdp_data.datasets.get_session_dataset
+        Function to pull or load a cached session dataset.
+    cdp_data.keywords.get_ngram_relevancy_history
+        Create a timeline of a single ngrams relevancy history.
     """
     # Ensure stopwords are downloaded
     # Do this once to ensure that we don't enter a race condition
@@ -340,15 +441,12 @@ def compute_ngram_usage_history(
         strict=strict,
     )
 
-    # TODO:
-    # maybe daskify?
-
     # Count all uni, bi, and trigrams in transcripts
     counts = pd.concat(
         process_map(
             counter_func,
             [
-                NgramUsageProcessingParameters(
+                _NgramUsageProcessingParameters(
                     session_id=row.id,
                     session_datetime=row.session_datetime,
                     transcript_path=row.transcript_path,
@@ -374,12 +472,12 @@ def compute_ngram_usage_history(
     # Percent of word usage per day
     counts["day_ngram_percent_usage"] = (
         counts["day_ngram_count_sum"] / counts["day_words_count_sum"]
-    )
+    ) * 100
 
     return counts
 
 
-def prepare_ngram_usage_history_plotting_data(
+def _prepare_ngram_usage_history_plotting_data(
     ngram: str,
     data: pd.DataFrame,
     strict: bool = False,
@@ -387,6 +485,41 @@ def prepare_ngram_usage_history_plotting_data(
     percent_col: str = "day_ngram_percent_usage",
     dt_col: str = "session_date",
 ) -> pd.DataFrame:
+    """
+    Prepare an ngram usage history DataFrame specifically for plotting.
+    This function will stem and clean the provided ngram, subset to just the data
+    of interest, and prepare the rest of the data for plotting.
+
+    Parameters
+    ----------
+    ngram: str
+        A single ngram of interest to plot.
+    data: pd.DataFrame
+        The data to prepare for plotting.
+    strict: bool
+        Should the provided ngram be stemmed or left unstemmed for a more
+        strict usage history.
+        Default: False (stem and clean the provided ngram)
+    ngram_col: str
+        The column name for which the "ngram" is stored.
+        Default: "ngram"
+    percent_col: str
+        The column name for which the percent usage of each ngram is stored.
+        Default: "day_ngram_percent_usage"
+    dt_col: str
+        The column name for which the date is stored.
+        Default: "session_date"
+
+    Returns
+    -------
+    prepared: pd.DataFrame
+        The subset and prepared for plotting dataset.
+
+    See Also
+    --------
+    compute_ngram_usage_history
+        The dataset loading function which should generally paired with this function.
+    """
     # Prepare ngram for user
     if not strict:
         ngram = _stem_n_gram(ngram)
@@ -401,9 +534,104 @@ def prepare_ngram_usage_history_plotting_data(
             f"zero matching rows for plotting."
         )
 
-    return _prepare_ngram_history_plotting_data(
+    return prepare_ngram_history_plotting_data(
         data=subset,
         ngram_col=ngram_col,
         value_col=percent_col,
         dt_col=dt_col,
+        keep_cols=["infrastructure"],
     )
+
+
+def compute_ngram_usage_history(
+    infrastructure_slug: List[str],
+    strict: bool = False,
+    start_datetime: Optional[Union[str, datetime]] = None,
+    end_datetime: Optional[Union[str, datetime]] = None,
+) -> pd.DataFrame:
+    # Always cast infrastructure slugs to list for easier API
+    if isinstance(infrastructure_slug, str):
+        infrastructure_slug = [infrastructure_slug]
+
+    # Create dataframe for all histories
+    gram_usage = []
+
+    # Start collecting datasets for each infrastructure
+    for infra_slug in tqdm(infrastructure_slug):
+        # Get the dataset
+        log.info(f"Getting session dataset for {infra_slug}")
+        infra_ds = datasets.get_session_dataset(
+            infrastructure_slug=infra_slug,
+            start_datetime=start_datetime,
+            end_datetime=end_datetime,
+            store_transcript=True,
+        )
+
+        # Compute ngram usages for infra
+        log.info(f"Computing ngram history for {infra_slug}")
+        infra_gram_usage = _compute_ngram_usage_history(infra_ds, strict=strict)
+        infra_gram_usage["infrastructure"] = infra_slug
+        gram_usage.append(infra_gram_usage)
+
+    # Convert gram histories to single dataframe
+    return pd.concat(gram_usage)
+
+
+def plot_ngram_usage_histories(
+    ngram: Union[str, List[str]],
+    gram_usage: pd.DataFrame,
+    strict: bool = False,
+) -> sns.FacetGrid:
+    # Always cast ngram to list for easier API
+    if isinstance(ngram, str):
+        ngram = [ngram]
+
+    # TODO:
+    # Assert all ngrams are the same size
+
+    # TODO:
+    # Add keyword grouping??
+
+    # Store prepared subsets
+    gram_histories = []
+
+    # Process the grams for the infrastructure
+    for gram in tqdm(ngram):
+        log.info(f"Preparing gram history for {gram}")
+        gram_history = _prepare_ngram_usage_history_plotting_data(
+            gram,
+            data=gram_usage,
+            strict=strict,
+        )
+
+        # Attach this gram history to all
+        gram_histories.append(gram_history)
+
+    # Convert histories to dataframe
+    gram_histories = pd.concat(gram_histories)
+
+    # Plot all the data
+    grid = sns.lmplot(
+        x="timestamp_posix",
+        y="day_ngram_percent_usage",
+        col="infrastructure",
+        hue="ngram",
+        row="ngram",
+        scatter_kws={"alpha": 0.2},
+        aspect=1.6,
+        data=gram_histories,
+    )
+    grid.add_legend()
+
+    # Fix the axes to actual date formats
+    for row in grid.axes:
+        for ax in row:
+            xticks = ax.get_xticks()
+            xticks_dates = [datetime.fromtimestamp(x).strftime("%b %Y") for x in xticks]
+            ax.set_xticklabels(xticks_dates)
+            ax.tick_params(axis="x", rotation=50)
+
+    # Set axis labels
+    grid.set_axis_labels("Date", "Ngram Usage (percent)")
+
+    return grid
