@@ -1,0 +1,29 @@
+cdp\_data.utils package
+=======================
+
+Submodules
+----------
+
+cdp\_data.utils.db\_utils module
+--------------------------------
+
+.. automodule:: cdp_data.utils.db_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cdp\_data.utils.fs\_utils module
+--------------------------------
+
+.. automodule:: cdp_data.utils.fs_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: cdp_data.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:

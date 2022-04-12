@@ -1,13 +1,37 @@
 cdp\_data package
 =================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cdp_data.utils
+
 Submodules
 ----------
 
-cdp\_data.main module
----------------------
+cdp\_data.constants module
+--------------------------
 
-.. automodule:: cdp_data.main
+.. automodule:: cdp_data.constants
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cdp\_data.datasets module
+-------------------------
+
+.. automodule:: cdp_data.datasets
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cdp\_data.keywords module
+-------------------------
+
+.. automodule:: cdp_data.keywords
    :members:
    :undoc-members:
    :show-inheritance:
