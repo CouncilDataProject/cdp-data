@@ -117,3 +117,4 @@ cdp-datasets/
 
 # Project specific
 *keyword_usage.parquet
+test-generated-*-plot.pdf
