@@ -161,7 +161,7 @@ def get_ngram_relevancy_history(
     return ngram_history
 
 
-def prepare_ngram_history_plotting_data(
+def _prepare_ngram_history_plotting_data(
     data: pd.DataFrame,
     ngram_col: str,
     value_col: str,
@@ -310,7 +310,7 @@ def prepare_ngram_relevancy_history_plotting_data(
         The dataset retrival function which should generally paired with this function.
     """
     # Basic preparation
-    data = prepare_ngram_history_plotting_data(
+    data = _prepare_ngram_history_plotting_data(
         data=data,
         ngram_col=ngram_col,
         value_col=value_col,
@@ -398,24 +398,6 @@ def _compute_ngram_usage_history(
         uncleaned) from the data and their counts for each session and their percentage
         of use as a percent of their use for the day over the sum of all other ngrams
         used that day.
-
-    Notes
-    -----
-    This function calculates the counts and percentage of each ngram used for a day
-    over the sum of all other ngrams used that day's discussion(s). This is close but
-    not exactly the same as Google's NGram Viewer.
-    https://books.google.com/ngrams
-
-    If you want to compare multiple ngrams against each other, such comparisons should
-    all be created from the same dataset produced by this function.
-    Specifically, you should not try to compare a unigram against a bigram for example.
-
-    See Also
-    --------
-    cdp_data.datasets.get_session_dataset
-        Function to pull or load a cached session dataset.
-    cdp_data.keywords.get_ngram_relevancy_history
-        Create a timeline of a single ngrams relevancy history.
     """
     # Ensure stopwords are downloaded
     # Do this once to ensure that we don't enter a race condition
@@ -534,7 +516,7 @@ def _prepare_ngram_usage_history_plotting_data(
             f"zero matching rows for plotting."
         )
 
-    return prepare_ngram_history_plotting_data(
+    return _prepare_ngram_history_plotting_data(
         data=subset,
         ngram_col=ngram_col,
         value_col=percent_col,
@@ -544,11 +526,65 @@ def _prepare_ngram_usage_history_plotting_data(
 
 
 def compute_ngram_usage_history(
-    infrastructure_slug: List[str],
+    infrastructure_slug: Union[str, List[str]],
+    ngram_size: int = 1,
     strict: bool = False,
     start_datetime: Optional[Union[str, datetime]] = None,
     end_datetime: Optional[Union[str, datetime]] = None,
+    cache_dir: Optional[Union[str, Path]] = None,
 ) -> pd.DataFrame:
+    """
+    Pull the minimal data needed for a session dataset for the provided infrastructure
+    and start and end datetimes, then compute the ngram usage history DataFrame.
+
+    Parameters
+    ----------
+    infrastructure_slug: str
+        The CDP infrastructure(s) to connect to and pull sessions for.
+    ngram_size: int
+        The ngram size to use for counting and calculating usage.
+        Default: 1 (unigrams)
+    strict: bool
+        Should all ngrams be stemmed or left unstemmed for a more strict usage history.
+        Default: False (stem and clean all grams in the dataset)
+    start_datetime: Optional[Union[str, datetime]]
+        An optional datetime that the session dataset will start at.
+        Default: None (no datetime beginning bound on the dataset)
+    end_datetime: Optional[Union[str, datetime]]
+        An optional datetime that the session dataset will end at.
+        Default: None (no datetime end bound on the dataset)
+    cache_dir: Optional[Union[str, Path]]
+        An optional directory path to cache the dataset. Directory is created if it
+        does not exist.
+        Default: "./cdp-datasets"
+
+    Returns
+    -------
+    gram_usage: pd.DataFrame
+        A pandas DataFrame of all found ngrams (stemmed and cleaned or unstemmed and
+        uncleaned) from the data and their counts for each session and their percentage
+        of use as a percent of their use for the day over the sum of all other ngrams
+        used that day.
+
+    See Also
+    --------
+    cdp_data.datasets.get_session_dataset
+        Function to pull or load a cached session dataset.
+    cdp_data.keywords.plot_ngram_usage_histories
+        Plot ngram usage history data.
+
+    Notes
+    -----
+    This function calculates the counts and percentage of each ngram used for a day
+    over the sum of all other ngrams used in that day's discussion(s). This is close but
+    not exactly the same as Google's NGram Viewer: https://books.google.com/ngrams
+
+    This function will pull a new session dataset and cache transcripts to the local
+    disk in the provided (or default) cache directory.
+
+    It is recommended to cache this dataset after computation because it may take a
+    while depending on machine resources and available.
+    """
     # Always cast infrastructure slugs to list for easier API
     if isinstance(infrastructure_slug, str):
         infrastructure_slug = [infrastructure_slug]
@@ -565,11 +601,16 @@ def compute_ngram_usage_history(
             start_datetime=start_datetime,
             end_datetime=end_datetime,
             store_transcript=True,
+            cache_dir=cache_dir,
         )
 
         # Compute ngram usages for infra
         log.info(f"Computing ngram history for {infra_slug}")
-        infra_gram_usage = _compute_ngram_usage_history(infra_ds, strict=strict)
+        infra_gram_usage = _compute_ngram_usage_history(
+            infra_ds,
+            ngram_size=ngram_size,
+            strict=strict,
+        )
         infra_gram_usage["infrastructure"] = infra_slug
         gram_usage.append(infra_gram_usage)
 
@@ -582,6 +623,37 @@ def plot_ngram_usage_histories(
     gram_usage: pd.DataFrame,
     strict: bool = False,
 ) -> sns.FacetGrid:
+    """
+    Select and plot specific ngram usage histories from the provided gram usage
+    DataFrame.
+
+    Parameters
+    ----------
+    ngram: Union[str, List[str]]
+        The unigrams, bigrams, or trigrams to retrieve history for.
+        Note: Must provide all unigrams, bigrams, or trigrams, cannot mix gram size, and
+        the gram size should be the same as the grams stored in the provided gram_usage
+        DataFrame.
+    gram_usage: pd.DataFrame
+        A pandas DataFrame of all found ngrams (stemmed and cleaned or unstemmed and
+        uncleaned) from the data and their counts for each session and their percentage
+        of use as a percent of their use for the day over the sum of all other ngrams
+        used that day.
+    strict: bool
+        Should all ngrams be stemmed or left unstemmed for a more strict usage history.
+        Default: False (stem and clean all grams in the dataset)
+
+    Returns
+    -------
+    grid: sns.FacetGrid
+        The small multiples FacetGrid of all ngrams and infrastructures found in the
+        provided dataset.
+
+    See Also
+    --------
+    cdp_data.keywords.compute_ngram_usage_history
+        Function to generate ngram usage history DataFrame.
+    """
     # Always cast ngram to list for easier API
     if isinstance(ngram, str):
         ngram = [ngram]
