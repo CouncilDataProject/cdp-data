@@ -25,10 +25,10 @@ log = logging.getLogger(__name__)
 
 DATASET_ARCHIVE = "dataset.zip"
 DATASET_CONTENT_SUMMARY = "cdp-councils-in-action-content-summary"
-SEATTLE_DISCUSSION_TRENDS_PLOT = "seattle-discussion-trends.pdf"
-ALL_INSTANCES_DISCUSSION_TRENDS_PLOT = "councils-in-action-discussion_trends.pdf"
+SEATTLE_DISCUSSION_TRENDS_PLOT = "seattle-discussion-trends"
+ALL_INSTANCES_DISCUSSION_TRENDS_PLOT = "councils-in-action-discussion_trends"
 ALL_INSTANCES_SPLIT_DISCUSSION_TRENDS_PLOT = (
-    "councils-in-action-split-discussion-trends.pdf"
+    "councils-in-action-split-discussion-trends"
 )
 
 PLOT_NGRAMS = [
@@ -152,12 +152,19 @@ def generate_paper_content(
     dataset_archive = storage_directory / DATASET_ARCHIVE
     dataset_content_table_csv = storage_directory / f"{DATASET_CONTENT_SUMMARY}.csv"
     dataset_content_table_latex = dataset_content_table_csv.with_suffix(".tex")
-    seattle_discussion_trends_plot = storage_directory / SEATTLE_DISCUSSION_TRENDS_PLOT
-    all_instances_discussion_trends_plot = (
+    seattle_discussion_trends_pdf = storage_directory / SEATTLE_DISCUSSION_TRENDS_PLOT
+    seattle_discussion_trends_png = seattle_discussion_trends_pdf.with_suffix(".png")
+    all_instances_discussion_trends_pdf = (
         storage_directory / ALL_INSTANCES_DISCUSSION_TRENDS_PLOT
     )
-    all_instances_split_discussion_trends_plot = (
+    all_instances_discussion_trends_png = (
+        all_instances_discussion_trends_pdf.with_suffix(".png")
+    )
+    all_instances_split_discussion_trends_pdf = (
         storage_directory / ALL_INSTANCES_SPLIT_DISCUSSION_TRENDS_PLOT
+    )
+    all_instances_split_discussion_trends_png = (
+        all_instances_split_discussion_trends_pdf.with_suffix(".png")
     )
 
     # Check content
@@ -165,9 +172,12 @@ def generate_paper_content(
         for content_piece in [
             dataset_content_table_csv,
             dataset_content_table_latex,
-            seattle_discussion_trends_plot,
-            all_instances_discussion_trends_plot,
-            all_instances_split_discussion_trends_plot,
+            seattle_discussion_trends_pdf,
+            seattle_discussion_trends_png,
+            all_instances_discussion_trends_pdf,
+            all_instances_discussion_trends_png,
+            all_instances_split_discussion_trends_pdf,
+            all_instances_split_discussion_trends_png,
         ]:
             # Delete dataset content tables
             if content_piece.exists():
@@ -198,7 +208,10 @@ def generate_paper_content(
         )
 
     # Generate Seattle only discussion trends
-    if not seattle_discussion_trends_plot.exists():
+    if (
+        not seattle_discussion_trends_pdf.exists()
+        or not seattle_discussion_trends_png.exists()
+    ):
         log.info("Generate Seattle discussion trends plot")
         seattle_ngram_usage = keywords.compute_ngram_usage_history(
             infrastructure_slug=CDPInstances.Seattle,
@@ -219,12 +232,15 @@ def generate_paper_content(
                 aspect=1.6,
             ),
         )
-        seattle_discussion_trends_grid.savefig(seattle_discussion_trends_plot)
+        seattle_discussion_trends_grid.savefig(seattle_discussion_trends_pdf)
+        seattle_discussion_trends_grid.savefig(seattle_discussion_trends_png)
 
     # Generate all instances discussion trends
     if (
-        not all_instances_discussion_trends_plot.exists()
-        or not all_instances_split_discussion_trends_plot.exists()
+        not all_instances_discussion_trends_pdf.exists()
+        or not all_instances_discussion_trends_png.exists()
+        or not all_instances_split_discussion_trends_pdf.exists()
+        or not all_instances_split_discussion_trends_png.exists()
     ):
         log.info("Generating all instances discussion trends (unified and split) plots")
         all_instances_ngram_usage = keywords.compute_ngram_usage_history(
@@ -253,7 +269,10 @@ def generate_paper_content(
             ),
         )
         all_instances_discussion_trends_grid.savefig(
-            all_instances_discussion_trends_plot,
+            all_instances_discussion_trends_pdf,
+        )
+        all_instances_discussion_trends_grid.savefig(
+            all_instances_discussion_trends_png,
         )
 
         # Show all instances discussion trends split by infra
@@ -272,7 +291,10 @@ def generate_paper_content(
             )
         )
         all_instances_split_discussion_trends_grid.savefig(
-            all_instances_split_discussion_trends_plot,
+            all_instances_split_discussion_trends_pdf,
+        )
+        all_instances_split_discussion_trends_grid.savefig(
+            all_instances_split_discussion_trends_png,
         )
 
     return storage_directory
