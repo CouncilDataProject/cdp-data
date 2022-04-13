@@ -1,0 +1,21 @@
+cdp\_data.bin.research package
+==============================
+
+Submodules
+----------
+
+cdp\_data.bin.research.cdp\_councils\_in\_action\_2022\_content module
+----------------------------------------------------------------------
+
+.. automodule:: cdp_data.bin.research.cdp_councils_in_action_2022_content
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: cdp_data.bin.research
+   :members:
+   :undoc-members:
+   :show-inheritance:

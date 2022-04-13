@@ -159,6 +159,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../modules.html">Package modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../cdp_data.html">cdp_data package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../cdp_data.bin.html">cdp_data.bin package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../cdp_data.bin.research.html">cdp_data.bin.research package</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../cdp_data.utils.html">cdp_data.utils package</a></li>
 </ul>
 </li>
@@ -873,7 +877,6 @@
 
     <span class="c1"># Process the grams for the infrastructure</span>
     <span class="k">for</span> <span class="n">gram</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">ngram</span><span class="p">):</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Preparing gram history for </span><span class="si">{</span><span class="n">gram</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">gram_history</span> <span class="o">=</span> <span class="n">_prepare_ngram_usage_history_plotting_data</span><span class="p">(</span>
             <span class="n">gram</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">gram_usage</span><span class="p">,</span>
@@ -890,11 +893,6 @@
     <span class="n">grid</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lmplot</span><span class="p">(</span>
         <span class="n">x</span><span class="o">=</span><span class="s2">"timestamp_posix"</span><span class="p">,</span>
         <span class="n">y</span><span class="o">=</span><span class="s2">"day_ngram_percent_usage"</span><span class="p">,</span>
-        <span class="n">col</span><span class="o">=</span><span class="s2">"infrastructure"</span><span class="p">,</span>
-        <span class="n">hue</span><span class="o">=</span><span class="s2">"ngram"</span><span class="p">,</span>
-        <span class="n">row</span><span class="o">=</span><span class="s2">"ngram"</span><span class="p">,</span>
-        <span class="n">scatter_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">"alpha"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">},</span>
-        <span class="n">aspect</span><span class="o">=</span><span class="mf">1.6</span><span class="p">,</span>
         <span class="n">data</span><span class="o">=</span><span class="n">gram_histories</span><span class="p">,</span>
         <span class="o">**</span><span class="n">lmplot_kws</span><span class="p">,</span>
     <span class="p">)</span>

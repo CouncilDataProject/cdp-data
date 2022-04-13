@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cdp_data.utils package" href="cdp_data.utils.html" /><link rel="prev" title="cdp_data" href="modules.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cdp_data.bin package" href="cdp_data.bin.html" /><link rel="prev" title="cdp_data" href="modules.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/>
         <title>cdp_data package - cdp-data 0.0.1 documentation</title>
@@ -160,6 +160,10 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">Package modules</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">cdp_data package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="cdp_data.bin.html">cdp_data.bin package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="cdp_data.bin.research.html">cdp_data.bin.research package</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cdp_data.utils.html">cdp_data.utils package</a></li>
 </ul>
 </li>
@@ -204,6 +208,19 @@
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="cdp_data.bin.html">cdp_data.bin package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cdp_data.bin.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cdp_data.bin.research.html">cdp_data.bin.research package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cdp_data.bin.research.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cdp_data.bin.research.html#module-cdp_data.bin.research.cdp_councils_in_action_2022_content">cdp_data.bin.research.cdp_councils_in_action_2022_content module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cdp_data.bin.research.html#module-cdp_data.bin.research">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cdp_data.bin.html#module-cdp_data.bin">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="cdp_data.utils.html">cdp_data.utils package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="cdp_data.utils.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cdp_data.utils.html#module-cdp_data.utils.db_utils">cdp_data.utils.db_utils module</a></li>
@@ -299,6 +316,34 @@ content hash comparison.</p>
 </div>
 <p>To clean a whole dataset or specific events or sessions simply delete the
 associated directory.</p>
+</dd></dl>
+</section>
+<section id="module-cdp_data.instances">
+<span id="cdp-data-instances-module"></span><h2>cdp_data.instances module<a class="headerlink" href="#module-cdp_data.instances" title="Permalink to this headline">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="cdp_data.instances.CDPInstances">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cdp_data.instances.</span></span><span class="sig-name descname"><span class="pre">CDPInstances</span></span><a class="reference internal" href="_modules/cdp_data/instances.html#CDPInstances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.instances.CDPInstances" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Container for CDP instance infrastructure slugs.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cdp_data</span> <span class="kn">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">CDPInstances</span>
+<span class="gp">... </span><span class="n">ds</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">get_session_dataset</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">infrastructure_slug</span><span class="o">=</span><span class="n">CDPInstances</span><span class="o">.</span><span class="n">Seattle</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cdp_data.instances.CDPInstances.KingCounty">
+<span class="sig-name descname"><span class="pre">KingCounty</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdp-king-county-b656c71b'</span></em><a class="headerlink" href="#cdp_data.instances.CDPInstances.KingCounty" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cdp_data.instances.CDPInstances.Portland">
+<span class="sig-name descname"><span class="pre">Portland</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdp-portland-d2bbda97'</span></em><a class="headerlink" href="#cdp_data.instances.CDPInstances.Portland" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cdp_data.instances.CDPInstances.Seattle">
+<span class="sig-name descname"><span class="pre">Seattle</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdp-seattle-21723dcf'</span></em><a class="headerlink" href="#cdp_data.instances.CDPInstances.Seattle" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 </dd></dl>
 </section>
 <section id="module-cdp_data.keywords">
@@ -507,12 +552,12 @@ Default: “event_datetime”</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="cdp_data.utils.html">
+          <a class="next-page" href="cdp_data.bin.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">cdp_data.utils package</div>
+                <div class="title">cdp_data.bin package</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -564,6 +609,7 @@ Default: “event_datetime”</p></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-cdp_data.constants">cdp_data.constants module</a></li>
 <li><a class="reference internal" href="#module-cdp_data.datasets">cdp_data.datasets module</a></li>
+<li><a class="reference internal" href="#module-cdp_data.instances">cdp_data.instances module</a></li>
 <li><a class="reference internal" href="#module-cdp_data.keywords">cdp_data.keywords module</a></li>
 <li><a class="reference internal" href="#module-cdp_data">Module contents</a></li>
 </ul>

@@ -160,6 +160,10 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="modules.html">Package modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="cdp_data.html">cdp_data package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="cdp_data.bin.html">cdp_data.bin package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="cdp_data.bin.research.html">cdp_data.bin.research package</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cdp_data.utils.html">cdp_data.utils package</a></li>
 </ul>
 </li>
@@ -223,9 +227,9 @@
 <section id="pulling-datasets">
 <h3>Pulling Datasets<a class="headerlink" href="#pulling-datasets" title="Permalink to this headline">#</a></h3>
 <p>Install basics: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">cdp-data</span></code></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cdp_data</span> <span class="kn">import</span> <span class="n">datasets</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cdp_data</span> <span class="kn">import</span> <span class="n">CDPInstances</span><span class="p">,</span> <span class="n">datasets</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">get_session_dataset</span><span class="p">(</span>
-    <span class="n">infrastructure_slug</span><span class="o">=</span><span class="s2">"cdp-seattle-21723dcf"</span><span class="p">,</span>
+    <span class="n">infrastructure_slug</span><span class="o">=</span><span class="n">CDPInstances</span><span class="o">.</span><span class="n">Seattle</span><span class="p">,</span>
     <span class="n">start_datetime</span><span class="o">=</span><span class="s2">"2021-01-01"</span><span class="p">,</span>
     <span class="n">store_transcript</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
@@ -235,24 +239,22 @@
 <section id="plotting-and-analysis">
 <h3>Plotting and Analysis<a class="headerlink" href="#plotting-and-analysis" title="Permalink to this headline">#</a></h3>
 <p>Install plotting support: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">cdp-data[plot]</span></code></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cdp_data</span> <span class="kn">import</span> <span class="n">keywords</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cdp_data</span> <span class="kn">import</span> <span class="n">CDPInstances</span><span class="p">,</span> <span class="n">keywords</span>
 <span class="n">ngram_usage</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">compute_ngram_usage_history</span><span class="p">(</span>
-    <span class="s2">"cdp-seattle-21723dcf"</span><span class="p">,</span>
+    <span class="n">CDPInstances</span><span class="o">.</span><span class="n">Seattle</span><span class="p">,</span>
     <span class="n">start_datetime</span><span class="o">=</span><span class="s2">"2021-01-01"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">grid</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">plot_ngram_usage_histories</span><span class="p">(</span>
     <span class="p">[</span><span class="s2">"police"</span><span class="p">,</span> <span class="s2">"housing"</span><span class="p">,</span> <span class="s2">"transportation"</span><span class="p">],</span>
     <span class="n">ngram_usage</span><span class="p">,</span>
+    <span class="n">lmplot_kws</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>  <span class="c1"># extra plotting params</span>
+        <span class="n">col</span><span class="o">=</span><span class="s2">"ngram"</span><span class="p">,</span>
+        <span class="n">hue</span><span class="o">=</span><span class="s2">"ngram"</span><span class="p">,</span>
+        <span class="n">scatter_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">"alpha"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">},</span>
+        <span class="n">aspect</span><span class="o">=</span><span class="mf">1.6</span><span class="p">,</span>
+    <span class="p">),</span>
 <span class="p">)</span>
 <span class="n">grid</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">"seattle-keywords-over-time.pdf"</span><span class="p">)</span>
-
-<span class="c1"># Or with extra kwargs like order</span>
-<span class="n">grid_third_order</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">plot_ngram_usage_histories</span><span class="p">(</span>
-    <span class="p">[</span><span class="s2">"police"</span><span class="p">,</span> <span class="s2">"housing"</span><span class="p">,</span> <span class="s2">"transportation"</span><span class="p">],</span>
-    <span class="n">ngram_usage</span><span class="p">,</span>
-    <span class="n">lmplot_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">"order"</span><span class="p">:</span> <span class="mi">3</span><span class="p">},</span>
-<span class="p">)</span>
-<span class="n">grid_third_order</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">"seattle-keywords-over-time-third-order.pdf"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

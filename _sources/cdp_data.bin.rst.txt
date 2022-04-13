@@ -1,0 +1,18 @@
+cdp\_data.bin package
+=====================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cdp_data.bin.research
+
+Module contents
+---------------
+
+.. automodule:: cdp_data.bin
+   :members:
+   :undoc-members:
+   :show-inheritance:
