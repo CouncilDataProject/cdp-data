@@ -229,10 +229,10 @@
 
 <span class="n">DATASET_ARCHIVE</span> <span class="o">=</span> <span class="s2">"dataset.zip"</span>
 <span class="n">DATASET_CONTENT_SUMMARY</span> <span class="o">=</span> <span class="s2">"cdp-councils-in-action-content-summary"</span>
-<span class="n">SEATTLE_DISCUSSION_TRENDS_PLOT</span> <span class="o">=</span> <span class="s2">"seattle-discussion-trends.pdf"</span>
-<span class="n">ALL_INSTANCES_DISCUSSION_TRENDS_PLOT</span> <span class="o">=</span> <span class="s2">"councils-in-action-discussion_trends.pdf"</span>
+<span class="n">SEATTLE_DISCUSSION_TRENDS_PLOT</span> <span class="o">=</span> <span class="s2">"seattle-discussion-trends"</span>
+<span class="n">ALL_INSTANCES_DISCUSSION_TRENDS_PLOT</span> <span class="o">=</span> <span class="s2">"councils-in-action-discussion_trends"</span>
 <span class="n">ALL_INSTANCES_SPLIT_DISCUSSION_TRENDS_PLOT</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s2">"councils-in-action-split-discussion-trends.pdf"</span>
+    <span class="s2">"councils-in-action-split-discussion-trends"</span>
 <span class="p">)</span>
 
 <span class="n">PLOT_NGRAMS</span> <span class="o">=</span> <span class="p">[</span>
@@ -356,12 +356,19 @@
     <span class="n">dataset_archive</span> <span class="o">=</span> <span class="n">storage_directory</span> <span class="o">/</span> <span class="n">DATASET_ARCHIVE</span>
     <span class="n">dataset_content_table_csv</span> <span class="o">=</span> <span class="n">storage_directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">DATASET_CONTENT_SUMMARY</span><span class="si">}</span><span class="s2">.csv"</span>
     <span class="n">dataset_content_table_latex</span> <span class="o">=</span> <span class="n">dataset_content_table_csv</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".tex"</span><span class="p">)</span>
-    <span class="n">seattle_discussion_trends_plot</span> <span class="o">=</span> <span class="n">storage_directory</span> <span class="o">/</span> <span class="n">SEATTLE_DISCUSSION_TRENDS_PLOT</span>
-    <span class="n">all_instances_discussion_trends_plot</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">seattle_discussion_trends_pdf</span> <span class="o">=</span> <span class="n">storage_directory</span> <span class="o">/</span> <span class="n">SEATTLE_DISCUSSION_TRENDS_PLOT</span>
+    <span class="n">seattle_discussion_trends_png</span> <span class="o">=</span> <span class="n">seattle_discussion_trends_pdf</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".png"</span><span class="p">)</span>
+    <span class="n">all_instances_discussion_trends_pdf</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">storage_directory</span> <span class="o">/</span> <span class="n">ALL_INSTANCES_DISCUSSION_TRENDS_PLOT</span>
     <span class="p">)</span>
-    <span class="n">all_instances_split_discussion_trends_plot</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">all_instances_discussion_trends_png</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">all_instances_discussion_trends_pdf</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".png"</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">all_instances_split_discussion_trends_pdf</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">storage_directory</span> <span class="o">/</span> <span class="n">ALL_INSTANCES_SPLIT_DISCUSSION_TRENDS_PLOT</span>
+    <span class="p">)</span>
+    <span class="n">all_instances_split_discussion_trends_png</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">all_instances_split_discussion_trends_pdf</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".png"</span><span class="p">)</span>
     <span class="p">)</span>
 
     <span class="c1"># Check content</span>
@@ -369,9 +376,12 @@
         <span class="k">for</span> <span class="n">content_piece</span> <span class="ow">in</span> <span class="p">[</span>
             <span class="n">dataset_content_table_csv</span><span class="p">,</span>
             <span class="n">dataset_content_table_latex</span><span class="p">,</span>
-            <span class="n">seattle_discussion_trends_plot</span><span class="p">,</span>
-            <span class="n">all_instances_discussion_trends_plot</span><span class="p">,</span>
-            <span class="n">all_instances_split_discussion_trends_plot</span><span class="p">,</span>
+            <span class="n">seattle_discussion_trends_pdf</span><span class="p">,</span>
+            <span class="n">seattle_discussion_trends_png</span><span class="p">,</span>
+            <span class="n">all_instances_discussion_trends_pdf</span><span class="p">,</span>
+            <span class="n">all_instances_discussion_trends_png</span><span class="p">,</span>
+            <span class="n">all_instances_split_discussion_trends_pdf</span><span class="p">,</span>
+            <span class="n">all_instances_split_discussion_trends_png</span><span class="p">,</span>
         <span class="p">]:</span>
             <span class="c1"># Delete dataset content tables</span>
             <span class="k">if</span> <span class="n">content_piece</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -402,7 +412,10 @@
         <span class="p">)</span>
 
     <span class="c1"># Generate Seattle only discussion trends</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">seattle_discussion_trends_plot</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">seattle_discussion_trends_pdf</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="n">seattle_discussion_trends_png</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+    <span class="p">):</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Generate Seattle discussion trends plot"</span><span class="p">)</span>
         <span class="n">seattle_ngram_usage</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">compute_ngram_usage_history</span><span class="p">(</span>
             <span class="n">infrastructure_slug</span><span class="o">=</span><span class="n">CDPInstances</span><span class="o">.</span><span class="n">Seattle</span><span class="p">,</span>
@@ -423,12 +436,15 @@
                 <span class="n">aspect</span><span class="o">=</span><span class="mf">1.6</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">)</span>
-        <span class="n">seattle_discussion_trends_grid</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">seattle_discussion_trends_plot</span><span class="p">)</span>
+        <span class="n">seattle_discussion_trends_grid</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">seattle_discussion_trends_pdf</span><span class="p">)</span>
+        <span class="n">seattle_discussion_trends_grid</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">seattle_discussion_trends_png</span><span class="p">)</span>
 
     <span class="c1"># Generate all instances discussion trends</span>
     <span class="k">if</span> <span class="p">(</span>
-        <span class="ow">not</span> <span class="n">all_instances_discussion_trends_plot</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
-        <span class="ow">or</span> <span class="ow">not</span> <span class="n">all_instances_split_discussion_trends_plot</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+        <span class="ow">not</span> <span class="n">all_instances_discussion_trends_pdf</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="n">all_instances_discussion_trends_png</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="n">all_instances_split_discussion_trends_pdf</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="n">all_instances_split_discussion_trends_png</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
     <span class="p">):</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Generating all instances discussion trends (unified and split) plots"</span><span class="p">)</span>
         <span class="n">all_instances_ngram_usage</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">compute_ngram_usage_history</span><span class="p">(</span>
@@ -457,7 +473,10 @@
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="n">all_instances_discussion_trends_grid</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
-            <span class="n">all_instances_discussion_trends_plot</span><span class="p">,</span>
+            <span class="n">all_instances_discussion_trends_pdf</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">all_instances_discussion_trends_grid</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+            <span class="n">all_instances_discussion_trends_png</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># Show all instances discussion trends split by infra</span>
@@ -476,7 +495,10 @@
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="n">all_instances_split_discussion_trends_grid</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
-            <span class="n">all_instances_split_discussion_trends_plot</span><span class="p">,</span>
+            <span class="n">all_instances_split_discussion_trends_pdf</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">all_instances_split_discussion_trends_grid</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+            <span class="n">all_instances_split_discussion_trends_png</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">storage_directory</span></div>
