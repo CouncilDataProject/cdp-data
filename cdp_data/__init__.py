@@ -9,5 +9,8 @@ __email__ = "jmaxfieldbrown@gmail.com"
 __version__ = "0.0.1"
 
 
+from .instances import CDPInstances  # noqa: F401
+
+
 def get_module_version() -> str:
     return __version__
