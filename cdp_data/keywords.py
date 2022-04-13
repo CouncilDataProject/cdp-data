@@ -673,7 +673,6 @@ def plot_ngram_usage_histories(
 
     # Process the grams for the infrastructure
     for gram in tqdm(ngram):
-        log.info(f"Preparing gram history for {gram}")
         gram_history = _prepare_ngram_usage_history_plotting_data(
             gram,
             data=gram_usage,
@@ -690,11 +689,6 @@ def plot_ngram_usage_histories(
     grid = sns.lmplot(
         x="timestamp_posix",
         y="day_ngram_percent_usage",
-        col="infrastructure",
-        hue="ngram",
-        row="ngram",
-        scatter_kws={"alpha": 0.2},
-        aspect=1.6,
         data=gram_histories,
         **lmplot_kws,
     )
