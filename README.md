@@ -23,9 +23,9 @@ For full package documentation please visit [councildataproject.github.io/cdp-da
 Install basics: `pip install cdp-data`
 
 ```python
-from cdp_data import datasets
+from cdp_data import CDPInstances, datasets
 ds = datasets.get_session_dataset(
-    infrastructure_slug="cdp-seattle-21723dcf",
+    infrastructure_slug=CDPInstances.Seattle,
     start_datetime="2021-01-01",
     store_transcript=True,
 )
@@ -36,24 +36,22 @@ ds = datasets.get_session_dataset(
 Install plotting support: `pip install cdp-data[plot]`
 
 ```python
-from cdp_data import keywords
+from cdp_data import CDPInstances, keywords
 ngram_usage = keywords.compute_ngram_usage_history(
-    "cdp-seattle-21723dcf",
+    CDPInstances.Seattle,
     start_datetime="2021-01-01",
 )
 grid = keywords.plot_ngram_usage_histories(
     ["police", "housing", "transportation"],
     ngram_usage,
+    lmplot_kws=dict(  # extra plotting params
+        col="ngram",
+        hue="ngram",
+        scatter_kws={"alpha": 0.2},
+        aspect=1.6,
+    ),
 )
 grid.savefig("seattle-keywords-over-time.pdf")
-
-# Or with extra kwargs like order
-grid_third_order = keywords.plot_ngram_usage_histories(
-    ["police", "housing", "transportation"],
-    ngram_usage,
-    lmplot_kws={"order": 3},
-)
-grid_third_order.savefig("seattle-keywords-over-time-third-order.pdf")
 ```
 
 ## Development
