@@ -14,6 +14,8 @@ setup_requirements = [
 
 plot_requirements = [
     "seaborn>=0.11.2",
+    # Support
+    "pyarrow>=7.0.0",
     # Widgets
     "ipywidgets>=7.7.0",
 ]
@@ -39,7 +41,6 @@ dev_requirements = [
     "coverage>=5.1",
     "jupyterlab>=3.2.8",
     "m2r2>=0.2.7",
-    "pyarrow>=7.0.0",
     "pytest-runner>=5.2",
     "Sphinx>=3.4.3",
     "furo>=2022.4.7",
@@ -85,7 +86,12 @@ setup(
         "Data Utilities and Processing Functions for Generalized for all CDP Instances"
     ),
     entry_points={
-        "console_scripts": [],
+        "console_scripts": [
+            (
+                "generate_cdp_councils_in_action_2022_paper_content="
+                "cdp_data.bin.research.cdp_councils_in_action_2022_content:main"
+            ),
+        ],
     },
     install_requires=requirements,
     license="MIT license",
