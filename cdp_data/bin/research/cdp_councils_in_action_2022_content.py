@@ -30,6 +30,13 @@ ALL_INSTANCES_SPLIT_DISCUSSION_TRENDS_PLOT = (
     "councils-in-action-split-discussion-trends.pdf"
 )
 
+PLOT_NGRAMS = [
+    "police",
+    "housing",
+    "union",
+    "homelessness",
+]
+
 ###############################################################################
 
 
@@ -201,12 +208,7 @@ def generate_paper_content(
             cache_dir=full_dataset_storage_dir,
         )
         seattle_discussion_trends_grid = keywords.plot_ngram_usage_histories(
-            ngram=[
-                "police",
-                "rent",
-                "union",
-                "homelessness",
-            ],
+            ngram=PLOT_NGRAMS,
             gram_usage=seattle_ngram_usage,
             strict=False,  # stem provided grams
             lmplot_kws=dict(  # extra plotting params
@@ -239,12 +241,7 @@ def generate_paper_content(
 
         # Show all instances discussion trends
         all_instances_discussion_trends_grid = keywords.plot_ngram_usage_histories(
-            ngram=[
-                "police",
-                "rent",
-                "union",
-                "homelessness",
-            ],
+            ngram=PLOT_NGRAMS,
             gram_usage=all_instances_ngram_usage,
             strict=False,  # stem provided grams
             lmplot_kws=dict(  # extra plotting params
@@ -261,12 +258,7 @@ def generate_paper_content(
         # Show all instances discussion trends split by infra
         all_instances_split_discussion_trends_grid = (
             keywords.plot_ngram_usage_histories(
-                ngram=[
-                    "police",
-                    "rent",
-                    "union",
-                    "homelessness",
-                ],
+                ngram=PLOT_NGRAMS,
                 gram_usage=all_instances_ngram_usage,
                 strict=False,  # stem provided grams
                 lmplot_kws=dict(  # extra plotting params
