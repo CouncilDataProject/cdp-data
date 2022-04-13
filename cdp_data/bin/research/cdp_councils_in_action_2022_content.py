@@ -3,14 +3,15 @@
 
 import argparse
 import logging
+import shutil
 import sys
 import traceback
 from pathlib import Path
 from typing import Union
-import shutil
 
-from cdp_data import datasets, keywords, CDPInstances
 import pandas as pd
+
+from cdp_data import CDPInstances, datasets, keywords
 
 ###############################################################################
 
@@ -176,7 +177,7 @@ def generate_paper_content(
     if not dataset_archive.exists():
         log.info("Generating dataset archive")
         shutil.make_archive(
-            dataset_archive.with_suffix(""),
+            str(dataset_archive.with_suffix("")),
             "zip",
             full_dataset_storage_dir,
         )
