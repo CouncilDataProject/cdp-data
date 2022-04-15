@@ -13,6 +13,7 @@ setup_requirements = [
 ]
 
 plot_requirements = [
+    "matplotlib>=3.5.1",
     "seaborn>=0.11.2",
     # Support
     "pyarrow>=7.0.0",
@@ -51,6 +52,7 @@ dev_requirements = [
 requirements = [
     "cdp-backend>=3.0.3",
     "nltk>=3.6",
+    "numpy>=1.22.3",
     "pandas>=1.4.1",
     "tqdm>=4.63.1",
     # Version pins set by cdp-backend
