@@ -656,7 +656,7 @@ def plot_ngram_usage_histories(
         Function to generate ngram usage history DataFrame.
     """
     import seaborn as sns
-    from matplotlib.axes._subplots import AxesSubplot
+    from matplotlib.axes import SubplotBase
 
     sns.set_theme(color_codes=True)
 
@@ -697,7 +697,7 @@ def plot_ngram_usage_histories(
     grid.add_legend()
 
     def _recurse_axes_grid_to_fix_datetimes(
-        arr_or_subplot: Union[np.ndarray, AxesSubplot],
+        arr_or_subplot: Union[np.ndarray, SubplotBase],
     ) -> None:
         if isinstance(arr_or_subplot, np.ndarray):
             for item in arr_or_subplot:
