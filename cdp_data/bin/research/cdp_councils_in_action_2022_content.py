@@ -152,16 +152,18 @@ def generate_paper_content(
     dataset_archive = storage_directory / DATASET_ARCHIVE
     dataset_content_table_csv = storage_directory / f"{DATASET_CONTENT_SUMMARY}.csv"
     dataset_content_table_latex = dataset_content_table_csv.with_suffix(".tex")
-    seattle_discussion_trends_pdf = storage_directory / SEATTLE_DISCUSSION_TRENDS_PLOT
+    seattle_discussion_trends_pdf = (
+        storage_directory / f"{SEATTLE_DISCUSSION_TRENDS_PLOT}.pdf"
+    )
     seattle_discussion_trends_png = seattle_discussion_trends_pdf.with_suffix(".png")
     all_instances_discussion_trends_pdf = (
-        storage_directory / ALL_INSTANCES_DISCUSSION_TRENDS_PLOT
+        storage_directory / f"{ALL_INSTANCES_DISCUSSION_TRENDS_PLOT}.pdf"
     )
     all_instances_discussion_trends_png = (
         all_instances_discussion_trends_pdf.with_suffix(".png")
     )
     all_instances_split_discussion_trends_pdf = (
-        storage_directory / ALL_INSTANCES_SPLIT_DISCUSSION_TRENDS_PLOT
+        storage_directory / f"{ALL_INSTANCES_SPLIT_DISCUSSION_TRENDS_PLOT}.pdf"
     )
     all_instances_split_discussion_trends_png = (
         all_instances_split_discussion_trends_pdf.with_suffix(".png")
@@ -221,6 +223,12 @@ def generate_paper_content(
             end_datetime="2022-04-01",
             cache_dir=full_dataset_storage_dir,
         )
+        seattle_ngram_usage.to_parquet(
+            seattle_discussion_trends_pdf.with_suffix(".parquet"),
+            index=False,
+        )
+
+        # Plot
         seattle_discussion_trends_grid = keywords.plot_ngram_usage_histories(
             ngram=PLOT_NGRAMS,
             gram_usage=seattle_ngram_usage,
@@ -228,6 +236,7 @@ def generate_paper_content(
             lmplot_kws=dict(  # extra plotting params
                 col="ngram",
                 hue="ngram",
+                col_wrap=2,
                 scatter_kws={"alpha": 0.2},
                 aspect=1.6,
             ),
@@ -255,6 +264,10 @@ def generate_paper_content(
             end_datetime="2022-04-01",
             cache_dir=full_dataset_storage_dir,
         )
+        all_instances_ngram_usage.to_parquet(
+            all_instances_discussion_trends_pdf.with_suffix(".parquet"),
+            index=False,
+        )
 
         # Show all instances discussion trends
         all_instances_discussion_trends_grid = keywords.plot_ngram_usage_histories(
@@ -264,6 +277,7 @@ def generate_paper_content(
             lmplot_kws=dict(  # extra plotting params
                 col="ngram",
                 hue="ngram",
+                col_wrap=2,
                 scatter_kws={"alpha": 0.2},
                 aspect=1.6,
             ),
