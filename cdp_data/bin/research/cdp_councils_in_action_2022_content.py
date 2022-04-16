@@ -8,7 +8,7 @@ import shutil
 import sys
 import traceback
 from pathlib import Path
-from typing import Union
+from typing import Dict, Union
 
 import pandas as pd
 
@@ -237,7 +237,7 @@ def generate_paper_content(
         )
 
         # Compute and store selected stats
-        collected_seattle_stats = {}
+        collected_seattle_stats: Dict[str, Dict[str, Dict[str, float]]] = {}
 
         # Month subsets
         jan_2021 = seattle_ngram_usage.loc[
@@ -252,24 +252,24 @@ def generate_paper_content(
         # Calc per gram
         for gram in PLOT_NGRAMS:
             stemmed_gram = _stem_n_gram(gram)
-            collected_seattle_stats[
-                f"mean_percent_usage_of_{stemmed_gram}-january_2021"
+            collected_seattle_stats[stemmed_gram] = {
+                "january_2021": {},
+                "march_2022": {},
+            }
+            collected_seattle_stats[stemmed_gram]["january_2021"][
+                "mean"
             ] = jan_2021.loc[
                 jan_2021.ngram == stemmed_gram
             ].day_ngram_percent_usage.mean()
-            collected_seattle_stats[
-                f"std_percent_usage_of_{stemmed_gram}-january_2021"
-            ] = jan_2021.loc[
+            collected_seattle_stats[stemmed_gram]["january_2021"]["std"] = jan_2021.loc[
                 jan_2021.ngram == stemmed_gram
             ].day_ngram_percent_usage.std()
-            collected_seattle_stats[
-                f"mean_percent_usage_of_{stemmed_gram}-march_2022"
+            collected_seattle_stats[stemmed_gram]["march_2022"][
+                "mean"
             ] = march_2022.loc[
                 march_2022.ngram == stemmed_gram
             ].day_ngram_percent_usage.mean()
-            collected_seattle_stats[
-                f"std_percent_usage_of_{stemmed_gram}-march_2022"
-            ] = march_2022.loc[
+            collected_seattle_stats[stemmed_gram]["march_2022"]["std"] = march_2022.loc[
                 march_2022.ngram == stemmed_gram
             ].day_ngram_percent_usage.std()
 
@@ -315,7 +315,7 @@ def generate_paper_content(
         )
 
         # Compute and store selected stats
-        collected_all_instance_stats = {}
+        collected_all_instance_stats: Dict[str, Dict[str, Dict[str, float]]] = {}
 
         # Month subsets
         oct_2021 = all_instances_ngram_usage.loc[
@@ -330,23 +330,27 @@ def generate_paper_content(
         # Calc per gram
         for gram in PLOT_NGRAMS:
             stemmed_gram = _stem_n_gram(gram)
-            collected_all_instance_stats[
-                f"mean_percent_usage_of_{stemmed_gram}-october_2021"
+            collected_all_instance_stats[stemmed_gram] = {
+                "october_2021": {},
+                "march_2022": {},
+            }
+            collected_all_instance_stats[stemmed_gram]["october_2021"][
+                "mean"
             ] = oct_2021.loc[
                 oct_2021.ngram == stemmed_gram
             ].day_ngram_percent_usage.mean()
-            collected_all_instance_stats[
-                f"std_percent_usage_of_{stemmed_gram}-october_2021"
+            collected_all_instance_stats[stemmed_gram]["october_2021"][
+                "std"
             ] = oct_2021.loc[
                 oct_2021.ngram == stemmed_gram
             ].day_ngram_percent_usage.std()
-            collected_all_instance_stats[
-                f"mean_percent_usage_of_{stemmed_gram}-march_2022"
+            collected_all_instance_stats[stemmed_gram]["march_2022"][
+                "mean"
             ] = march_2022.loc[
                 march_2022.ngram == stemmed_gram
             ].day_ngram_percent_usage.mean()
-            collected_all_instance_stats[
-                f"std_percent_usage_of_{stemmed_gram}-march_2022"
+            collected_all_instance_stats[stemmed_gram]["march_2022"][
+                "std"
             ] = march_2022.loc[
                 march_2022.ngram == stemmed_gram
             ].day_ngram_percent_usage.std()
@@ -358,31 +362,38 @@ def generate_paper_content(
             json.dump(collected_all_instance_stats, open_f, indent=4)
 
         # Compute and store selected stats for splits
-        collected_all_instance_split_stats = {}
+        collected_all_instance_split_stats: Dict[
+            str, Dict[str, Dict[str, Dict[str, float]]]
+        ] = {}
 
         # Calc per gram and infrastructure
         for infra in PLOT_INFRASTRUCTURES:
             oct_2021_infra_subset = oct_2021.loc[oct_2021.infrastructure == infra]
             march_2022_infra_subset = march_2022.loc[march_2022.infrastructure == infra]
+            collected_all_instance_split_stats[infra] = {}
             for gram in PLOT_NGRAMS:
                 stemmed_gram = _stem_n_gram(gram)
-                collected_all_instance_split_stats[
-                    f"mean_percent_usage_of_{stemmed_gram}-{infra}-october_2021"
+                collected_all_instance_split_stats[infra][stemmed_gram] = {
+                    "october_2021": {},
+                    "march_2022": {},
+                }
+                collected_all_instance_split_stats[infra][stemmed_gram]["october_2021"][
+                    "mean"
                 ] = oct_2021_infra_subset.loc[
                     oct_2021_infra_subset.ngram == stemmed_gram
                 ].day_ngram_percent_usage.mean()
-                collected_all_instance_split_stats[
-                    f"std_percent_usage_of_{stemmed_gram}-{infra}-october_2021"
+                collected_all_instance_split_stats[infra][stemmed_gram]["october_2021"][
+                    "std"
                 ] = oct_2021_infra_subset.loc[
                     oct_2021_infra_subset.ngram == stemmed_gram
                 ].day_ngram_percent_usage.std()
-                collected_all_instance_split_stats[
-                    f"mean_percent_usage_of_{stemmed_gram}-{infra}-march_2022"
+                collected_all_instance_split_stats[infra][stemmed_gram]["march_2022"][
+                    "mean"
                 ] = march_2022_infra_subset.loc[
                     march_2022_infra_subset.ngram == stemmed_gram
                 ].day_ngram_percent_usage.mean()
-                collected_all_instance_split_stats[
-                    f"std_percent_usage_of_{stemmed_gram}-{infra}-march_2022"
+                collected_all_instance_split_stats[infra][stemmed_gram]["march_2022"][
+                    "std"
                 ] = march_2022_infra_subset.loc[
                     march_2022_infra_subset.ngram == stemmed_gram
                 ].day_ngram_percent_usage.std()
