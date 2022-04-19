@@ -9,6 +9,7 @@ from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
+import numpy as np
 import pandas as pd
 from cdp_backend.database import models as db_models
 from cdp_backend.pipeline.transcript_model import Transcript
@@ -655,6 +656,7 @@ def plot_ngram_usage_histories(
         Function to generate ngram usage history DataFrame.
     """
     import seaborn as sns
+    from matplotlib.axes import SubplotBase
 
     sns.set_theme(color_codes=True)
 
@@ -694,13 +696,21 @@ def plot_ngram_usage_histories(
     )
     grid.add_legend()
 
-    # Fix the axes to actual date formats
-    for row in grid.axes:
-        for ax in row:
+    def _recurse_axes_grid_to_fix_datetimes(
+        arr_or_subplot: Union[np.ndarray, SubplotBase],
+    ) -> None:
+        if isinstance(arr_or_subplot, np.ndarray):
+            for item in arr_or_subplot:
+                _recurse_axes_grid_to_fix_datetimes(item)
+        else:
+            ax = arr_or_subplot
             xticks = ax.get_xticks()
             xticks_dates = [datetime.fromtimestamp(x).strftime("%b %Y") for x in xticks]
             ax.set_xticklabels(xticks_dates)
             ax.tick_params(axis="x", rotation=50)
+
+    # Fix the axes to actual date formats
+    _recurse_axes_grid_to_fix_datetimes(grid.axes)
 
     # Set axis labels
     grid.set_axis_labels("Date", "Ngram Usage (percent)")
