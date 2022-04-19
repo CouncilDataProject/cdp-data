@@ -206,16 +206,18 @@
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">traceback</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">from</span> <span class="nn">cdp_data</span> <span class="kn">import</span> <span class="n">CDPInstances</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">keywords</span>
+<span class="kn">from</span> <span class="nn">cdp_data.keywords</span> <span class="kn">import</span> <span class="n">_stem_n_gram</span>
 
 <span class="c1">###############################################################################</span>
 
@@ -230,7 +232,7 @@
 <span class="n">DATASET_ARCHIVE</span> <span class="o">=</span> <span class="s2">"dataset.zip"</span>
 <span class="n">DATASET_CONTENT_SUMMARY</span> <span class="o">=</span> <span class="s2">"cdp-councils-in-action-content-summary"</span>
 <span class="n">SEATTLE_DISCUSSION_TRENDS_PLOT</span> <span class="o">=</span> <span class="s2">"seattle-discussion-trends"</span>
-<span class="n">ALL_INSTANCES_DISCUSSION_TRENDS_PLOT</span> <span class="o">=</span> <span class="s2">"councils-in-action-discussion_trends"</span>
+<span class="n">ALL_INSTANCES_DISCUSSION_TRENDS_PLOT</span> <span class="o">=</span> <span class="s2">"councils-in-action-discussion-trends"</span>
 <span class="n">ALL_INSTANCES_SPLIT_DISCUSSION_TRENDS_PLOT</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s2">"councils-in-action-split-discussion-trends"</span>
 <span class="p">)</span>
@@ -240,6 +242,12 @@
     <span class="s2">"housing"</span><span class="p">,</span>
     <span class="s2">"union"</span><span class="p">,</span>
     <span class="s2">"homelessness"</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">PLOT_INFRASTRUCTURES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">CDPInstances</span><span class="o">.</span><span class="n">Seattle</span><span class="p">,</span>
+    <span class="n">CDPInstances</span><span class="o">.</span><span class="n">KingCounty</span><span class="p">,</span>
+    <span class="n">CDPInstances</span><span class="o">.</span><span class="n">Portland</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="c1">###############################################################################</span>
@@ -317,9 +325,14 @@
         <span class="n">CDPInstances</span><span class="o">.</span><span class="n">KingCounty</span><span class="p">,</span>
         <span class="n">CDPInstances</span><span class="o">.</span><span class="n">Portland</span><span class="p">,</span>
     <span class="p">]:</span>
+        <span class="k">if</span> <span class="n">infra</span> <span class="o">==</span> <span class="n">CDPInstances</span><span class="o">.</span><span class="n">Seattle</span><span class="p">:</span>
+            <span class="n">start_datetime</span> <span class="o">=</span> <span class="s2">"2021-01-01"</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">start_datetime</span> <span class="o">=</span> <span class="s2">"2021-10-01"</span>
+
         <span class="n">infra_ds</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">get_session_dataset</span><span class="p">(</span>
             <span class="n">infrastructure_slug</span><span class="o">=</span><span class="n">infra</span><span class="p">,</span>
-            <span class="n">start_datetime</span><span class="o">=</span><span class="s2">"2021-01-01"</span><span class="p">,</span>
+            <span class="n">start_datetime</span><span class="o">=</span><span class="n">start_datetime</span><span class="p">,</span>
             <span class="n">end_datetime</span><span class="o">=</span><span class="s2">"2022-04-01"</span><span class="p">,</span>
             <span class="n">store_full_metadata</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">store_transcript</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -356,16 +369,18 @@
     <span class="n">dataset_archive</span> <span class="o">=</span> <span class="n">storage_directory</span> <span class="o">/</span> <span class="n">DATASET_ARCHIVE</span>
     <span class="n">dataset_content_table_csv</span> <span class="o">=</span> <span class="n">storage_directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">DATASET_CONTENT_SUMMARY</span><span class="si">}</span><span class="s2">.csv"</span>
     <span class="n">dataset_content_table_latex</span> <span class="o">=</span> <span class="n">dataset_content_table_csv</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".tex"</span><span class="p">)</span>
-    <span class="n">seattle_discussion_trends_pdf</span> <span class="o">=</span> <span class="n">storage_directory</span> <span class="o">/</span> <span class="n">SEATTLE_DISCUSSION_TRENDS_PLOT</span>
+    <span class="n">seattle_discussion_trends_pdf</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">storage_directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">SEATTLE_DISCUSSION_TRENDS_PLOT</span><span class="si">}</span><span class="s2">.pdf"</span>
+    <span class="p">)</span>
     <span class="n">seattle_discussion_trends_png</span> <span class="o">=</span> <span class="n">seattle_discussion_trends_pdf</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".png"</span><span class="p">)</span>
     <span class="n">all_instances_discussion_trends_pdf</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">storage_directory</span> <span class="o">/</span> <span class="n">ALL_INSTANCES_DISCUSSION_TRENDS_PLOT</span>
+        <span class="n">storage_directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ALL_INSTANCES_DISCUSSION_TRENDS_PLOT</span><span class="si">}</span><span class="s2">.pdf"</span>
     <span class="p">)</span>
     <span class="n">all_instances_discussion_trends_png</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">all_instances_discussion_trends_pdf</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".png"</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">all_instances_split_discussion_trends_pdf</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">storage_directory</span> <span class="o">/</span> <span class="n">ALL_INSTANCES_SPLIT_DISCUSSION_TRENDS_PLOT</span>
+        <span class="n">storage_directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ALL_INSTANCES_SPLIT_DISCUSSION_TRENDS_PLOT</span><span class="si">}</span><span class="s2">.pdf"</span>
     <span class="p">)</span>
     <span class="n">all_instances_split_discussion_trends_png</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">all_instances_split_discussion_trends_pdf</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".png"</span><span class="p">)</span>
@@ -425,6 +440,53 @@
             <span class="n">end_datetime</span><span class="o">=</span><span class="s2">"2022-04-01"</span><span class="p">,</span>
             <span class="n">cache_dir</span><span class="o">=</span><span class="n">full_dataset_storage_dir</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="n">seattle_ngram_usage</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span>
+            <span class="n">seattle_discussion_trends_pdf</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".parquet"</span><span class="p">),</span>
+            <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Compute and store selected stats</span>
+        <span class="n">collected_seattle_stats</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Month subsets</span>
+        <span class="n">jan_2021</span> <span class="o">=</span> <span class="n">seattle_ngram_usage</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="p">(</span><span class="n">seattle_ngram_usage</span><span class="o">.</span><span class="n">session_datetime</span> <span class="o">&gt;=</span> <span class="s2">"2021-01-01"</span><span class="p">)</span>
+            <span class="o">&amp;</span> <span class="p">(</span><span class="n">seattle_ngram_usage</span><span class="o">.</span><span class="n">session_datetime</span> <span class="o">&lt;</span> <span class="s2">"2021-02-01"</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">march_2022</span> <span class="o">=</span> <span class="n">seattle_ngram_usage</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="p">(</span><span class="n">seattle_ngram_usage</span><span class="o">.</span><span class="n">session_datetime</span> <span class="o">&gt;=</span> <span class="s2">"2022-03-01"</span><span class="p">)</span>
+            <span class="o">&amp;</span> <span class="p">(</span><span class="n">seattle_ngram_usage</span><span class="o">.</span><span class="n">session_datetime</span> <span class="o">&lt;</span> <span class="s2">"2022-04-01"</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Calc per gram</span>
+        <span class="k">for</span> <span class="n">gram</span> <span class="ow">in</span> <span class="n">PLOT_NGRAMS</span><span class="p">:</span>
+            <span class="n">stemmed_gram</span> <span class="o">=</span> <span class="n">_stem_n_gram</span><span class="p">(</span><span class="n">gram</span><span class="p">)</span>
+            <span class="n">collected_seattle_stats</span><span class="p">[</span><span class="n">stemmed_gram</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">"january_2021"</span><span class="p">:</span> <span class="p">{},</span>
+                <span class="s2">"march_2022"</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="p">}</span>
+            <span class="n">collected_seattle_stats</span><span class="p">[</span><span class="n">stemmed_gram</span><span class="p">][</span><span class="s2">"january_2021"</span><span class="p">][</span>
+                <span class="s2">"mean"</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">jan_2021</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">jan_2021</span><span class="o">.</span><span class="n">ngram</span> <span class="o">==</span> <span class="n">stemmed_gram</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">day_ngram_percent_usage</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="n">collected_seattle_stats</span><span class="p">[</span><span class="n">stemmed_gram</span><span class="p">][</span><span class="s2">"january_2021"</span><span class="p">][</span><span class="s2">"std"</span><span class="p">]</span> <span class="o">=</span> <span class="n">jan_2021</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">jan_2021</span><span class="o">.</span><span class="n">ngram</span> <span class="o">==</span> <span class="n">stemmed_gram</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">day_ngram_percent_usage</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+            <span class="n">collected_seattle_stats</span><span class="p">[</span><span class="n">stemmed_gram</span><span class="p">][</span><span class="s2">"march_2022"</span><span class="p">][</span>
+                <span class="s2">"mean"</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">march_2022</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">march_2022</span><span class="o">.</span><span class="n">ngram</span> <span class="o">==</span> <span class="n">stemmed_gram</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">day_ngram_percent_usage</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="n">collected_seattle_stats</span><span class="p">[</span><span class="n">stemmed_gram</span><span class="p">][</span><span class="s2">"march_2022"</span><span class="p">][</span><span class="s2">"std"</span><span class="p">]</span> <span class="o">=</span> <span class="n">march_2022</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">march_2022</span><span class="o">.</span><span class="n">ngram</span> <span class="o">==</span> <span class="n">stemmed_gram</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">day_ngram_percent_usage</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+
+        <span class="c1"># Store stats</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">seattle_discussion_trends_pdf</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".json"</span><span class="p">),</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">open_f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">collected_seattle_stats</span><span class="p">,</span> <span class="n">open_f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+        <span class="c1"># Plot</span>
         <span class="n">seattle_discussion_trends_grid</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">plot_ngram_usage_histories</span><span class="p">(</span>
             <span class="n">ngram</span><span class="o">=</span><span class="n">PLOT_NGRAMS</span><span class="p">,</span>
             <span class="n">gram_usage</span><span class="o">=</span><span class="n">seattle_ngram_usage</span><span class="p">,</span>
@@ -432,6 +494,7 @@
             <span class="n">lmplot_kws</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>  <span class="c1"># extra plotting params</span>
                 <span class="n">col</span><span class="o">=</span><span class="s2">"ngram"</span><span class="p">,</span>
                 <span class="n">hue</span><span class="o">=</span><span class="s2">"ngram"</span><span class="p">,</span>
+                <span class="n">col_wrap</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                 <span class="n">scatter_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">"alpha"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">},</span>
                 <span class="n">aspect</span><span class="o">=</span><span class="mf">1.6</span><span class="p">,</span>
             <span class="p">),</span>
@@ -448,17 +511,107 @@
     <span class="p">):</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Generating all instances discussion trends (unified and split) plots"</span><span class="p">)</span>
         <span class="n">all_instances_ngram_usage</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">compute_ngram_usage_history</span><span class="p">(</span>
-            <span class="n">infrastructure_slug</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">CDPInstances</span><span class="o">.</span><span class="n">Seattle</span><span class="p">,</span>
-                <span class="n">CDPInstances</span><span class="o">.</span><span class="n">KingCounty</span><span class="p">,</span>
-                <span class="n">CDPInstances</span><span class="o">.</span><span class="n">Portland</span><span class="p">,</span>
-            <span class="p">],</span>
+            <span class="n">infrastructure_slug</span><span class="o">=</span><span class="n">PLOT_INFRASTRUCTURES</span><span class="p">,</span>
             <span class="n">ngram_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># generate unigrams</span>
             <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># stem grams</span>
             <span class="n">start_datetime</span><span class="o">=</span><span class="s2">"2021-10-01"</span><span class="p">,</span>  <span class="c1"># data available for all instances</span>
             <span class="n">end_datetime</span><span class="o">=</span><span class="s2">"2022-04-01"</span><span class="p">,</span>
             <span class="n">cache_dir</span><span class="o">=</span><span class="n">full_dataset_storage_dir</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="n">all_instances_ngram_usage</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span>
+            <span class="n">all_instances_discussion_trends_pdf</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".parquet"</span><span class="p">),</span>
+            <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Compute and store selected stats</span>
+        <span class="n">collected_all_instance_stats</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Month subsets</span>
+        <span class="n">oct_2021</span> <span class="o">=</span> <span class="n">all_instances_ngram_usage</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="p">(</span><span class="n">all_instances_ngram_usage</span><span class="o">.</span><span class="n">session_datetime</span> <span class="o">&gt;=</span> <span class="s2">"2021-10-01"</span><span class="p">)</span>
+            <span class="o">&amp;</span> <span class="p">(</span><span class="n">all_instances_ngram_usage</span><span class="o">.</span><span class="n">session_datetime</span> <span class="o">&lt;</span> <span class="s2">"2021-11-01"</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">march_2022</span> <span class="o">=</span> <span class="n">all_instances_ngram_usage</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="p">(</span><span class="n">all_instances_ngram_usage</span><span class="o">.</span><span class="n">session_datetime</span> <span class="o">&gt;=</span> <span class="s2">"2022-03-01"</span><span class="p">)</span>
+            <span class="o">&amp;</span> <span class="p">(</span><span class="n">all_instances_ngram_usage</span><span class="o">.</span><span class="n">session_datetime</span> <span class="o">&lt;</span> <span class="s2">"2022-04-01"</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Calc per gram</span>
+        <span class="k">for</span> <span class="n">gram</span> <span class="ow">in</span> <span class="n">PLOT_NGRAMS</span><span class="p">:</span>
+            <span class="n">stemmed_gram</span> <span class="o">=</span> <span class="n">_stem_n_gram</span><span class="p">(</span><span class="n">gram</span><span class="p">)</span>
+            <span class="n">collected_all_instance_stats</span><span class="p">[</span><span class="n">stemmed_gram</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">"october_2021"</span><span class="p">:</span> <span class="p">{},</span>
+                <span class="s2">"march_2022"</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="p">}</span>
+            <span class="n">collected_all_instance_stats</span><span class="p">[</span><span class="n">stemmed_gram</span><span class="p">][</span><span class="s2">"october_2021"</span><span class="p">][</span>
+                <span class="s2">"mean"</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">oct_2021</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">oct_2021</span><span class="o">.</span><span class="n">ngram</span> <span class="o">==</span> <span class="n">stemmed_gram</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">day_ngram_percent_usage</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="n">collected_all_instance_stats</span><span class="p">[</span><span class="n">stemmed_gram</span><span class="p">][</span><span class="s2">"october_2021"</span><span class="p">][</span>
+                <span class="s2">"std"</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">oct_2021</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">oct_2021</span><span class="o">.</span><span class="n">ngram</span> <span class="o">==</span> <span class="n">stemmed_gram</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">day_ngram_percent_usage</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+            <span class="n">collected_all_instance_stats</span><span class="p">[</span><span class="n">stemmed_gram</span><span class="p">][</span><span class="s2">"march_2022"</span><span class="p">][</span>
+                <span class="s2">"mean"</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">march_2022</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">march_2022</span><span class="o">.</span><span class="n">ngram</span> <span class="o">==</span> <span class="n">stemmed_gram</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">day_ngram_percent_usage</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="n">collected_all_instance_stats</span><span class="p">[</span><span class="n">stemmed_gram</span><span class="p">][</span><span class="s2">"march_2022"</span><span class="p">][</span>
+                <span class="s2">"std"</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">march_2022</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">march_2022</span><span class="o">.</span><span class="n">ngram</span> <span class="o">==</span> <span class="n">stemmed_gram</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">day_ngram_percent_usage</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+
+        <span class="c1"># Store stats</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+            <span class="n">all_instances_discussion_trends_pdf</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".json"</span><span class="p">),</span> <span class="s2">"w"</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">open_f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">collected_all_instance_stats</span><span class="p">,</span> <span class="n">open_f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+        <span class="c1"># Compute and store selected stats for splits</span>
+        <span class="n">collected_all_instance_split_stats</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
+            <span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Calc per gram and infrastructure</span>
+        <span class="k">for</span> <span class="n">infra</span> <span class="ow">in</span> <span class="n">PLOT_INFRASTRUCTURES</span><span class="p">:</span>
+            <span class="n">oct_2021_infra_subset</span> <span class="o">=</span> <span class="n">oct_2021</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">oct_2021</span><span class="o">.</span><span class="n">infrastructure</span> <span class="o">==</span> <span class="n">infra</span><span class="p">]</span>
+            <span class="n">march_2022_infra_subset</span> <span class="o">=</span> <span class="n">march_2022</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">march_2022</span><span class="o">.</span><span class="n">infrastructure</span> <span class="o">==</span> <span class="n">infra</span><span class="p">]</span>
+            <span class="n">collected_all_instance_split_stats</span><span class="p">[</span><span class="n">infra</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">gram</span> <span class="ow">in</span> <span class="n">PLOT_NGRAMS</span><span class="p">:</span>
+                <span class="n">stemmed_gram</span> <span class="o">=</span> <span class="n">_stem_n_gram</span><span class="p">(</span><span class="n">gram</span><span class="p">)</span>
+                <span class="n">collected_all_instance_split_stats</span><span class="p">[</span><span class="n">infra</span><span class="p">][</span><span class="n">stemmed_gram</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">"october_2021"</span><span class="p">:</span> <span class="p">{},</span>
+                    <span class="s2">"march_2022"</span><span class="p">:</span> <span class="p">{},</span>
+                <span class="p">}</span>
+                <span class="n">collected_all_instance_split_stats</span><span class="p">[</span><span class="n">infra</span><span class="p">][</span><span class="n">stemmed_gram</span><span class="p">][</span><span class="s2">"october_2021"</span><span class="p">][</span>
+                    <span class="s2">"mean"</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="n">oct_2021_infra_subset</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                    <span class="n">oct_2021_infra_subset</span><span class="o">.</span><span class="n">ngram</span> <span class="o">==</span> <span class="n">stemmed_gram</span>
+                <span class="p">]</span><span class="o">.</span><span class="n">day_ngram_percent_usage</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                <span class="n">collected_all_instance_split_stats</span><span class="p">[</span><span class="n">infra</span><span class="p">][</span><span class="n">stemmed_gram</span><span class="p">][</span><span class="s2">"october_2021"</span><span class="p">][</span>
+                    <span class="s2">"std"</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="n">oct_2021_infra_subset</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                    <span class="n">oct_2021_infra_subset</span><span class="o">.</span><span class="n">ngram</span> <span class="o">==</span> <span class="n">stemmed_gram</span>
+                <span class="p">]</span><span class="o">.</span><span class="n">day_ngram_percent_usage</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+                <span class="n">collected_all_instance_split_stats</span><span class="p">[</span><span class="n">infra</span><span class="p">][</span><span class="n">stemmed_gram</span><span class="p">][</span><span class="s2">"march_2022"</span><span class="p">][</span>
+                    <span class="s2">"mean"</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="n">march_2022_infra_subset</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                    <span class="n">march_2022_infra_subset</span><span class="o">.</span><span class="n">ngram</span> <span class="o">==</span> <span class="n">stemmed_gram</span>
+                <span class="p">]</span><span class="o">.</span><span class="n">day_ngram_percent_usage</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                <span class="n">collected_all_instance_split_stats</span><span class="p">[</span><span class="n">infra</span><span class="p">][</span><span class="n">stemmed_gram</span><span class="p">][</span><span class="s2">"march_2022"</span><span class="p">][</span>
+                    <span class="s2">"std"</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="n">march_2022_infra_subset</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                    <span class="n">march_2022_infra_subset</span><span class="o">.</span><span class="n">ngram</span> <span class="o">==</span> <span class="n">stemmed_gram</span>
+                <span class="p">]</span><span class="o">.</span><span class="n">day_ngram_percent_usage</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+
+        <span class="c1"># Store stats</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+            <span class="n">all_instances_split_discussion_trends_pdf</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".json"</span><span class="p">),</span> <span class="s2">"w"</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">open_f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">collected_all_instance_split_stats</span><span class="p">,</span> <span class="n">open_f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
         <span class="c1"># Show all instances discussion trends</span>
         <span class="n">all_instances_discussion_trends_grid</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">plot_ngram_usage_histories</span><span class="p">(</span>
@@ -468,6 +621,7 @@
             <span class="n">lmplot_kws</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>  <span class="c1"># extra plotting params</span>
                 <span class="n">col</span><span class="o">=</span><span class="s2">"ngram"</span><span class="p">,</span>
                 <span class="n">hue</span><span class="o">=</span><span class="s2">"ngram"</span><span class="p">,</span>
+                <span class="n">col_wrap</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                 <span class="n">scatter_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">"alpha"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">},</span>
                 <span class="n">aspect</span><span class="o">=</span><span class="mf">1.6</span><span class="p">,</span>
             <span class="p">),</span>
