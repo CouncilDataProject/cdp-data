@@ -121,9 +121,14 @@ def generate_paper_content(
         CDPInstances.KingCounty,
         CDPInstances.Portland,
     ]:
+        if infra == CDPInstances.Seattle:
+            start_datetime = "2021-01-01"
+        else:
+            start_datetime = "2021-10-01"
+
         infra_ds = datasets.get_session_dataset(
             infrastructure_slug=infra,
-            start_datetime="2021-01-01",
+            start_datetime=start_datetime,
             end_datetime="2022-04-01",
             store_full_metadata=True,
             store_transcript=True,
