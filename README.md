@@ -33,6 +33,8 @@ ds = datasets.get_session_dataset(
 
 ### Plotting and Analysis
 
+![Seattle keyword usage over time](https://github.com/CouncilDataProject/cdp-data/blob/main/docs/_static/seattle-keywords-over-time.png)
+
 Install plotting support: `pip install cdp-data[plot]`
 
 ```python
@@ -51,7 +53,7 @@ grid = keywords.plot_ngram_usage_histories(
         aspect=1.6,
     ),
 )
-grid.savefig("seattle-keywords-over-time.pdf")
+grid.savefig("seattle-keywords-over-time.png")
 ```
 
 ## Development
