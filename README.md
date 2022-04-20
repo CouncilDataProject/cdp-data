@@ -33,7 +33,7 @@ ds = datasets.get_session_dataset(
 
 ### Plotting and Analysis
 
-![Seattle keyword usage over time](https://github.com/CouncilDataProject/cdp-data/blob/main/docs/_static/seattle-keywords-over-time.png)
+![Seattle keyword usage over time](https://raw.githubusercontent.com/CouncilDataProject/cdp-data/main/docs/_static/seattle-keywords-over-time.png)
 
 Install plotting support: `pip install cdp-data[plot]`
 
