@@ -9,10 +9,10 @@ from typing import List, Optional, Union
 
 import pandas as pd
 from cdp_backend.database import models as db_models
+from cdp_backend.utils.file_utils import resource_copy
 from dataclasses_json import dataclass_json
 from gcsfs import GCSFileSystem
 from tqdm.contrib.concurrent import thread_map
-from cdp_backend.utils.file_utils import resource_copy
 
 from .constants import DEFAULT_DATASET_STORAGE_DIR
 from .utils import connect_to_infrastructure, db_utils
