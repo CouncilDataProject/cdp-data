@@ -264,7 +264,8 @@ Options: “confidence” for transcript with the highest confidence value,
 Default: “confidence” (Return the single highest confidence
 transcript per session)</p></li>
 <li><p><strong>store_video</strong> (<em>bool</em>) – Should the session video be requested and stored to disk and a path to the
-stored video file be added to the returned DataFrame.
+stored video file be added to the returned DataFrame. Note: the video is stored
+without a file extension. However, the video with always be either mp4 or webm.
 Default: False (do not request and store the video)</p></li>
 <li><p><strong>store_audio</strong> (<em>bool</em>) – Should the session audio be requested and stored to disk and a path to the
 stored audio file be added to the returned DataFrame.
@@ -295,23 +296,23 @@ content hash comparison.</p>
     │   └── session-{session-id-0}
     │       ├── audio.wav
     │       ├── transcript.json
-    │       └── video.mp4
+    │       └── video
     ├── event-{event-id-1}
     │   ├── metadata.json
     │   └── session-{session-id-0}
     │       ├── audio.wav
     │       ├── transcript.json
-    │       └── video.mp4
+    │       └── video
     ├── event-{event-id-2}
     │   ├── metadata.json
     │   └── session-{session-id-0}
     │       ├── audio.wav
     │       ├── transcript.json
-    │       └── video.mp4
+    │       └── video
     │   └── session-{session-id-1}
     │       ├── audio.wav
     │       ├── transcript.json
-    │       └── video.mp4
+    │       └── video
 </pre></div>
 </div>
 <p>To clean a whole dataset or specific events or sessions simply delete the
