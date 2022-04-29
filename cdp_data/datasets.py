@@ -5,13 +5,14 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 import pandas as pd
 from cdp_backend.database import models as db_models
 from dataclasses_json import dataclass_json
 from gcsfs import GCSFileSystem
 from tqdm.contrib.concurrent import thread_map
+from cdp_backend.utils.file_utils import resource_copy
 
 from .constants import DEFAULT_DATASET_STORAGE_DIR
 from .utils import connect_to_infrastructure, db_utils
@@ -21,6 +22,131 @@ from .utils import connect_to_infrastructure, db_utils
 log = logging.getLogger(__name__)
 
 ###############################################################################
+# Fetch utils
+
+
+@dataclass
+class _VideoFetchParams:
+    session_id: str
+    session_key: str
+    event_id: str
+    video_uri: str
+    parent_cache_dir: Path
+
+
+@dataclass_json
+@dataclass
+class _MatchingVideo:
+    session_key: str
+    video_path: Path
+
+
+def _get_matching_video(
+    fetch_params: _VideoFetchParams,
+) -> _MatchingVideo:
+    # Handle cache dir
+    this_video_cache_dir = (
+        fetch_params.parent_cache_dir
+        / f"event-{fetch_params.event_id}"
+        / f"session-{fetch_params.session_id}"
+    )
+    # Create cache dir (Handle try except because threaded)
+    try:
+        this_video_cache_dir.mkdir(parents=True, exist_ok=True)
+    except FileExistsError:
+        pass
+
+    # Download transcript if needed
+    save_path = this_video_cache_dir / "video"
+    if save_path.is_dir():
+        raise IsADirectoryError(
+            f"Video '{fetch_params.video_uri}', could not be saved because "
+            f"'{save_path}' is a directory. Delete or move the directory to a "
+            f"different location or change the target dataset cache dir."
+        )
+    elif save_path.is_file():
+        log.debug(
+            f"Skipping video '{fetch_params.video_uri}'. "
+            f"A file already exists at target save path."
+        )
+    else:
+        resource_copy(uri=fetch_params.video_uri, dst=save_path)
+
+    return _MatchingVideo(
+        session_key=fetch_params.session_key,
+        video_path=save_path,
+    )
+
+
+@dataclass
+class _AudioFetchParams:
+    session_id: str
+    session_key: str
+    event_id: str
+    parent_cache_dir: Path
+    fs: GCSFileSystem
+
+
+@dataclass_json
+@dataclass
+class _MatchingAudio:
+    session_key: str
+    audio_path: Path
+
+
+def _get_matching_audio(
+    fetch_params: _AudioFetchParams,
+) -> _MatchingAudio:
+    # Get any DB transcript
+    db_transcript = db_models.Transcript.collection.filter(
+        "session_ref", "==", fetch_params.session_key
+    ).get()
+
+    # Get transcript file info
+    db_transcript_file = db_transcript.file_ref.get()
+
+    # Strip the transcript details from filename
+    # Audio files are stored with the same URI as the transcript
+    # but instead of `-cdp_{version}-transcript.json`
+    # they simply end with `-audio.wav`
+    transcript_uri_parts = db_transcript_file.uri.split("/")
+    transcript_filename = transcript_uri_parts[-1]
+    uri_base = "/".join(transcript_uri_parts[:-1])
+    session_content_hash = transcript_filename[:64]
+    audio_uri = "/".join([uri_base, f"{session_content_hash}-audio.wav"])
+
+    # Handle cache dir
+    this_audio_cache_dir = (
+        fetch_params.parent_cache_dir
+        / f"event-{fetch_params.event_id}"
+        / f"session-{fetch_params.session_id}"
+    )
+    # Create cache dir (Handle try except because threaded)
+    try:
+        this_audio_cache_dir.mkdir(parents=True, exist_ok=True)
+    except FileExistsError:
+        pass
+
+    # Download audio if needed
+    save_path = this_audio_cache_dir / "audio.wav"
+    if save_path.is_dir():
+        raise IsADirectoryError(
+            f"Audio '{audio_uri}', could not be saved because "
+            f"'{save_path}' is a directory. Delete or move the directory to a "
+            f"different location or change the target dataset cache dir."
+        )
+    elif save_path.is_file():
+        log.debug(
+            f"Skipping audio '{audio_uri}'. "
+            f"A file already exists at target save path."
+        )
+    else:
+        fetch_params.fs.get(audio_uri, str(save_path))
+
+    return _MatchingAudio(
+        session_key=fetch_params.session_key,
+        audio_path=save_path,
+    )
 
 
 @dataclass
@@ -91,6 +217,25 @@ def _get_matching_db_transcript(
     )
 
 
+def _merge_dataclasses_to_df(
+    data_objs: List[dataclass_json],
+    df: pd.DataFrame,
+    data_objs_key: str,
+    df_key: str,
+) -> pd.DataFrame:
+    # Merge back to video dataframe
+    fetched_objs = pd.DataFrame([obj.to_dict() for obj in data_objs])
+
+    # Join to larger dataframe
+    return df.join(
+        fetched_objs.set_index(data_objs_key),
+        on=df_key,
+    )
+
+
+###############################################################################
+
+
 def get_session_dataset(
     infrastructure_slug: str,
     start_datetime: Optional[Union[str, datetime]] = None,
@@ -132,7 +277,8 @@ def get_session_dataset(
         transcript per session)
     store_video: bool
         Should the session video be requested and stored to disk and a path to the
-        stored video file be added to the returned DataFrame.
+        stored video file be added to the returned DataFrame. Note: the video is stored
+        without a file extension. However, the video with always be either mp4 or webm.
         Default: False (do not request and store the video)
     store_audio: bool
         Should the session audio be requested and stored to disk and a path to the
@@ -165,23 +311,23 @@ def get_session_dataset(
             │   └── session-{session-id-0}
             │       ├── audio.wav
             │       ├── transcript.json
-            │       └── video.mp4
+            │       └── video
             ├── event-{event-id-1}
             │   ├── metadata.json
             │   └── session-{session-id-0}
             │       ├── audio.wav
             │       ├── transcript.json
-            │       └── video.mp4
+            │       └── video
             ├── event-{event-id-2}
             │   ├── metadata.json
             │   └── session-{session-id-0}
             │       ├── audio.wav
             │       ├── transcript.json
-            │       └── video.mp4
+            │       └── video
             │   └── session-{session-id-1}
             │       ├── audio.wav
             │       ├── transcript.json
-            │       └── video.mp4
+            │       └── video
 
     To clean a whole dataset or specific events or sessions simply delete the
     associated directory.
@@ -243,11 +389,53 @@ def get_session_dataset(
 
     # Handle video
     if store_video:
-        log.warning("`store_video` not implemented")
+        log.info("Fetching video")
+        fetched_video_infos = thread_map(
+            _get_matching_video,
+            [
+                _VideoFetchParams(
+                    session_id=row.id,
+                    session_key=row.key,
+                    event_id=row.event.id,
+                    video_uri=row.video_uri,
+                    parent_cache_dir=cache_dir,
+                )
+                for _, row in sessions.iterrows()
+            ],
+        )
+
+        # Merge fetched data back to session df
+        sessions = _merge_dataclasses_to_df(
+            data_objs=fetched_video_infos,
+            df=sessions,
+            data_objs_key="session_key",
+            df_key="key",
+        )
 
     # Handle audio
     if store_audio:
-        log.warning("`store_audio` not implemented")
+        log.info("Fetching audio")
+        fetched_audio_infos = thread_map(
+            _get_matching_audio,
+            [
+                _AudioFetchParams(
+                    session_id=row.id,
+                    session_key=row.key,
+                    event_id=row.event.id,
+                    parent_cache_dir=cache_dir,
+                    fs=fs,
+                )
+                for _, row in sessions.iterrows()
+            ],
+        )
+
+        # Merge fetched data back to session df
+        sessions = _merge_dataclasses_to_df(
+            data_objs=fetched_audio_infos,
+            df=sessions,
+            data_objs_key="session_key",
+            df_key="key",
+        )
 
     # Pull transcript info
     if store_transcript:
@@ -268,15 +456,12 @@ def get_session_dataset(
             ],
         )
 
-        # Merge back to transcript dataframe
-        fetched_transcripts = pd.DataFrame(
-            [fti.to_dict() for fti in fetched_transcript_infos]
-        )
-
-        # Join to larger dataframe
-        sessions = sessions.join(
-            fetched_transcripts.set_index("session_key"),
-            on="key",
+        # Merge fetched data back to session df
+        sessions = _merge_dataclasses_to_df(
+            data_objs=fetched_transcript_infos,
+            df=sessions,
+            data_objs_key="session_key",
+            df_key="key",
         )
 
     return sessions
