@@ -42,7 +42,6 @@ dev_requirements = [
     "coverage>=5.1",
     "jupyterlab>=3.2.8",
     "m2r2>=0.2.7",
-    "pytest-runner>=5.2",
     "Sphinx>=3.4.3",
     "furo>=2022.4.7",
     "twine>=3.1.1",
@@ -50,10 +49,10 @@ dev_requirements = [
 ]
 
 requirements = [
-    "cdp-backend>=3.0.3",
-    "nltk>=3.6",
-    "numpy>=1",
-    "pandas>=1",
+    "cdp-backend>=3.0.15",
+    "nltk~=3.6",
+    "numpy~=1.0",
+    "pandas~=1.0",
     "tqdm>=4.63",
     # Version pins set by cdp-backend
     "dataclasses_json",
@@ -77,12 +76,13 @@ setup(
     author="Council Data Project Contributors",
     author_email="jmaxfieldbrown@gmail.com",
     classifiers=[
-        "Development Status :: 2 - Pre-Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ],
     description=(
         "Data Utilities and Processing Functions for Generalized for all CDP Instances"
