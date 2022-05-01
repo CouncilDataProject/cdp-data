@@ -658,8 +658,6 @@ def plot_ngram_usage_histories(
     import seaborn as sns
     from matplotlib.axes import SubplotBase
 
-    sns.set_theme(color_codes=True)
-
     # Always cast ngram to list for easier API
     if isinstance(ngram, str):
         ngram = [ngram]
