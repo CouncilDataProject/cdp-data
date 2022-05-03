@@ -556,7 +556,10 @@
 
     <span class="c1"># Query for events and cast to pandas</span>
     <span class="n">sessions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">e</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">fetch</span><span class="p">()])</span>
-
+    
+    <span class="c1"># Test if selected date range contains any events </span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">sessions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"The selected date range returned no session records."</span>    
+    
     <span class="c1"># Handle basic event metadata attachment</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Attaching event metadata to each session datum"</span><span class="p">)</span>
     <span class="n">sessions</span> <span class="o">=</span> <span class="n">db_utils</span><span class="o">.</span><span class="n">load_model_from_pd_columns</span><span class="p">(</span>
