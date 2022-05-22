@@ -352,10 +352,23 @@ def get_session_dataset(
 
     # Query for events and cast to pandas
     sessions = pd.DataFrame([e.to_dict() for e in query.fetch()])
-    
-    # Test if selected date range contains any events 
-    assert len(sessions) > 0, "The selected date range returned no session records."    
-    
+
+    # If no sessions found, return empty dataset
+    if len(sessions) == 0:
+        return pd.DataFrame(
+            columns=[
+                "session_datetime",
+                "session_index",
+                "session_content_hash",
+                "video_uri",
+                "caption_uri",
+                "external_source_id",
+                "id",
+                "key",
+                "event",
+            ]
+        )
+
     # Handle basic event metadata attachment
     log.info("Attaching event metadata to each session datum")
     sessions = db_utils.load_model_from_pd_columns(
