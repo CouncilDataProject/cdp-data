@@ -481,3 +481,51 @@ def get_session_dataset(
         )
 
     return sessions
+
+
+def get_matter_dataset(
+    infrastructure_slug: str,
+    start_datetime: Optional[Union[str, datetime]] = None,
+    end_datetime: Optional[Union[str, datetime]] = None,
+) -> pd.DataFrame:
+    # Connect to infra
+    fs = connect_to_infrastructure(infrastructure_slug)
+
+    # We don't store "matter datetimes"
+    # Go from Event -> EMI -> Minutes Items -> Matters
+
+    # Begin partial query
+    query = db_models.Event.collection
+
+    # Add datetime filters
+    if start_datetime:
+        if isinstance(start_datetime, str):
+            start_datetime = datetime.fromisoformat(start_datetime)
+
+        query = query.filter("event_datetime", ">=", start_datetime)
+    if end_datetime:
+        if isinstance(end_datetime, str):
+            end_datetime = datetime.fromisoformat(end_datetime)
+
+        query = query.filter("event_datetime", "<=", end_datetime)
+
+    # Get emis for each event, then minutes item for emi, then matter
+    matter_items = []
+    # TODO: thread
+    for event in query.fetch():
+        emis = db_models.EventMinutesItem.collection.filter(
+            "event_ref",
+            "==",
+            event.key,
+        ).fetch()
+        for emi in emis:
+            mi = emi.minutes_item_ref.get()
+            if mi.matter_ref is not None:
+                matter_items.append(
+                    mi.matter_ref.get()
+                )
+
+    # TODO: matter decision dates
+    # start date = first event
+
+    return pd.DataFrame([matter_item.to_dict() for matter_item in matter_items])
