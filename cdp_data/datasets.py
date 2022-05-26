@@ -5,7 +5,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Optional, Union, TYPE_CHECKING
 
 import pandas as pd
 from cdp_backend.database import models as db_models
@@ -16,6 +16,11 @@ from tqdm.contrib.concurrent import thread_map
 
 from .constants import DEFAULT_DATASET_STORAGE_DIR
 from .utils import connect_to_infrastructure, db_utils
+import dask.dataframe as dd
+from dask.delayed import delayed
+
+if TYPE_CHECKING:
+    from google.api_core.datetime_helpers import DatetimeWithNanoseconds
 
 ###############################################################################
 
@@ -483,13 +488,79 @@ def get_session_dataset(
     return sessions
 
 
+@dataclass_json
+@dataclass
+class _MatterEvent:
+    matter_id: str
+    matter_key: str
+    matter_name: str
+    matter_type: str
+    matter_title: str
+    event_id: str
+    event_key: str
+    event_datetime: "DatetimeWithNanoseconds"
+    matter_status: str
+
+
+def _get_matter_items_from_event(
+    event_id: str,
+    event_key: str,
+    event_datetime: "DatetimeWithNanoseconds",
+    infrastructure_slug: str,
+) -> pd.DataFrame:
+    # Connect
+    connect_to_infrastructure(infrastructure_slug)
+
+    # Get event again
+    event = db_models.Event.collection.get(event_key)
+
+    matter_items = []
+    emis = db_models.EventMinutesItem.collection.filter(
+        "event_ref",
+        "==",
+        event.key,
+    ).fetch()
+    for emi in emis:
+        mi = emi.minutes_item_ref.get()
+        if mi.matter_ref is not None:
+            matter = mi.matter_ref.get()
+            status = list(
+                db_models.MatterStatus.collection.filter(
+                    "event_minutes_item_ref",
+                    "==",
+                    emi.key,
+                )
+                .filter(
+                    "matter_ref",
+                    "==",
+                    matter.key,
+                )
+                .fetch(1)
+            )[0]
+            matter_items.append(
+                _MatterEvent(
+                    matter_id=matter.id,
+                    matter_key=matter.key,
+                    matter_name=matter.name,
+                    matter_type=matter.matter_type,
+                    matter_title=matter.title,
+                    event_id=event.id,
+                    event_key=event.key,
+                    event_datetime=event.event_datetime,
+                    matter_status=status.status,
+                )
+            )
+
+    return pd.DataFrame([matter_item.to_dict() for matter_item in matter_items])
+
+
 def get_matter_dataset(
     infrastructure_slug: str,
     start_datetime: Optional[Union[str, datetime]] = None,
     end_datetime: Optional[Union[str, datetime]] = None,
 ) -> pd.DataFrame:
     # Connect to infra
-    fs = connect_to_infrastructure(infrastructure_slug)
+    connect_to_infrastructure(infrastructure_slug)
 
     # We don't store "matter datetimes"
     # Go from Event -> EMI -> Minutes Items -> Matters
@@ -510,22 +581,13 @@ def get_matter_dataset(
         query = query.filter("event_datetime", "<=", end_datetime)
 
     # Get emis for each event, then minutes item for emi, then matter
-    matter_items = []
-    # TODO: thread
-    for event in query.fetch():
-        emis = db_models.EventMinutesItem.collection.filter(
-            "event_ref",
-            "==",
+    all_matter_item_dfs = [
+        delayed(_get_matter_items_from_event)(
+            event.id,
             event.key,
-        ).fetch()
-        for emi in emis:
-            mi = emi.minutes_item_ref.get()
-            if mi.matter_ref is not None:
-                matter_items.append(
-                    mi.matter_ref.get()
-                )
-
-    # TODO: matter decision dates
-    # start date = first event
-
-    return pd.DataFrame([matter_item.to_dict() for matter_item in matter_items])
+            event.event_datetime,
+            infrastructure_slug,
+        )
+        for event in query.fetch()
+    ]
+    return dd.from_delayed(all_matter_item_dfs)

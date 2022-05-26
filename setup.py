@@ -50,6 +50,7 @@ dev_requirements = [
 
 requirements = [
     "cdp-backend>=3.0.15",
+    "dask[array,dataframe,distributed]==2022.5.0",
     "nltk~=3.6",
     "numpy~=1.0",
     "pandas~=1.0",
