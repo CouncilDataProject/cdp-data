@@ -16,8 +16,6 @@ from tqdm.contrib.concurrent import thread_map
 
 from .constants import DEFAULT_DATASET_STORAGE_DIR
 from .utils import connect_to_infrastructure, db_utils
-import dask.dataframe as dd
-from dask.delayed import delayed
 
 if TYPE_CHECKING:
     from google.api_core.datetime_helpers import DatetimeWithNanoseconds
@@ -487,7 +485,6 @@ def get_session_dataset(
 
     return sessions
 
-
 @dataclass_json
 @dataclass
 class _MatterEvent:
@@ -503,14 +500,8 @@ class _MatterEvent:
 
 
 def _get_matter_items_from_event(
-    event_id: str,
     event_key: str,
-    event_datetime: "DatetimeWithNanoseconds",
-    infrastructure_slug: str,
 ) -> pd.DataFrame:
-    # Connect
-    connect_to_infrastructure(infrastructure_slug)
-
     # Get event again
     event = db_models.Event.collection.get(event_key)
 
@@ -524,19 +515,26 @@ def _get_matter_items_from_event(
         mi = emi.minutes_item_ref.get()
         if mi.matter_ref is not None:
             matter = mi.matter_ref.get()
-            status = list(
-                db_models.MatterStatus.collection.filter(
-                    "event_minutes_item_ref",
-                    "==",
-                    emi.key,
-                )
-                .filter(
-                    "matter_ref",
-                    "==",
-                    matter.key,
-                )
-                .fetch(1)
-            )[0]
+
+            # TODO: look into bad data bugs
+            # missing status
+            try:
+                status = list(
+                    db_models.MatterStatus.collection.filter(
+                        "event_minutes_item_ref",
+                        "==",
+                        emi.key,
+                    )
+                    .filter(
+                        "matter_ref",
+                        "==",
+                        matter.key,
+                    )
+                    .fetch(1)
+                )[0].status
+            except Exception:
+                status = None
+
             matter_items.append(
                 _MatterEvent(
                     matter_id=matter.id,
@@ -547,7 +545,7 @@ def _get_matter_items_from_event(
                     event_id=event.id,
                     event_key=event.key,
                     event_datetime=event.event_datetime,
-                    matter_status=status.status,
+                    matter_status=status,
                 )
             )
 
@@ -559,11 +557,11 @@ def get_matter_dataset(
     start_datetime: Optional[Union[str, datetime]] = None,
     end_datetime: Optional[Union[str, datetime]] = None,
 ) -> pd.DataFrame:
+    # TODO: impl filter by type
+    # TODO: impl filter by sponsor
+
     # Connect to infra
     connect_to_infrastructure(infrastructure_slug)
-
-    # We don't store "matter datetimes"
-    # Go from Event -> EMI -> Minutes Items -> Matters
 
     # Begin partial query
     query = db_models.Event.collection
@@ -581,13 +579,8 @@ def get_matter_dataset(
         query = query.filter("event_datetime", "<=", end_datetime)
 
     # Get emis for each event, then minutes item for emi, then matter
-    all_matter_item_dfs = [
-        delayed(_get_matter_items_from_event)(
-            event.id,
-            event.key,
-            event.event_datetime,
-            infrastructure_slug,
-        )
-        for event in query.fetch()
-    ]
-    return dd.from_delayed(all_matter_item_dfs)
+    all_matter_item_dfs = thread_map(
+        _get_matter_items_from_event,
+        [event.key for event in query.fetch()],
+    )
+    return pd.concat(all_matter_item_dfs)
