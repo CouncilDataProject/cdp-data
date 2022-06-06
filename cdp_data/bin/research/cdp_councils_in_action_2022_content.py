@@ -10,10 +10,15 @@ import traceback
 from pathlib import Path
 from typing import Dict, Union
 
+import matplotlib as mpl
 import pandas as pd
+import seaborn as sns
 
 from cdp_data import CDPInstances, datasets, keywords
 from cdp_data.keywords import _stem_n_gram
+
+sns.set_theme(color_codes=True)
+mpl.rcParams["axes.labelsize"] = 16
 
 ###############################################################################
 
