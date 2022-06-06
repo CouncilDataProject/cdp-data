@@ -1,13 +1,13 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/>
+    <meta name="generator" content="sphinx-5.0.1, furo 2022.06.04.1"/>
         <title>cdp_data.utils.db_utils - cdp-data 0.0.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -187,7 +187,8 @@
           </svg>
           <span>Back to top</span>
         </a>
-        <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -236,10 +237,10 @@
 
 
 <div class="viewcode-block" id="connect_to_database"><a class="viewcode-back" href="../../../cdp_data.utils.html#cdp_data.utils.db_utils.connect_to_database">[docs]</a><span class="k">def</span> <span class="nf">connect_to_database</span><span class="p">(</span><span class="n">infrastructure_slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">"""</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simple function to shorten how many imports and code it takes to connect</span>
 <span class="sd">    to a CDP database.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">fireo</span><span class="o">.</span><span class="n">connection</span><span class="p">(</span>
         <span class="n">client</span><span class="o">=</span><span class="n">Client</span><span class="p">(</span>
             <span class="n">project</span><span class="o">=</span><span class="n">infrastructure_slug</span><span class="p">,</span>
@@ -252,7 +253,7 @@
 <span class="k">def</span> <span class="nf">load_from_model_reference</span><span class="p">(</span>
     <span class="n">model_ref</span><span class="p">:</span> <span class="n">fireo</span><span class="o">.</span><span class="n">queries</span><span class="o">.</span><span class="n">query_wrapper</span><span class="o">.</span><span class="n">ReferenceDocLoader</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
-    <span class="sd">"""</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load a CDP database model from a ReferenceDocLoader or potentially from cache.</span>
 
 <span class="sd">    Parameters</span>
@@ -273,14 +274,14 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    LRU cache size is 1024 items.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">model_ref</span><span class="o">.</span><span class="n">get</span><span class="p">()</span></div>
 
 
 <span class="k">def</span> <span class="nf">_load_model_from_reference_joiner</span><span class="p">(</span>
     <span class="n">ref_joiner</span><span class="p">:</span> <span class="n">_ModelRefJoiner</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_ModelJoiner</span><span class="p">:</span>
-    <span class="sd">"""</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load a CDP database model from a ModelRefJoiner.</span>
 
 <span class="sd">    Parameters</span>
@@ -307,7 +308,7 @@
 <span class="sd">    Additionally, this function uses the</span>
 <span class="sd">    `cdp_data.utils.db_utils.load_from_model_reference` function to load the full</span>
 <span class="sd">    database model which itself uses an LRU cache.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_ModelJoiner</span><span class="p">(</span>
         <span class="n">join_id</span><span class="o">=</span><span class="n">ref_joiner</span><span class="o">.</span><span class="n">join_id</span><span class="p">,</span>
         <span class="n">model</span><span class="o">=</span><span class="n">load_from_model_reference</span><span class="p">(</span><span class="n">ref_joiner</span><span class="o">.</span><span class="n">model_ref</span><span class="p">),</span>
@@ -320,7 +321,7 @@
     <span class="n">model_ref_col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">drop_original_model_ref</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-    <span class="sd">"""</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load a model reference and attach the loaded model back to the original DataFrame.</span>
 
 <span class="sd">    Parameters</span>
@@ -342,7 +343,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    data: pd.DataFrame</span>
 <span class="sd">        A DataFrame with all of the original data and all the models loaded from the</span>
-<span class="sd">        original DataFrame's `model_ref_col` ReferenceDocLoader objects.</span>
+<span class="sd">        original DataFrame&#39;s `model_ref_col` ReferenceDocLoader objects.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -366,17 +367,17 @@
 <span class="sd">    ... from cdp_data.utils import db_utils</span>
 <span class="sd">    ... import pandas as pd</span>
 <span class="sd">    ... # Connect, fetch sessions and unpack, threaded event attachment to session df</span>
-<span class="sd">    ... db_utils.connect_to_database("cdp-seattle-21723dcf")</span>
+<span class="sd">    ... db_utils.connect_to_database(&quot;cdp-seattle-21723dcf&quot;)</span>
 <span class="sd">    ... sessions = pd.DataFrame([</span>
 <span class="sd">    ...     s.to_dict() for s in db_models.Session.collection.fetch()</span>
 <span class="sd">    ... ])</span>
 <span class="sd">    ... # Fetch all models in the `event_ref` column and join on session id</span>
 <span class="sd">    ... event_attached = db_utils.load_model_from_pd_columns(</span>
 <span class="sd">    ...     sessions,</span>
-<span class="sd">    ...     join_id_col="id",</span>
-<span class="sd">    ...     model_ref_col="event_ref",</span>
+<span class="sd">    ...     join_id_col=&quot;id&quot;,</span>
+<span class="sd">    ...     model_ref_col=&quot;event_ref&quot;,</span>
 <span class="sd">    ... )</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get models</span>
     <span class="n">loaded_models</span> <span class="o">=</span> <span class="n">thread_map</span><span class="p">(</span>
         <span class="n">_load_model_from_reference_joiner</span><span class="p">,</span>
@@ -394,12 +395,12 @@
 
     <span class="c1"># Rename column to collection name</span>
     <span class="n">models_to_join</span> <span class="o">=</span> <span class="n">models_to_join</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
-        <span class="p">{</span><span class="s2">"model"</span><span class="p">:</span> <span class="n">models_to_join</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">collection_name</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="n">models_to_join</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">collection_name</span><span class="p">},</span>
         <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># Join and return</span>
-    <span class="n">joined</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">models_to_join</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"join_id"</span><span class="p">),</span> <span class="n">on</span><span class="o">=</span><span class="n">join_id_col</span><span class="p">)</span>
+    <span class="n">joined</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">models_to_join</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;join_id&quot;</span><span class="p">),</span> <span class="n">on</span><span class="o">=</span><span class="n">join_id_col</span><span class="p">)</span>
 
     <span class="c1"># Handle model ref drop</span>
     <span class="k">if</span> <span class="n">drop_original_model_ref</span><span class="p">:</span>
@@ -443,6 +444,7 @@
 </div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     </body>

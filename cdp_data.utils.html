@@ -1,14 +1,14 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Contributing" href="contributing.html" /><link rel="prev" title="cdp_data.bin.research package" href="cdp_data.bin.research.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/>
+    <meta name="generator" content="sphinx-5.0.1, furo 2022.06.04.1"/>
         <title>cdp_data.utils package - cdp-data 0.0.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -188,7 +188,8 @@
           </svg>
           <span>Back to top</span>
         </a>
-        <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -203,30 +204,31 @@
         </div>
         <article role="main">
           <section id="cdp-data-utils-package">
-<h1>cdp_data.utils package<a class="headerlink" href="#cdp-data-utils-package" title="Permalink to this headline">#</a></h1>
+<h1>cdp_data.utils package<a class="headerlink" href="#cdp-data-utils-package" title="Permalink to this heading">#</a></h1>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">#</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 </section>
 <section id="module-cdp_data.utils.db_utils">
-<span id="cdp-data-utils-db-utils-module"></span><h2>cdp_data.utils.db_utils module<a class="headerlink" href="#module-cdp_data.utils.db_utils" title="Permalink to this headline">#</a></h2>
+<span id="cdp-data-utils-db-utils-module"></span><h2>cdp_data.utils.db_utils module<a class="headerlink" href="#module-cdp_data.utils.db_utils" title="Permalink to this heading">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="cdp_data.utils.db_utils.connect_to_database">
-<span class="sig-prename descclassname"><span class="pre">cdp_data.utils.db_utils.</span></span><span class="sig-name descname"><span class="pre">connect_to_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infrastructure_slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/cdp_data/utils/db_utils.html#connect_to_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.utils.db_utils.connect_to_database" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cdp_data.utils.db_utils.</span></span><span class="sig-name descname"><span class="pre">connect_to_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infrastructure_slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/cdp_data/utils/db_utils.html#connect_to_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.utils.db_utils.connect_to_database" title="Permalink to this definition">#</a></dt>
 <dd><p>Simple function to shorten how many imports and code it takes to connect
 to a CDP database.</p>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="cdp_data.utils.db_utils.load_from_model_reference">
-<span class="sig-prename descclassname"><span class="pre">cdp_data.utils.db_utils.</span></span><span class="sig-name descname"><span class="pre">load_from_model_reference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">fireo.queries.query_wrapper.ReferenceDocLoader</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">fireo.models.model.Model</span></span></span><a class="reference internal" href="_modules/cdp_data/utils/db_utils.html#load_from_model_reference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.utils.db_utils.load_from_model_reference" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cdp_data.utils.db_utils.</span></span><span class="sig-name descname"><span class="pre">load_from_model_reference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ReferenceDocLoader</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Model</span></span></span><a class="reference internal" href="_modules/cdp_data/utils/db_utils.html#load_from_model_reference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.utils.db_utils.load_from_model_reference" title="Permalink to this definition">#</a></dt>
 <dd><p>Load a CDP database model from a ReferenceDocLoader or potentially from cache.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>model_ref</strong> (<em>fireo.queries.query_wrapper.ReferenceDocLoader</em>) – The model reference to load.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>model</strong> – The loaded (retrieved from database or cache) CDP database model.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -237,12 +239,13 @@ to a CDP database.</p>
 <p class="rubric">Notes</p>
 <p>LRU cache size is 1024 items.</p>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="cdp_data.utils.db_utils.load_model_from_pd_columns">
-<span class="sig-prename descclassname"><span class="pre">cdp_data.utils.db_utils.</span></span><span class="sig-name descname"><span class="pre">load_model_from_pd_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join_id_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_ref_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_original_model_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/cdp_data/utils/db_utils.html#load_model_from_pd_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.utils.db_utils.load_model_from_pd_columns" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cdp_data.utils.db_utils.</span></span><span class="sig-name descname"><span class="pre">load_model_from_pd_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join_id_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_ref_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_original_model_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/cdp_data/utils/db_utils.html#load_model_from_pd_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.utils.db_utils.load_model_from_pd_columns" title="Permalink to this definition">#</a></dt>
 <dd><p>Load a model reference and attach the loaded model back to the original DataFrame.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>pd.DataFrame</em>) – The DataFrame which contains a model ReferenceDocLoader to fetch and reattach
 the loaded model to.</p></li>
@@ -254,11 +257,11 @@ loaded models DataFrame.</p></li>
 Default: True (drop the original <cite>model_ref_column</cite>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>data</strong> – A DataFrame with all of the original data and all the models loaded from the
 original DataFrame’s <cite>model_ref_col</cite> ReferenceDocLoader objects.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
@@ -278,38 +281,41 @@ referenced events to each session.</p>
 <span class="gp">... </span><span class="kn">from</span> <span class="nn">cdp_data.utils</span> <span class="kn">import</span> <span class="n">db_utils</span>
 <span class="gp">... </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="gp">... </span><span class="c1"># Connect, fetch sessions and unpack, threaded event attachment to session df</span>
-<span class="gp">... </span><span class="n">db_utils</span><span class="o">.</span><span class="n">connect_to_database</span><span class="p">(</span><span class="s2">"cdp-seattle-21723dcf"</span><span class="p">)</span>
+<span class="gp">... </span><span class="n">db_utils</span><span class="o">.</span><span class="n">connect_to_database</span><span class="p">(</span><span class="s2">&quot;cdp-seattle-21723dcf&quot;</span><span class="p">)</span>
 <span class="gp">... </span><span class="n">sessions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
 <span class="gp">... </span>    <span class="n">s</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">db_models</span><span class="o">.</span><span class="n">Session</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>
 <span class="gp">... </span><span class="p">])</span>
 <span class="gp">... </span><span class="c1"># Fetch all models in the `event_ref` column and join on session id</span>
 <span class="gp">... </span><span class="n">event_attached</span> <span class="o">=</span> <span class="n">db_utils</span><span class="o">.</span><span class="n">load_model_from_pd_columns</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">sessions</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">join_id_col</span><span class="o">=</span><span class="s2">"id"</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">model_ref_col</span><span class="o">=</span><span class="s2">"event_ref"</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">join_id_col</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">model_ref_col</span><span class="o">=</span><span class="s2">&quot;event_ref&quot;</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
+
 </section>
 <section id="module-cdp_data.utils.fs_utils">
-<span id="cdp-data-utils-fs-utils-module"></span><h2>cdp_data.utils.fs_utils module<a class="headerlink" href="#module-cdp_data.utils.fs_utils" title="Permalink to this headline">#</a></h2>
+<span id="cdp-data-utils-fs-utils-module"></span><h2>cdp_data.utils.fs_utils module<a class="headerlink" href="#module-cdp_data.utils.fs_utils" title="Permalink to this heading">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="cdp_data.utils.fs_utils.connect_to_filestore">
-<span class="sig-prename descclassname"><span class="pre">cdp_data.utils.fs_utils.</span></span><span class="sig-name descname"><span class="pre">connect_to_filestore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infrastructure_slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">gcsfs.core.GCSFileSystem</span></span></span><a class="reference internal" href="_modules/cdp_data/utils/fs_utils.html#connect_to_filestore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.utils.fs_utils.connect_to_filestore" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cdp_data.utils.fs_utils.</span></span><span class="sig-name descname"><span class="pre">connect_to_filestore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infrastructure_slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GCSFileSystem</span></span></span><a class="reference internal" href="_modules/cdp_data/utils/fs_utils.html#connect_to_filestore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.utils.fs_utils.connect_to_filestore" title="Permalink to this definition">#</a></dt>
 <dd><p>Simple function to shorten how many imports and code it takes to connect
 to a CDP file store.</p>
 </dd></dl>
+
 </section>
 <section id="module-cdp_data.utils">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cdp_data.utils" title="Permalink to this headline">#</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cdp_data.utils" title="Permalink to this heading">#</a></h2>
 <p>Utils package for cdp_data.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="cdp_data.utils.connect_to_infrastructure">
-<span class="sig-prename descclassname"><span class="pre">cdp_data.utils.</span></span><span class="sig-name descname"><span class="pre">connect_to_infrastructure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infrastructure_slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">gcsfs.core.GCSFileSystem</span></span></span><a class="reference internal" href="_modules/cdp_data/utils.html#connect_to_infrastructure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.utils.connect_to_infrastructure" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cdp_data.utils.</span></span><span class="sig-name descname"><span class="pre">connect_to_infrastructure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infrastructure_slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GCSFileSystem</span></span></span><a class="reference internal" href="_modules/cdp_data/utils.html#connect_to_infrastructure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.utils.connect_to_infrastructure" title="Permalink to this definition">#</a></dt>
 <dd><p>Simple function to shorten how many imports and code it takes to connect
 to a CDP infrastructure.</p>
 </dd></dl>
+
 </section>
 </section>
 
@@ -389,6 +395,7 @@ to a CDP infrastructure.</p>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>

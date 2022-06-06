@@ -1,13 +1,13 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/>
+    <meta name="generator" content="sphinx-5.0.1, furo 2022.06.04.1"/>
         <title>cdp_data.datasets - cdp-data 0.0.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -187,7 +187,8 @@
           </svg>
           <span>Back to top</span>
         </a>
-        <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -251,8 +252,8 @@
     <span class="c1"># Handle cache dir</span>
     <span class="n">this_video_cache_dir</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">fetch_params</span><span class="o">.</span><span class="n">parent_cache_dir</span>
-        <span class="o">/</span> <span class="sa">f</span><span class="s2">"event-</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">event_id</span><span class="si">}</span><span class="s2">"</span>
-        <span class="o">/</span> <span class="sa">f</span><span class="s2">"session-</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">session_id</span><span class="si">}</span><span class="s2">"</span>
+        <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;event-</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">event_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;session-</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">session_id</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="p">)</span>
     <span class="c1"># Create cache dir (Handle try except because threaded)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -261,17 +262,17 @@
         <span class="k">pass</span>
 
     <span class="c1"># Download transcript if needed</span>
-    <span class="n">save_path</span> <span class="o">=</span> <span class="n">this_video_cache_dir</span> <span class="o">/</span> <span class="s2">"video"</span>
+    <span class="n">save_path</span> <span class="o">=</span> <span class="n">this_video_cache_dir</span> <span class="o">/</span> <span class="s2">&quot;video&quot;</span>
     <span class="k">if</span> <span class="n">save_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">IsADirectoryError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"Video '</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">video_uri</span><span class="si">}</span><span class="s2">', could not be saved because "</span>
-            <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">' is a directory. Delete or move the directory to a "</span>
-            <span class="sa">f</span><span class="s2">"different location or change the target dataset cache dir."</span>
+            <span class="sa">f</span><span class="s2">&quot;Video &#39;</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">video_uri</span><span class="si">}</span><span class="s2">&#39;, could not be saved because &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">&#39; is a directory. Delete or move the directory to a &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;different location or change the target dataset cache dir.&quot;</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">save_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"Skipping video '</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">video_uri</span><span class="si">}</span><span class="s2">'. "</span>
-            <span class="sa">f</span><span class="s2">"A file already exists at target save path."</span>
+            <span class="sa">f</span><span class="s2">&quot;Skipping video &#39;</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">video_uri</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;A file already exists at target save path.&quot;</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">resource_copy</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">video_uri</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">save_path</span><span class="p">)</span>
@@ -303,7 +304,7 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_MatchingAudio</span><span class="p">:</span>
     <span class="c1"># Get any DB transcript</span>
     <span class="n">db_transcript</span> <span class="o">=</span> <span class="n">db_models</span><span class="o">.</span><span class="n">Transcript</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-        <span class="s2">"session_ref"</span><span class="p">,</span> <span class="s2">"=="</span><span class="p">,</span> <span class="n">fetch_params</span><span class="o">.</span><span class="n">session_key</span>
+        <span class="s2">&quot;session_ref&quot;</span><span class="p">,</span> <span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="n">fetch_params</span><span class="o">.</span><span class="n">session_key</span>
     <span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
     <span class="c1"># Get transcript file info</span>
@@ -313,17 +314,17 @@
     <span class="c1"># Audio files are stored with the same URI as the transcript</span>
     <span class="c1"># but instead of `-cdp_{version}-transcript.json`</span>
     <span class="c1"># they simply end with `-audio.wav`</span>
-    <span class="n">transcript_uri_parts</span> <span class="o">=</span> <span class="n">db_transcript_file</span><span class="o">.</span><span class="n">uri</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
+    <span class="n">transcript_uri_parts</span> <span class="o">=</span> <span class="n">db_transcript_file</span><span class="o">.</span><span class="n">uri</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
     <span class="n">transcript_filename</span> <span class="o">=</span> <span class="n">transcript_uri_parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">uri_base</span> <span class="o">=</span> <span class="s2">"/"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">transcript_uri_parts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">uri_base</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">transcript_uri_parts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">session_content_hash</span> <span class="o">=</span> <span class="n">transcript_filename</span><span class="p">[:</span><span class="mi">64</span><span class="p">]</span>
-    <span class="n">audio_uri</span> <span class="o">=</span> <span class="s2">"/"</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">uri_base</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">session_content_hash</span><span class="si">}</span><span class="s2">-audio.wav"</span><span class="p">])</span>
+    <span class="n">audio_uri</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">uri_base</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">session_content_hash</span><span class="si">}</span><span class="s2">-audio.wav&quot;</span><span class="p">])</span>
 
     <span class="c1"># Handle cache dir</span>
     <span class="n">this_audio_cache_dir</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">fetch_params</span><span class="o">.</span><span class="n">parent_cache_dir</span>
-        <span class="o">/</span> <span class="sa">f</span><span class="s2">"event-</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">event_id</span><span class="si">}</span><span class="s2">"</span>
-        <span class="o">/</span> <span class="sa">f</span><span class="s2">"session-</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">session_id</span><span class="si">}</span><span class="s2">"</span>
+        <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;event-</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">event_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;session-</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">session_id</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="p">)</span>
     <span class="c1"># Create cache dir (Handle try except because threaded)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -332,17 +333,17 @@
         <span class="k">pass</span>
 
     <span class="c1"># Download audio if needed</span>
-    <span class="n">save_path</span> <span class="o">=</span> <span class="n">this_audio_cache_dir</span> <span class="o">/</span> <span class="s2">"audio.wav"</span>
+    <span class="n">save_path</span> <span class="o">=</span> <span class="n">this_audio_cache_dir</span> <span class="o">/</span> <span class="s2">&quot;audio.wav&quot;</span>
     <span class="k">if</span> <span class="n">save_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">IsADirectoryError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"Audio '</span><span class="si">{</span><span class="n">audio_uri</span><span class="si">}</span><span class="s2">', could not be saved because "</span>
-            <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">' is a directory. Delete or move the directory to a "</span>
-            <span class="sa">f</span><span class="s2">"different location or change the target dataset cache dir."</span>
+            <span class="sa">f</span><span class="s2">&quot;Audio &#39;</span><span class="si">{</span><span class="n">audio_uri</span><span class="si">}</span><span class="s2">&#39;, could not be saved because &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">&#39; is a directory. Delete or move the directory to a &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;different location or change the target dataset cache dir.&quot;</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">save_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"Skipping audio '</span><span class="si">{</span><span class="n">audio_uri</span><span class="si">}</span><span class="s2">'. "</span>
-            <span class="sa">f</span><span class="s2">"A file already exists at target save path."</span>
+            <span class="sa">f</span><span class="s2">&quot;Skipping audio &#39;</span><span class="si">{</span><span class="n">audio_uri</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;A file already exists at target save path.&quot;</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">fetch_params</span><span class="o">.</span><span class="n">fs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">audio_uri</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">save_path</span><span class="p">))</span>
@@ -377,9 +378,9 @@
     <span class="c1"># Get DB transcript</span>
     <span class="n">db_transcript</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">db_models</span><span class="o">.</span><span class="n">Transcript</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-            <span class="s2">"session_ref"</span><span class="p">,</span> <span class="s2">"=="</span><span class="p">,</span> <span class="n">fetch_params</span><span class="o">.</span><span class="n">session_key</span>
+            <span class="s2">&quot;session_ref&quot;</span><span class="p">,</span> <span class="s2">&quot;==&quot;</span><span class="p">,</span> <span class="n">fetch_params</span><span class="o">.</span><span class="n">session_key</span>
         <span class="p">)</span>
-        <span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="sa">f</span><span class="s2">"-</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">transcript_selection</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;-</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">transcript_selection</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="o">.</span><span class="n">get</span><span class="p">()</span>
     <span class="p">)</span>
 
@@ -389,8 +390,8 @@
     <span class="c1"># Handle cache dir</span>
     <span class="n">this_transcript_cache_dir</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">fetch_params</span><span class="o">.</span><span class="n">parent_cache_dir</span>
-        <span class="o">/</span> <span class="sa">f</span><span class="s2">"event-</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">event_id</span><span class="si">}</span><span class="s2">"</span>
-        <span class="o">/</span> <span class="sa">f</span><span class="s2">"session-</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">session_id</span><span class="si">}</span><span class="s2">"</span>
+        <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;event-</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">event_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;session-</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">session_id</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="p">)</span>
     <span class="c1"># Create cache dir (Handle try except because threaded)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -399,17 +400,17 @@
         <span class="k">pass</span>
 
     <span class="c1"># Download transcript if needed</span>
-    <span class="n">save_path</span> <span class="o">=</span> <span class="n">this_transcript_cache_dir</span> <span class="o">/</span> <span class="s2">"transcript.json"</span>
+    <span class="n">save_path</span> <span class="o">=</span> <span class="n">this_transcript_cache_dir</span> <span class="o">/</span> <span class="s2">&quot;transcript.json&quot;</span>
     <span class="k">if</span> <span class="n">save_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">IsADirectoryError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"Transcript '</span><span class="si">{</span><span class="n">db_transcript_file</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s2">', could not be saved because "</span>
-            <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">' is a directory. Delete or move the directory to a "</span>
-            <span class="sa">f</span><span class="s2">"different location or change the target dataset cache dir."</span>
+            <span class="sa">f</span><span class="s2">&quot;Transcript &#39;</span><span class="si">{</span><span class="n">db_transcript_file</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s2">&#39;, could not be saved because &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">&#39; is a directory. Delete or move the directory to a &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;different location or change the target dataset cache dir.&quot;</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">save_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"Skipping transcript '</span><span class="si">{</span><span class="n">db_transcript_file</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s2">'. "</span>
-            <span class="sa">f</span><span class="s2">"A file already exists at target save path."</span>
+            <span class="sa">f</span><span class="s2">&quot;Skipping transcript &#39;</span><span class="si">{</span><span class="n">db_transcript_file</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;A file already exists at target save path.&quot;</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">fetch_params</span><span class="o">.</span><span class="n">fs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_transcript_file</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">save_path</span><span class="p">))</span>
@@ -446,12 +447,12 @@
     <span class="n">end_datetime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">datetime</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">store_full_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">store_transcript</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">transcript_selection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"confidence"</span><span class="p">,</span>
+    <span class="n">transcript_selection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;confidence&quot;</span><span class="p">,</span>
     <span class="n">store_video</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">store_audio</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">cache_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-    <span class="sd">"""</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a dataset of sessions from a CDP infrastructure.</span>
 
 <span class="sd">    Parameters</span>
@@ -475,9 +476,9 @@
 <span class="sd">        Default: False (do not request extra data and do not store the transcript)</span>
 <span class="sd">    transcript_selection: str</span>
 <span class="sd">        How should the single transcript be selected.</span>
-<span class="sd">        Options: "confidence" for transcript with the highest confidence value,</span>
-<span class="sd">        "created" for the most recently created transcript.</span>
-<span class="sd">        Default: "confidence" (Return the single highest confidence</span>
+<span class="sd">        Options: &quot;confidence&quot; for transcript with the highest confidence value,</span>
+<span class="sd">        &quot;created&quot; for the most recently created transcript.</span>
+<span class="sd">        Default: &quot;confidence&quot; (Return the single highest confidence</span>
 <span class="sd">        transcript per session)</span>
 <span class="sd">    store_video: bool</span>
 <span class="sd">        Should the session video be requested and stored to disk and a path to the</span>
@@ -491,7 +492,7 @@
 <span class="sd">    cache_dir: Optional[Union[str, Path]]</span>
 <span class="sd">        An optional directory path to cache the dataset. Directory is created if it</span>
 <span class="sd">        does not exist.</span>
-<span class="sd">        Default: "./cdp-datasets"</span>
+<span class="sd">        Default: &quot;./cdp-datasets&quot;</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -535,7 +536,7 @@
 
 <span class="sd">    To clean a whole dataset or specific events or sessions simply delete the</span>
 <span class="sd">    associated directory.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Connect to infra</span>
     <span class="n">fs</span> <span class="o">=</span> <span class="n">connect_to_infrastructure</span><span class="p">(</span><span class="n">infrastructure_slug</span><span class="p">)</span>
 
@@ -547,12 +548,12 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_datetime</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">start_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">start_datetime</span><span class="p">)</span>
 
-        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="s2">"session_datetime"</span><span class="p">,</span> <span class="s2">"&gt;="</span><span class="p">,</span> <span class="n">start_datetime</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="s2">&quot;session_datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span> <span class="n">start_datetime</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">end_datetime</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">end_datetime</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">end_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">end_datetime</span><span class="p">)</span>
 
-        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="s2">"session_datetime"</span><span class="p">,</span> <span class="s2">"&lt;="</span><span class="p">,</span> <span class="n">end_datetime</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="s2">&quot;session_datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span> <span class="n">end_datetime</span><span class="p">)</span>
 
     <span class="c1"># Query for events and cast to pandas</span>
     <span class="n">sessions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">e</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">fetch</span><span class="p">()])</span>
@@ -561,24 +562,24 @@
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sessions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
             <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
-                <span class="s2">"session_datetime"</span><span class="p">,</span>
-                <span class="s2">"session_index"</span><span class="p">,</span>
-                <span class="s2">"session_content_hash"</span><span class="p">,</span>
-                <span class="s2">"video_uri"</span><span class="p">,</span>
-                <span class="s2">"caption_uri"</span><span class="p">,</span>
-                <span class="s2">"external_source_id"</span><span class="p">,</span>
-                <span class="s2">"id"</span><span class="p">,</span>
-                <span class="s2">"key"</span><span class="p">,</span>
-                <span class="s2">"event"</span><span class="p">,</span>
+                <span class="s2">&quot;session_datetime&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;session_index&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;session_content_hash&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;video_uri&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;caption_uri&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;external_source_id&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;key&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;event&quot;</span><span class="p">,</span>
             <span class="p">]</span>
         <span class="p">)</span>
 
     <span class="c1"># Handle basic event metadata attachment</span>
-    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Attaching event metadata to each session datum"</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Attaching event metadata to each session datum&quot;</span><span class="p">)</span>
     <span class="n">sessions</span> <span class="o">=</span> <span class="n">db_utils</span><span class="o">.</span><span class="n">load_model_from_pd_columns</span><span class="p">(</span>
         <span class="n">sessions</span><span class="p">,</span>
-        <span class="n">join_id_col</span><span class="o">=</span><span class="s2">"id"</span><span class="p">,</span>
-        <span class="n">model_ref_col</span><span class="o">=</span><span class="s2">"event_ref"</span><span class="p">,</span>
+        <span class="n">join_id_col</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
+        <span class="n">model_ref_col</span><span class="o">=</span><span class="s2">&quot;event_ref&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># We only need to handle cache dir and more if any extras are True</span>
@@ -605,11 +606,11 @@
     <span class="c1"># TODO:</span>
     <span class="c1"># Handle metadata reversal to ingestion model</span>
     <span class="k">if</span> <span class="n">store_full_metadata</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"`store_full_metadata` not implemented"</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;`store_full_metadata` not implemented&quot;</span><span class="p">)</span>
 
     <span class="c1"># Handle video</span>
     <span class="k">if</span> <span class="n">store_video</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Fetching video"</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fetching video&quot;</span><span class="p">)</span>
         <span class="n">fetched_video_infos</span> <span class="o">=</span> <span class="n">thread_map</span><span class="p">(</span>
             <span class="n">_get_matching_video</span><span class="p">,</span>
             <span class="p">[</span>
@@ -628,13 +629,13 @@
         <span class="n">sessions</span> <span class="o">=</span> <span class="n">_merge_dataclasses_to_df</span><span class="p">(</span>
             <span class="n">data_objs</span><span class="o">=</span><span class="n">fetched_video_infos</span><span class="p">,</span>
             <span class="n">df</span><span class="o">=</span><span class="n">sessions</span><span class="p">,</span>
-            <span class="n">data_objs_key</span><span class="o">=</span><span class="s2">"session_key"</span><span class="p">,</span>
-            <span class="n">df_key</span><span class="o">=</span><span class="s2">"key"</span><span class="p">,</span>
+            <span class="n">data_objs_key</span><span class="o">=</span><span class="s2">&quot;session_key&quot;</span><span class="p">,</span>
+            <span class="n">df_key</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="c1"># Handle audio</span>
     <span class="k">if</span> <span class="n">store_audio</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Fetching audio"</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fetching audio&quot;</span><span class="p">)</span>
         <span class="n">fetched_audio_infos</span> <span class="o">=</span> <span class="n">thread_map</span><span class="p">(</span>
             <span class="n">_get_matching_audio</span><span class="p">,</span>
             <span class="p">[</span>
@@ -653,13 +654,13 @@
         <span class="n">sessions</span> <span class="o">=</span> <span class="n">_merge_dataclasses_to_df</span><span class="p">(</span>
             <span class="n">data_objs</span><span class="o">=</span><span class="n">fetched_audio_infos</span><span class="p">,</span>
             <span class="n">df</span><span class="o">=</span><span class="n">sessions</span><span class="p">,</span>
-            <span class="n">data_objs_key</span><span class="o">=</span><span class="s2">"session_key"</span><span class="p">,</span>
-            <span class="n">df_key</span><span class="o">=</span><span class="s2">"key"</span><span class="p">,</span>
+            <span class="n">data_objs_key</span><span class="o">=</span><span class="s2">&quot;session_key&quot;</span><span class="p">,</span>
+            <span class="n">df_key</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="c1"># Pull transcript info</span>
     <span class="k">if</span> <span class="n">store_transcript</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Fetching transcripts"</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fetching transcripts&quot;</span><span class="p">)</span>
         <span class="c1"># Threaded get of transcript info</span>
         <span class="n">fetched_transcript_infos</span> <span class="o">=</span> <span class="n">thread_map</span><span class="p">(</span>
             <span class="n">_get_matching_db_transcript</span><span class="p">,</span>
@@ -680,8 +681,8 @@
         <span class="n">sessions</span> <span class="o">=</span> <span class="n">_merge_dataclasses_to_df</span><span class="p">(</span>
             <span class="n">data_objs</span><span class="o">=</span><span class="n">fetched_transcript_infos</span><span class="p">,</span>
             <span class="n">df</span><span class="o">=</span><span class="n">sessions</span><span class="p">,</span>
-            <span class="n">data_objs_key</span><span class="o">=</span><span class="s2">"session_key"</span><span class="p">,</span>
-            <span class="n">df_key</span><span class="o">=</span><span class="s2">"key"</span><span class="p">,</span>
+            <span class="n">data_objs_key</span><span class="o">=</span><span class="s2">&quot;session_key&quot;</span><span class="p">,</span>
+            <span class="n">df_key</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">sessions</span></div>
@@ -722,6 +723,7 @@
 </div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     </body>

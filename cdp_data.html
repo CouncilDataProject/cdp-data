@@ -1,14 +1,14 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cdp_data.bin package" href="cdp_data.bin.html" /><link rel="prev" title="cdp_data" href="modules.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/>
+    <meta name="generator" content="sphinx-5.0.1, furo 2022.06.04.1"/>
         <title>cdp_data package - cdp-data 0.0.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -188,7 +188,8 @@
           </svg>
           <span>Back to top</span>
         </a>
-        <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -203,9 +204,9 @@
         </div>
         <article role="main">
           <section id="cdp-data-package">
-<h1>cdp_data package<a class="headerlink" href="#cdp-data-package" title="Permalink to this headline">#</a></h1>
+<h1>cdp_data package<a class="headerlink" href="#cdp-data-package" title="Permalink to this heading">#</a></h1>
 <section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">#</a></h2>
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="cdp_data.bin.html">cdp_data.bin package</a><ul>
@@ -232,19 +233,19 @@
 </div>
 </section>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">#</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 </section>
 <section id="module-cdp_data.constants">
-<span id="cdp-data-constants-module"></span><h2>cdp_data.constants module<a class="headerlink" href="#module-cdp_data.constants" title="Permalink to this headline">#</a></h2>
+<span id="cdp-data-constants-module"></span><h2>cdp_data.constants module<a class="headerlink" href="#module-cdp_data.constants" title="Permalink to this heading">#</a></h2>
 </section>
 <section id="module-cdp_data.datasets">
-<span id="cdp-data-datasets-module"></span><h2>cdp_data.datasets module<a class="headerlink" href="#module-cdp_data.datasets" title="Permalink to this headline">#</a></h2>
+<span id="cdp-data-datasets-module"></span><h2>cdp_data.datasets module<a class="headerlink" href="#module-cdp_data.datasets" title="Permalink to this heading">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="cdp_data.datasets.get_session_dataset">
-<span class="sig-prename descclassname"><span class="pre">cdp_data.datasets.</span></span><span class="sig-name descname"><span class="pre">get_session_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infrastructure_slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime.datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime.datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_full_metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_transcript</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transcript_selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'confidence'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_video</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_audio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/cdp_data/datasets.html#get_session_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.datasets.get_session_dataset" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cdp_data.datasets.</span></span><span class="sig-name descname"><span class="pre">get_session_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infrastructure_slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_full_metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_transcript</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transcript_selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'confidence'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_video</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_audio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/cdp_data/datasets.html#get_session_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.datasets.get_session_dataset" title="Permalink to this definition">#</a></dt>
 <dd><p>Get a dataset of sessions from a CDP infrastructure.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>infrastructure_slug</strong> (<em>str</em>) – The CDP infrastructure to connect to and pull sessions for.</p></li>
 <li><p><strong>start_datetime</strong> (<em>Optional[Union[str, datetime]]</em>) – An optional datetime that the session dataset will start at.
@@ -275,10 +276,10 @@ does not exist.
 Default: “./cdp-datasets”</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>dataset</strong> – The dataset with all additions requested.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
@@ -318,9 +319,10 @@ content hash comparison.</p>
 <p>To clean a whole dataset or specific events or sessions simply delete the
 associated directory.</p>
 </dd></dl>
+
 </section>
 <section id="module-cdp_data.instances">
-<span id="cdp-data-instances-module"></span><h2>cdp_data.instances module<a class="headerlink" href="#module-cdp_data.instances" title="Permalink to this headline">#</a></h2>
+<span id="cdp-data-instances-module"></span><h2>cdp_data.instances module<a class="headerlink" href="#module-cdp_data.instances" title="Permalink to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="cdp_data.instances.CDPInstances">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cdp_data.instances.</span></span><span class="sig-name descname"><span class="pre">CDPInstances</span></span><a class="reference internal" href="_modules/cdp_data/instances.html#CDPInstances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.instances.CDPInstances" title="Permalink to this definition">#</a></dt>
@@ -334,32 +336,52 @@ associated directory.</p>
 </pre></div>
 </div>
 <dl class="py attribute">
+<dt class="sig sig-object py" id="cdp_data.instances.CDPInstances.Alameda">
+<span class="sig-name descname"><span class="pre">Alameda</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdp-alameda-d3dabe54'</span></em><a class="headerlink" href="#cdp_data.instances.CDPInstances.Alameda" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cdp_data.instances.CDPInstances.Boston">
+<span class="sig-name descname"><span class="pre">Boston</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdp-boston-c384047b'</span></em><a class="headerlink" href="#cdp_data.instances.CDPInstances.Boston" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cdp_data.instances.CDPInstances.Denver">
+<span class="sig-name descname"><span class="pre">Denver</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdp-denver-962aefef'</span></em><a class="headerlink" href="#cdp_data.instances.CDPInstances.Denver" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="cdp_data.instances.CDPInstances.KingCounty">
 <span class="sig-name descname"><span class="pre">KingCounty</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdp-king-county-b656c71b'</span></em><a class="headerlink" href="#cdp_data.instances.CDPInstances.KingCounty" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="cdp_data.instances.CDPInstances.Missoula">
 <span class="sig-name descname"><span class="pre">Missoula</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'missoula-council-data-proj'</span></em><a class="headerlink" href="#cdp_data.instances.CDPInstances.Missoula" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="cdp_data.instances.CDPInstances.Portland">
 <span class="sig-name descname"><span class="pre">Portland</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdp-portland-d2bbda97'</span></em><a class="headerlink" href="#cdp_data.instances.CDPInstances.Portland" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="cdp_data.instances.CDPInstances.Seattle">
 <span class="sig-name descname"><span class="pre">Seattle</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdp-seattle-21723dcf'</span></em><a class="headerlink" href="#cdp_data.instances.CDPInstances.Seattle" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 </dd></dl>
+
 </section>
 <section id="module-cdp_data.keywords">
-<span id="cdp-data-keywords-module"></span><h2>cdp_data.keywords module<a class="headerlink" href="#module-cdp_data.keywords" title="Permalink to this headline">#</a></h2>
+<span id="cdp-data-keywords-module"></span><h2>cdp_data.keywords module<a class="headerlink" href="#module-cdp_data.keywords" title="Permalink to this heading">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="cdp_data.keywords.compute_ngram_usage_history">
-<span class="sig-prename descclassname"><span class="pre">cdp_data.keywords.</span></span><span class="sig-name descname"><span class="pre">compute_ngram_usage_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infrastructure_slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ngram_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime.datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime.datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/cdp_data/keywords.html#compute_ngram_usage_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.keywords.compute_ngram_usage_history" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cdp_data.keywords.</span></span><span class="sig-name descname"><span class="pre">compute_ngram_usage_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infrastructure_slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ngram_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/cdp_data/keywords.html#compute_ngram_usage_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.keywords.compute_ngram_usage_history" title="Permalink to this definition">#</a></dt>
 <dd><p>Pull the minimal data needed for a session dataset for the provided infrastructure
 and start and end datetimes, then compute the ngram usage history DataFrame.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>infrastructure_slug</strong> (<em>str</em>) – The CDP infrastructure(s) to connect to and pull sessions for.</p></li>
 <li><p><strong>ngram_size</strong> (<em>int</em>) – The ngram size to use for counting and calculating usage.
@@ -375,13 +397,13 @@ does not exist.
 Default: “./cdp-datasets”</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>gram_usage</strong> – A pandas DataFrame of all found ngrams (stemmed and cleaned or unstemmed and
 uncleaned) from the data and their counts for each session and their percentage
 of use as a percent of their use for the day over the sum of all other ngrams
 used that day.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
@@ -403,23 +425,24 @@ disk in the provided (or default) cache directory.</p>
 <p>It is recommended to cache this dataset after computation because it may take a
 while depending on machine resources and available.</p>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="cdp_data.keywords.fill_history_data_with_zeros">
-<span class="sig-prename descclassname"><span class="pre">cdp_data.keywords.</span></span><span class="sig-name descname"><span class="pre">fill_history_data_with_zeros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ngram_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/cdp_data/keywords.html#fill_history_data_with_zeros"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.keywords.fill_history_data_with_zeros" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cdp_data.keywords.</span></span><span class="sig-name descname"><span class="pre">fill_history_data_with_zeros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ngram_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/cdp_data/keywords.html#fill_history_data_with_zeros"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.keywords.fill_history_data_with_zeros" title="Permalink to this definition">#</a></dt>
 <dd><p>A utility function to fill ngram history data with zeros for all missing dates.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>pd.DataFrame</em>) – The ngram history data to fill dates for.</p></li>
 <li><p><strong>ngram_col</strong> (<em>str</em>) – The column name for which the “ngram” is stored.</p></li>
 <li><p><strong>dt_col</strong> (<em>str</em>) – The column name for which the datetime is stored.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>data</strong> – A DataFrame filled with the original data and filled in with any missing dates
 with their values being set to zero.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
@@ -431,12 +454,13 @@ with their values being set to zero.</p>
 </dl>
 </div>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="cdp_data.keywords.get_ngram_relevancy_history">
-<span class="sig-prename descclassname"><span class="pre">cdp_data.keywords.</span></span><span class="sig-name descname"><span class="pre">get_ngram_relevancy_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ngram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime.datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime.datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infrastructure_slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/cdp_data/keywords.html#get_ngram_relevancy_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.keywords.get_ngram_relevancy_history" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cdp_data.keywords.</span></span><span class="sig-name descname"><span class="pre">get_ngram_relevancy_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ngram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infrastructure_slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/cdp_data/keywords.html#get_ngram_relevancy_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.keywords.get_ngram_relevancy_history" title="Permalink to this definition">#</a></dt>
 <dd><p>Pull an n-gram’s relevancy history from a CDP database.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ngram</strong> (<em>str</em>) – The unigram, bigram, or trigram to retrieve history for.</p></li>
 <li><p><strong>strict</strong> (<em>bool</em>) – Should the provided ngram be used for a strict “unstemmed_gram” query or not.
@@ -449,11 +473,11 @@ If provided as a string, the datetime should be in ISO format.</p></li>
 Default: None (you are managing the database connection yourself)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ngram_history</strong> – A pandas DataFrame of all IndexedEventGrams that match the provided ngram query
 (stemmed or unstemmed).</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
@@ -470,13 +494,14 @@ provided ngram over time. This is a measure of relevancy to a document and not
 the same as Google’s NGram Viewer which shows what percentage of literature
 used the term.</p>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="cdp_data.keywords.plot_ngram_usage_histories">
-<span class="sig-prename descclassname"><span class="pre">cdp_data.keywords.</span></span><span class="sig-name descname"><span class="pre">plot_ngram_usage_histories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ngram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gram_usage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmplot_kws</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">sns.FacetGrid</span></span></span><a class="reference internal" href="_modules/cdp_data/keywords.html#plot_ngram_usage_histories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.keywords.plot_ngram_usage_histories" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cdp_data.keywords.</span></span><span class="sig-name descname"><span class="pre">plot_ngram_usage_histories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ngram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gram_usage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmplot_kws</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">sns.FacetGrid</span></span></span><a class="reference internal" href="_modules/cdp_data/keywords.html#plot_ngram_usage_histories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.keywords.plot_ngram_usage_histories" title="Permalink to this definition">#</a></dt>
 <dd><p>Select and plot specific ngram usage histories from the provided gram usage
 DataFrame.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ngram</strong> (<em>Union[str, List[str]]</em>) – The unigrams, bigrams, or trigrams to retrieve history for.
 Note: Must provide all unigrams, bigrams, or trigrams, cannot mix gram size, and
@@ -491,11 +516,11 @@ Default: False (stem and clean all grams in the dataset)</p></li>
 <li><p><strong>lmplot_kws</strong> (<em>Dict[str, Any]</em>) – Any extra kwargs to provide to sns.lmplot.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>grid</strong> – The small multiples FacetGrid of all ngrams and infrastructures found in the
 provided dataset.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>sns.FacetGrid</p>
 </dd>
 </dl>
@@ -507,15 +532,16 @@ provided dataset.</p>
 </dl>
 </div>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="cdp_data.keywords.prepare_ngram_relevancy_history_plotting_data">
-<span class="sig-prename descclassname"><span class="pre">cdp_data.keywords.</span></span><span class="sig-name descname"><span class="pre">prepare_ngram_relevancy_history_plotting_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ngram_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'query_gram'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'event_datetime'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/cdp_data/keywords.html#prepare_ngram_relevancy_history_plotting_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.keywords.prepare_ngram_relevancy_history_plotting_data" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cdp_data.keywords.</span></span><span class="sig-name descname"><span class="pre">prepare_ngram_relevancy_history_plotting_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ngram_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'query_gram'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'event_datetime'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/cdp_data/keywords.html#prepare_ngram_relevancy_history_plotting_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.keywords.prepare_ngram_relevancy_history_plotting_data" title="Permalink to this definition">#</a></dt>
 <dd><p>Prepare an ngram relevancy history DataFrame specifically for plotting.
 This function will subset the DataFrame to just the provided columns and
 will only store a single value for each day if there are multiple
 (keeping the max value).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>pd.DataFrame</em>) – The data to prepare for plotting.</p></li>
 <li><p><strong>ngram_col</strong> (<em>str</em>) – The column name for which the “ngram” is stored.
@@ -526,10 +552,10 @@ Default: “value”</p></li>
 Default: “event_datetime”</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>prepared</strong> – The subset and max selected dataset reading for plotting.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
@@ -541,14 +567,16 @@ Default: “event_datetime”</p></li>
 </dl>
 </div>
 </dd></dl>
+
 </section>
 <section id="module-cdp_data">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cdp_data" title="Permalink to this headline">#</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cdp_data" title="Permalink to this heading">#</a></h2>
 <p>Top-level package for cdp_data.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="cdp_data.get_module_version">
-<span class="sig-prename descclassname"><span class="pre">cdp_data.</span></span><span class="sig-name descname"><span class="pre">get_module_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/cdp_data.html#get_module_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.get_module_version" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cdp_data.</span></span><span class="sig-name descname"><span class="pre">get_module_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/cdp_data.html#get_module_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.get_module_version" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 </section>
 </section>
 
@@ -631,6 +659,7 @@ Default: “event_datetime”</p></li>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
