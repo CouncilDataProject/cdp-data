@@ -3,6 +3,7 @@
 
 from dataclasses import dataclass
 from functools import lru_cache
+from typing import List
 
 import fireo
 import pandas as pd
@@ -26,6 +27,13 @@ class _ModelRefJoiner:
 class _ModelJoiner:
     join_id: str
     model: Model
+
+
+@dataclass(frozen=True)
+class _ModelQueryJoiner:
+    collection_model: Model
+    model_key: str
+    collection_ref_key: str
 
 
 ###############################################################################
@@ -159,15 +167,15 @@ def load_model_from_pd_columns(
     referenced events to each session.
 
     >>> from cdp_backend.database import models as db_models
-    ... from cdp_data.utils import db_utils
-    ... import pandas as pd
-    ... # Connect, fetch sessions and unpack, threaded event attachment to session df
-    ... db_utils.connect_to_database("cdp-seattle-21723dcf")
-    ... sessions = pd.DataFrame([
+    >>> from cdp_data.utils import db_utils
+    >>> import pandas as pd
+    >>> # Connect, fetch sessions and unpack, threaded event attachment to session df
+    >>> db_utils.connect_to_database("cdp-seattle-21723dcf")
+    >>> sessions = pd.DataFrame([
     ...     s.to_dict() for s in db_models.Session.collection.fetch()
     ... ])
-    ... # Fetch all models in the `event_ref` column and join on session id
-    ... event_attached = db_utils.load_model_from_pd_columns(
+    >>> # Fetch all models in the `event_ref` column and join on session id
+    >>> event_attached = db_utils.load_model_from_pd_columns(
     ...     sessions,
     ...     join_id_col="id",
     ...     model_ref_col="event_ref",
@@ -202,3 +210,71 @@ def load_model_from_pd_columns(
         joined = joined.drop([model_ref_col], axis=1)
 
     return joined
+
+
+@lru_cache(64)
+def _load_model_using_query(
+    query_joiner: _ModelQueryJoiner,
+) -> List[_ModelJoiner]:
+    # Query
+    results = query_joiner.collection_model.collection.filter(
+        query_joiner.collection_ref_key,
+        "==",
+        query_joiner.model_key,
+    ).fetch()
+
+    # Return with metadata
+    return [
+        _ModelJoiner(join_id=query_joiner.model_key, model=model) for model in results
+    ]
+
+
+def join_model_using_pd_columns(
+    data: pd.DataFrame,
+    model_key_col: str,
+    collection_model_to_join: Model,
+    collection_ref_key: str,
+    use_queried_as_primary: bool = False,
+) -> pd.DataFrame:
+    # Get models
+    loaded_models = thread_map(
+        _load_model_using_query,
+        [
+            _ModelQueryJoiner(
+                collection_model=collection_model_to_join,
+                model_key=row[model_key_col],
+                collection_ref_key=collection_ref_key,
+            )
+            for _, row in data.iterrows()
+        ],
+    )
+
+    # Concat all results
+    loaded_models = pd.concat(
+        [
+            pd.DataFrame([joiner.to_dict() for joiner in returned_models])
+            for returned_models in loaded_models
+        ]
+    )
+
+    # Rename model column to the collection name
+    loaded_models = loaded_models.rename(
+        columns={
+            "join_id": model_key_col,
+            "model": collection_model_to_join.collection_name,
+        }
+    )
+
+    # Join with original
+    if use_queried_as_primary:
+        return (
+            loaded_models.set_index(model_key_col)
+            .join(data.set_index(model_key_col))
+            .reset_index()
+        )
+
+    return (
+        data.set_index(model_key_col)
+        .join(loaded_models.set_index(model_key_col))
+        .reset_index()
+    )

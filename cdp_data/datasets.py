@@ -5,7 +5,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional, Union
 
 import pandas as pd
 from cdp_backend.database import models as db_models
@@ -485,6 +485,78 @@ def get_session_dataset(
 
     return sessions
 
+
+def get_voting_record_dataset(
+    infrastructure_slug: str,
+    start_datetime: Optional[Union[str, datetime]] = None,
+    end_datetime: Optional[Union[str, datetime]] = None,
+) -> pd.DataFrame:
+    # Connect to infra
+    connect_to_infrastructure(infrastructure_slug)
+
+    # Begin partial query
+    query = db_models.Event.collection
+
+    # Add datetime filters
+    if start_datetime:
+        if isinstance(start_datetime, str):
+            start_datetime = datetime.fromisoformat(start_datetime)
+
+        query = query.filter("event_datetime", ">=", start_datetime)
+    if end_datetime:
+        if isinstance(end_datetime, str):
+            end_datetime = datetime.fromisoformat(end_datetime)
+
+        query = query.filter("event_datetime", "<=", end_datetime)
+
+    # Query for events and cast to pandas
+    log.info("Fetching events that match the provided datetime range.")
+    events = pd.DataFrame([e.to_dict() for e in query.fetch()])
+
+    # If no events found, return empty dataset
+    if len(events) == 0:
+        return pd.DataFrame(
+            columns=[
+                "id",
+                "key",
+                "body_ref",
+                "event_datetime",
+                "agenda_uri",
+                "minutes_uri",
+            ]
+        )
+
+    # Drop non-needed data
+    events = events.drop(
+        [
+            "static_thumbnail_ref",
+            "hover_thumbnail_ref",
+            "external_source_id",
+        ],
+        axis=1,
+    )
+
+    # Unpack body
+    events = db_utils.load_model_from_pd_columns(
+        data=events,
+        join_id_col="id",
+        model_ref_col="body_ref",
+        drop_original_model_ref=True,
+    )
+
+    # Handle basic event metadata attachment
+    log.info("Attaching votes for each event")
+    votes = db_utils.join_model_using_pd_columns(
+        data=events,
+        model_key_col="key",
+        collection_model_to_join=db_models.Vote,
+        collection_ref_key="event_ref",
+        use_queried_as_primary=True,
+    )
+
+    return votes.reset_index(drop=True)
+
+
 @dataclass_json
 @dataclass
 class _MatterEvent:
@@ -549,7 +621,9 @@ def _get_matter_items_from_event(
                 )
             )
 
-    return pd.DataFrame([matter_item.to_dict() for matter_item in matter_items])
+    return pd.DataFrame(
+        [matter_item.to_dict() for matter_item in matter_items]  # type: ignore
+    )
 
 
 def get_matter_dataset(
