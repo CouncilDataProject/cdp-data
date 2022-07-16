@@ -18,3 +18,6 @@ class CDPInstances:
     KingCounty = "cdp-king-county-b656c71b"
     Portland = "cdp-portland-d2bbda97"
     Missoula = "missoula-council-data-proj"
+    Denver = "cdp-denver-962aefef"
+    Alameda = "cdp-alameda-d3dabe54"
+    Boston = "cdp-boston-c384047b"

@@ -692,7 +692,6 @@ def plot_ngram_usage_histories(
         data=gram_histories,
         **lmplot_kws,
     )
-    grid.add_legend()
 
     def _recurse_axes_grid_to_fix_datetimes(
         arr_or_subplot: Union[np.ndarray, SubplotBase],
@@ -712,5 +711,6 @@ def plot_ngram_usage_histories(
 
     # Set axis labels
     grid.set_axis_labels("Date", "Ngram Usage (percent)")
+    grid.tight_layout()
 
     return grid
