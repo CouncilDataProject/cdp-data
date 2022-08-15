@@ -2,15 +2,16 @@
 
 """Top-level package for cdp_data."""
 
-__author__ = "Jackson Maxfield Brown"
-__email__ = "jmaxfieldbrown@gmail.com"
-# Do not edit this string manually, always use bumpversion
-# Details in CONTRIBUTING.md
-__version__ = "0.0.6"
+from importlib.metadata import PackageNotFoundError, version
 
+try:
+    __version__ = version("cdp-data")
+except PackageNotFoundError:
+    __version__ = "uninstalled"
 
-from .instances import CDPInstances  # noqa: F401
+__author__ = "Eva Maxfield Brown, Council Data Project Contributors"
+__email__ = "evamaxfieldbrown@gmail.com"
 
+from .instances import CDPInstances
 
-def get_module_version() -> str:
-    return __version__
+__all__ = ["CDPInstances"]

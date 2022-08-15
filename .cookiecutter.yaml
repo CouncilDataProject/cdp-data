@@ -1,0 +1,10 @@
+default_context:
+    author_name: "Eva Maxfield Brown, Council Data Project Contributors"
+    author_email: "evamaxfieldbrown@gmail.com"
+    hosting_github_username_or_org: "CouncilDataProject"
+    project_name: "cdp-data"
+    project_slug: "cdp-data"
+    python_slug: "cdp_data"
+    project_short_description: "Data Utilities and Processing Generalized for All CDP Instances"
+    hosting_pypi_username: "CouncilDataProject"
+    license: "MIT License"

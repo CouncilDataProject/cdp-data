@@ -26,6 +26,7 @@ import cdp_data
 sys.path.insert(0, os.path.abspath(".."))
 
 
+
 # -- General configuration ---------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -35,18 +36,24 @@ sys.path.insert(0, os.path.abspath(".."))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named "sphinx.ext.*") or your custom ones.
 extensions = [
+    # Sphinx lib ext
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
-    "sphinx.ext.napoleon",
-    "sphinx.ext.mathjax",
+    # Installed Sphinx ext
+    "sphinx_copybutton",
+    # Doc installs
     "m2r2",
+    "numpydoc", 
 ]
 
-# Control napoleon
-napoleon_google_docstring = False
-napolean_include_init_with_doc = True
-napoleon_use_ivar = True
-napoleon_use_param = False
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
+
+numpydoc_show_class_members = False
+
+sphinx_tabs_disable_tab_closing = True
 
 # Control autodoc
 autoclass_content = "both"  # include init doc with class
@@ -63,13 +70,13 @@ source_suffix = {
     ".md": "markdown",
 }
 
-# The master toctree document.
-master_doc = "index"
+# The main toctree document.
+main_doc = "index"
 
 # General information about the project.
 project = "cdp-data"
-copyright = "2022, Jackson Maxfield Brown"
-author = "Jackson Maxfield Brown"
+copyright = "2022"
+author = "Eva Maxfield Brown, Council Data Project Contributors"
 
 # The version info for the project you"re documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -146,10 +153,10 @@ latex_elements = {
 # [howto, manual, or own class]).
 latex_documents = [
     (
-        master_doc,
+        main_doc,
         "cdp_data.tex",
         "cdp-data Documentation",
-        "Jackson Maxfield Brown",
+        "Eva Maxfield Brown, Council Data Project Contributors",
         "manual",
     ),
 ]
@@ -159,7 +166,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "cdp_data", "cdp-data Documentation", [author], 1)]
+man_pages = [(main_doc, "cdp_data", "cdp-data Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------
@@ -169,7 +176,7 @@ man_pages = [(master_doc, "cdp_data", "cdp-data Documentation", [author], 1)]
 #  dir menu entry, description, category)
 texinfo_documents = [
     (
-        master_doc,
+        main_doc,
         "cdp_data",
         "cdp-data Documentation",
         author,
