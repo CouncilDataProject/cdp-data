@@ -5,10 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Contributing" href="contributing.html" /><link rel="prev" title="cdp_data.bin.research package" href="cdp_data.bin.research.html" />
 
-    <meta name="generator" content="sphinx-5.0.1, furo 2022.06.04.1"/>
-        <title>cdp_data.utils package - cdp-data 0.0.6 documentation</title>
+    <meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
+        <title>cdp_data.utils package - cdp-data 0.1.dev1+gf44c433 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -123,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">cdp-data 0.0.6 documentation</div></a>
+      <a href="index.html"><div class="brand">cdp-data 0.1.dev1+gf44c433 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +147,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">cdp-data 0.0.6 documentation</span>
+  <span class="sidebar-brand-text">cdp-data 0.1.dev1+gf44c433 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -223,18 +224,24 @@ to a CDP database.</p>
 <dd><p>Load a CDP database model from a ReferenceDocLoader or potentially from cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>model_ref</strong> (<em>fireo.queries.query_wrapper.ReferenceDocLoader</em>) – The model reference to load.</p>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>model_ref: fireo.queries.query_wrapper.ReferenceDocLoader</strong></dt><dd><p>The model reference to load.</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>model</strong> – The loaded (retrieved from database or cache) CDP database model.</p>
+<dd class="field-even"><dl class="simple">
+<dt>model: Model</dt><dd><p>The loaded (retrieved from database or cache) CDP database model.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Model</p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cdp_data.utils.db_utils.load_model_from_reference_joiner</span></code>, <a class="reference internal" href="#cdp_data.utils.db_utils.load_model_from_pd_columns" title="cdp_data.utils.db_utils.load_model_from_pd_columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cdp_data.utils.db_utils.load_model_from_pd_columns</span></code></a></p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">cdp_data.utils.db_utils.load_model_from_reference_joiner</span></code></dt><dd></dd>
+<dt><a class="reference internal" href="#cdp_data.utils.db_utils.load_model_from_pd_columns" title="cdp_data.utils.db_utils.load_model_from_pd_columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cdp_data.utils.db_utils.load_model_from_pd_columns</span></code></a></dt><dd></dd>
+</dl>
 </div>
 <p class="rubric">Notes</p>
 <p>LRU cache size is 1024 items.</p>
@@ -246,28 +253,35 @@ to a CDP database.</p>
 <dd><p>Load a model reference and attach the loaded model back to the original DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – The DataFrame which contains a model ReferenceDocLoader to fetch and reattach
-the loaded model to.</p></li>
-<li><p><strong>join_id_col</strong> (<em>str</em>) – The column name to use for joining the original provided DataFrame to the
-loaded models DataFrame.</p></li>
-<li><p><strong>model_ref_col</strong> (<em>str</em>) – The column name which contains the model ReferenceDocLoader objects.</p></li>
-<li><p><strong>drop_original_model_ref</strong> (<em>bool</em>) – After loading and joining all models to the DataFrame, should the original
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data: pd.DataFrame</strong></dt><dd><p>The DataFrame which contains a model ReferenceDocLoader to fetch and reattach
+the loaded model to.</p>
+</dd>
+<dt><strong>join_id_col: str</strong></dt><dd><p>The column name to use for joining the original provided DataFrame to the
+loaded models DataFrame.</p>
+</dd>
+<dt><strong>model_ref_col: str</strong></dt><dd><p>The column name which contains the model ReferenceDocLoader objects.</p>
+</dd>
+<dt><strong>drop_original_model_ref: bool</strong></dt><dd><p>After loading and joining all models to the DataFrame, should the original
 <cite>model_ref_col</cite> be dropped.
-Default: True (drop the original <cite>model_ref_column</cite>)</p></li>
-</ul>
+Default: True (drop the original <cite>model_ref_column</cite>)</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> – A DataFrame with all of the original data and all the models loaded from the
+<dd class="field-even"><dl class="simple">
+<dt>data: pd.DataFrame</dt><dd><p>A DataFrame with all of the original data and all the models loaded from the
 original DataFrame’s <cite>model_ref_col</cite> ReferenceDocLoader objects.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#cdp_data.utils.db_utils.load_from_model_reference" title="cdp_data.utils.db_utils.load_from_model_reference"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cdp_data.utils.db_utils.load_from_model_reference</span></code></a>, <a class="reference internal" href="#cdp_data.utils.db_utils.load_model_from_pd_columns" title="cdp_data.utils.db_utils.load_model_from_pd_columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cdp_data.utils.db_utils.load_model_from_pd_columns</span></code></a></p>
+<dl class="simple">
+<dt><a class="reference internal" href="#cdp_data.utils.db_utils.load_from_model_reference" title="cdp_data.utils.db_utils.load_from_model_reference"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cdp_data.utils.db_utils.load_from_model_reference</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="#cdp_data.utils.db_utils.load_model_from_pd_columns" title="cdp_data.utils.db_utils.load_model_from_pd_columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cdp_data.utils.db_utils.load_model_from_pd_columns</span></code></a></dt><dd></dd>
+</dl>
 </div>
 <p class="rubric">Notes</p>
 <p>This function loads all models using a threadpool. Because of this threading,
@@ -348,7 +362,7 @@ to a CDP infrastructure.</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2022, Jackson Maxfield Brown
+                Copyright &#169; 2022
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -398,5 +412,7 @@ to a CDP infrastructure.</p>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/scripts/furo.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
     </body>
 </html>

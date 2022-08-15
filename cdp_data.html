@@ -5,10 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cdp_data.bin package" href="cdp_data.bin.html" /><link rel="prev" title="cdp_data" href="modules.html" />
 
-    <meta name="generator" content="sphinx-5.0.1, furo 2022.06.04.1"/>
-        <title>cdp_data package - cdp-data 0.0.6 documentation</title>
+    <meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
+        <title>cdp_data package - cdp-data 0.1.dev1+gf44c433 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -123,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">cdp-data 0.0.6 documentation</div></a>
+      <a href="index.html"><div class="brand">cdp-data 0.1.dev1+gf44c433 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +147,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">cdp-data 0.0.6 documentation</span>
+  <span class="sidebar-brand-text">cdp-data 0.1.dev1+gf44c433 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -213,7 +214,7 @@
 <li class="toctree-l2"><a class="reference internal" href="cdp_data.bin.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cdp_data.bin.research.html">cdp_data.bin.research package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cdp_data.bin.research.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cdp_data.bin.research.html#module-cdp_data.bin.research.cdp_councils_in_action_2022_content">cdp_data.bin.research.cdp_councils_in_action_2022_content module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cdp_data.bin.research.html#cdp-data-bin-research-cdp-councils-in-action-2022-content-module">cdp_data.bin.research.cdp_councils_in_action_2022_content module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cdp_data.bin.research.html#module-cdp_data.bin.research">Module contents</a></li>
 </ul>
 </li>
@@ -246,41 +247,50 @@
 <dd><p>Get a dataset of sessions from a CDP infrastructure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>infrastructure_slug</strong> (<em>str</em>) – The CDP infrastructure to connect to and pull sessions for.</p></li>
-<li><p><strong>start_datetime</strong> (<em>Optional[Union[str, datetime]]</em>) – An optional datetime that the session dataset will start at.
-Default: None (no datetime beginning bound on the dataset)</p></li>
-<li><p><strong>end_datetime</strong> (<em>Optional[Union[str, datetime]]</em>) – An optional datetime that the session dataset will end at.
-Default: None (no datetime end bound on the dataset)</p></li>
-<li><p><strong>store_full_metadata</strong> (<em>bool</em>) – Should a JSON file of the full event metadata be stored to disk and a
+<dd class="field-odd"><dl class="simple">
+<dt><strong>infrastructure_slug: str</strong></dt><dd><p>The CDP infrastructure to connect to and pull sessions for.</p>
+</dd>
+<dt><strong>start_datetime: Optional[Union[str, datetime]]</strong></dt><dd><p>An optional datetime that the session dataset will start at.
+Default: None (no datetime beginning bound on the dataset)</p>
+</dd>
+<dt><strong>end_datetime: Optional[Union[str, datetime]]</strong></dt><dd><p>An optional datetime that the session dataset will end at.
+Default: None (no datetime end bound on the dataset)</p>
+</dd>
+<dt><strong>store_full_metadata: bool</strong></dt><dd><p>Should a JSON file of the full event metadata be stored to disk and a
 path to the stored JSON file be added to the returned DataFrame.
 Default: False (do not request extra data and store to disk)
-<strong>Currently not implemented</strong></p></li>
-<li><p><strong>store_transcript</strong> (<em>bool</em>) – Should a session transcript be requested and stored to disk and a path
+<strong>Currently not implemented</strong></p>
+</dd>
+<dt><strong>store_transcript: bool</strong></dt><dd><p>Should a session transcript be requested and stored to disk and a path
 to the stored transcript JSON file be added to the returned DataFrame.
-Default: False (do not request extra data and do not store the transcript)</p></li>
-<li><p><strong>transcript_selection</strong> (<em>str</em>) – How should the single transcript be selected.
+Default: False (do not request extra data and do not store the transcript)</p>
+</dd>
+<dt><strong>transcript_selection: str</strong></dt><dd><p>How should the single transcript be selected.
 Options: “confidence” for transcript with the highest confidence value,
 “created” for the most recently created transcript.
 Default: “confidence” (Return the single highest confidence
-transcript per session)</p></li>
-<li><p><strong>store_video</strong> (<em>bool</em>) – Should the session video be requested and stored to disk and a path to the
+transcript per session)</p>
+</dd>
+<dt><strong>store_video: bool</strong></dt><dd><p>Should the session video be requested and stored to disk and a path to the
 stored video file be added to the returned DataFrame. Note: the video is stored
 without a file extension. However, the video with always be either mp4 or webm.
-Default: False (do not request and store the video)</p></li>
-<li><p><strong>store_audio</strong> (<em>bool</em>) – Should the session audio be requested and stored to disk and a path to the
+Default: False (do not request and store the video)</p>
+</dd>
+<dt><strong>store_audio: bool</strong></dt><dd><p>Should the session audio be requested and stored to disk and a path to the
 stored audio file be added to the returned DataFrame.
-Default: False (do not request and store the audio)</p></li>
-<li><p><strong>cache_dir</strong> (<em>Optional[Union[str, Path]]</em>) – An optional directory path to cache the dataset. Directory is created if it
+Default: False (do not request and store the audio)</p>
+</dd>
+<dt><strong>cache_dir: Optional[Union[str, Path]]</strong></dt><dd><p>An optional directory path to cache the dataset. Directory is created if it
 does not exist.
-Default: “./cdp-datasets”</p></li>
-</ul>
+Default: “./cdp-datasets”</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>dataset</strong> – The dataset with all additions requested.</p>
+<dd class="field-even"><dl class="simple">
+<dt>dataset: pd.DataFrame</dt><dd><p>The dataset with all additions requested.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
+</dl>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -382,29 +392,35 @@ associated directory.</p>
 and start and end datetimes, then compute the ngram usage history DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>infrastructure_slug</strong> (<em>str</em>) – The CDP infrastructure(s) to connect to and pull sessions for.</p></li>
-<li><p><strong>ngram_size</strong> (<em>int</em>) – The ngram size to use for counting and calculating usage.
-Default: 1 (unigrams)</p></li>
-<li><p><strong>strict</strong> (<em>bool</em>) – Should all ngrams be stemmed or left unstemmed for a more strict usage history.
-Default: False (stem and clean all grams in the dataset)</p></li>
-<li><p><strong>start_datetime</strong> (<em>Optional[Union[str, datetime]]</em>) – An optional datetime that the session dataset will start at.
-Default: None (no datetime beginning bound on the dataset)</p></li>
-<li><p><strong>end_datetime</strong> (<em>Optional[Union[str, datetime]]</em>) – An optional datetime that the session dataset will end at.
-Default: None (no datetime end bound on the dataset)</p></li>
-<li><p><strong>cache_dir</strong> (<em>Optional[Union[str, Path]]</em>) – An optional directory path to cache the dataset. Directory is created if it
+<dd class="field-odd"><dl class="simple">
+<dt><strong>infrastructure_slug: str</strong></dt><dd><p>The CDP infrastructure(s) to connect to and pull sessions for.</p>
+</dd>
+<dt><strong>ngram_size: int</strong></dt><dd><p>The ngram size to use for counting and calculating usage.
+Default: 1 (unigrams)</p>
+</dd>
+<dt><strong>strict: bool</strong></dt><dd><p>Should all ngrams be stemmed or left unstemmed for a more strict usage history.
+Default: False (stem and clean all grams in the dataset)</p>
+</dd>
+<dt><strong>start_datetime: Optional[Union[str, datetime]]</strong></dt><dd><p>An optional datetime that the session dataset will start at.
+Default: None (no datetime beginning bound on the dataset)</p>
+</dd>
+<dt><strong>end_datetime: Optional[Union[str, datetime]]</strong></dt><dd><p>An optional datetime that the session dataset will end at.
+Default: None (no datetime end bound on the dataset)</p>
+</dd>
+<dt><strong>cache_dir: Optional[Union[str, Path]]</strong></dt><dd><p>An optional directory path to cache the dataset. Directory is created if it
 does not exist.
-Default: “./cdp-datasets”</p></li>
-</ul>
+Default: “./cdp-datasets”</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>gram_usage</strong> – A pandas DataFrame of all found ngrams (stemmed and cleaned or unstemmed and
+<dd class="field-even"><dl class="simple">
+<dt>gram_usage: pd.DataFrame</dt><dd><p>A pandas DataFrame of all found ngrams (stemmed and cleaned or unstemmed and
 uncleaned) from the data and their counts for each session and their percentage
 of use as a percent of their use for the day over the sum of all other ngrams
 used that day.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -432,18 +448,21 @@ while depending on machine resources and available.</p>
 <dd><p>A utility function to fill ngram history data with zeros for all missing dates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – The ngram history data to fill dates for.</p></li>
-<li><p><strong>ngram_col</strong> (<em>str</em>) – The column name for which the “ngram” is stored.</p></li>
-<li><p><strong>dt_col</strong> (<em>str</em>) – The column name for which the datetime is stored.</p></li>
-</ul>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data: pd.DataFrame</strong></dt><dd><p>The ngram history data to fill dates for.</p>
+</dd>
+<dt><strong>ngram_col: str</strong></dt><dd><p>The column name for which the “ngram” is stored.</p>
+</dd>
+<dt><strong>dt_col: str</strong></dt><dd><p>The column name for which the datetime is stored.</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> – A DataFrame filled with the original data and filled in with any missing dates
+<dd class="field-even"><dl class="simple">
+<dt>data: pd.DataFrame</dt><dd><p>A DataFrame filled with the original data and filled in with any missing dates
 with their values being set to zero.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -461,24 +480,29 @@ with their values being set to zero.</p>
 <dd><p>Pull an n-gram’s relevancy history from a CDP database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ngram</strong> (<em>str</em>) – The unigram, bigram, or trigram to retrieve history for.</p></li>
-<li><p><strong>strict</strong> (<em>bool</em>) – Should the provided ngram be used for a strict “unstemmed_gram” query or not.
-Default: False (stem and clean the ngram before querying)</p></li>
-<li><p><strong>start_datetime</strong> (<em>Optional[Union[str, datetime]]</em>) – The earliest possible datetime for ngram history to be retrieved for.
-If provided as a string, the datetime should be in ISO format.</p></li>
-<li><p><strong>end_datetime</strong> (<em>Optional[Union[str, datetime]]</em>) – The latest possible datetime for ngram history to be retrieved for.
-If provided as a string, the datetime should be in ISO format.</p></li>
-<li><p><strong>infrastructure_slug</strong> (<em>Optional[str]</em>) – The optional CDP infrastructure slug to connect to.
-Default: None (you are managing the database connection yourself)</p></li>
-</ul>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ngram: str</strong></dt><dd><p>The unigram, bigram, or trigram to retrieve history for.</p>
+</dd>
+<dt><strong>strict: bool</strong></dt><dd><p>Should the provided ngram be used for a strict “unstemmed_gram” query or not.
+Default: False (stem and clean the ngram before querying)</p>
+</dd>
+<dt><strong>start_datetime: Optional[Union[str, datetime]]</strong></dt><dd><p>The earliest possible datetime for ngram history to be retrieved for.
+If provided as a string, the datetime should be in ISO format.</p>
+</dd>
+<dt><strong>end_datetime: Optional[Union[str, datetime]]</strong></dt><dd><p>The latest possible datetime for ngram history to be retrieved for.
+If provided as a string, the datetime should be in ISO format.</p>
+</dd>
+<dt><strong>infrastructure_slug: Optional[str]</strong></dt><dd><p>The optional CDP infrastructure slug to connect to.
+Default: None (you are managing the database connection yourself)</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ngram_history</strong> – A pandas DataFrame of all IndexedEventGrams that match the provided ngram query
+<dd class="field-even"><dl class="simple">
+<dt>ngram_history: pd.DataFrame</dt><dd><p>A pandas DataFrame of all IndexedEventGrams that match the provided ngram query
 (stemmed or unstemmed).</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -502,26 +526,30 @@ used the term.</p>
 DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ngram</strong> (<em>Union[str, List[str]]</em>) – The unigrams, bigrams, or trigrams to retrieve history for.
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ngram: Union[str, List[str]]</strong></dt><dd><p>The unigrams, bigrams, or trigrams to retrieve history for.
 Note: Must provide all unigrams, bigrams, or trigrams, cannot mix gram size, and
 the gram size should be the same as the grams stored in the provided gram_usage
-DataFrame.</p></li>
-<li><p><strong>gram_usage</strong> (<em>pd.DataFrame</em>) – A pandas DataFrame of all found ngrams (stemmed and cleaned or unstemmed and
+DataFrame.</p>
+</dd>
+<dt><strong>gram_usage: pd.DataFrame</strong></dt><dd><p>A pandas DataFrame of all found ngrams (stemmed and cleaned or unstemmed and
 uncleaned) from the data and their counts for each session and their percentage
 of use as a percent of their use for the day over the sum of all other ngrams
-used that day.</p></li>
-<li><p><strong>strict</strong> (<em>bool</em>) – Should all ngrams be stemmed or left unstemmed for a more strict usage history.
-Default: False (stem and clean all grams in the dataset)</p></li>
-<li><p><strong>lmplot_kws</strong> (<em>Dict[str, Any]</em>) – Any extra kwargs to provide to sns.lmplot.</p></li>
-</ul>
+used that day.</p>
+</dd>
+<dt><strong>strict: bool</strong></dt><dd><p>Should all ngrams be stemmed or left unstemmed for a more strict usage history.
+Default: False (stem and clean all grams in the dataset)</p>
+</dd>
+<dt><strong>lmplot_kws: Dict[str, Any]</strong></dt><dd><p>Any extra kwargs to provide to sns.lmplot.</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>grid</strong> – The small multiples FacetGrid of all ngrams and infrastructures found in the
+<dd class="field-even"><dl class="simple">
+<dt>grid: sns.FacetGrid</dt><dd><p>The small multiples FacetGrid of all ngrams and infrastructures found in the
 provided dataset.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>sns.FacetGrid</p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -542,21 +570,25 @@ will only store a single value for each day if there are multiple
 (keeping the max value).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – The data to prepare for plotting.</p></li>
-<li><p><strong>ngram_col</strong> (<em>str</em>) – The column name for which the “ngram” is stored.
-Default: “query_gram”</p></li>
-<li><p><strong>value_col</strong> (<em>str</em>) – The column name for which the value of each ngram is stored.
-Default: “value”</p></li>
-<li><p><strong>dt_col</strong> (<em>str</em>) – The column name for which the datetime is stored.
-Default: “event_datetime”</p></li>
-</ul>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data: pd.DataFrame</strong></dt><dd><p>The data to prepare for plotting.</p>
+</dd>
+<dt><strong>ngram_col: str</strong></dt><dd><p>The column name for which the “ngram” is stored.
+Default: “query_gram”</p>
+</dd>
+<dt><strong>value_col: str</strong></dt><dd><p>The column name for which the value of each ngram is stored.
+Default: “value”</p>
+</dd>
+<dt><strong>dt_col: str</strong></dt><dd><p>The column name for which the datetime is stored.
+Default: “event_datetime”</p>
+</dd>
+</dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>prepared</strong> – The subset and max selected dataset reading for plotting.</p>
+<dd class="field-even"><dl class="simple">
+<dt>prepared: pd.DataFrame</dt><dd><p>The subset and max selected dataset reading for plotting.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
+</dl>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -572,10 +604,54 @@ Default: “event_datetime”</p></li>
 <section id="module-cdp_data">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cdp_data" title="Permalink to this heading">#</a></h2>
 <p>Top-level package for cdp_data.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="cdp_data.get_module_version">
-<span class="sig-prename descclassname"><span class="pre">cdp_data.</span></span><span class="sig-name descname"><span class="pre">get_module_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/cdp_data.html#get_module_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.get_module_version" title="Permalink to this definition">#</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="cdp_data.CDPInstances">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cdp_data.</span></span><span class="sig-name descname"><span class="pre">CDPInstances</span></span><a class="reference internal" href="_modules/cdp_data/instances.html#CDPInstances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.CDPInstances" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Container for CDP instance infrastructure slugs.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cdp_data</span> <span class="kn">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">CDPInstances</span>
+<span class="gp">... </span><span class="n">ds</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">get_session_dataset</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">infrastructure_slug</span><span class="o">=</span><span class="n">CDPInstances</span><span class="o">.</span><span class="n">Seattle</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cdp_data.CDPInstances.Alameda">
+<span class="sig-name descname"><span class="pre">Alameda</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdp-alameda-d3dabe54'</span></em><a class="headerlink" href="#cdp_data.CDPInstances.Alameda" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cdp_data.CDPInstances.Boston">
+<span class="sig-name descname"><span class="pre">Boston</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdp-boston-c384047b'</span></em><a class="headerlink" href="#cdp_data.CDPInstances.Boston" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cdp_data.CDPInstances.Denver">
+<span class="sig-name descname"><span class="pre">Denver</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdp-denver-962aefef'</span></em><a class="headerlink" href="#cdp_data.CDPInstances.Denver" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cdp_data.CDPInstances.KingCounty">
+<span class="sig-name descname"><span class="pre">KingCounty</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdp-king-county-b656c71b'</span></em><a class="headerlink" href="#cdp_data.CDPInstances.KingCounty" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cdp_data.CDPInstances.Missoula">
+<span class="sig-name descname"><span class="pre">Missoula</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'missoula-council-data-proj'</span></em><a class="headerlink" href="#cdp_data.CDPInstances.Missoula" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cdp_data.CDPInstances.Portland">
+<span class="sig-name descname"><span class="pre">Portland</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdp-portland-d2bbda97'</span></em><a class="headerlink" href="#cdp_data.CDPInstances.Portland" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cdp_data.CDPInstances.Seattle">
+<span class="sig-name descname"><span class="pre">Seattle</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdp-seattle-21723dcf'</span></em><a class="headerlink" href="#cdp_data.CDPInstances.Seattle" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
 
 </section>
 </section>
@@ -609,7 +685,7 @@ Default: “event_datetime”</p></li>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2022, Jackson Maxfield Brown
+                Copyright &#169; 2022
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -662,5 +738,7 @@ Default: “event_datetime”</p></li>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/scripts/furo.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
     </body>
 </html>
