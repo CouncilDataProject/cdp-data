@@ -27,3 +27,5 @@ class CDPInstances:
     MountainView = "cdp-mountain-view-7c8a47df"
     Milwaukee = "cdp-milwaukee-9f60e352"
     LongBeach = "cdp-long-beach-49323fe9"
+    Albuquerque = "cdp-albuquerque-1d29496e"
+    Richmond = "cdp-richmond-a3d06941"
