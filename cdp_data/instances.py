@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import List, Literal
+import pandas as pd
+
+###############################################################################
+
 
 class CDPInstances:
     """
@@ -21,3 +26,20 @@ class CDPInstances:
     Denver = "cdp-denver-962aefef"
     Alameda = "cdp-alameda-d3dabe54"
     Boston = "cdp-boston-c384047b"
+
+
+ALL_INSTANCES = [
+    getattr(inst) for inst in dir(CDPInstances) if not inst.startswith("__")
+]
+
+###############################################################################
+
+class CDPInstanceDataChecks:
+    existance: str = "existance"
+    count: str = "count"
+
+def check_instance_data_availability(
+    instances: List[str] = ALL_INSTANCES,
+    check: str = CDPInstanceDataChecks.existance,
+) -> pd.DataFrame:
+    pass
