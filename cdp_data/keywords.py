@@ -24,6 +24,7 @@ from .utils import db_utils
 
 if TYPE_CHECKING:
     import seaborn as sns
+    from sentence_transformers import SentenceTransformer
 
 ###############################################################################
 
@@ -714,3 +715,83 @@ def plot_ngram_usage_histories(
     grid.tight_layout()
 
     return grid
+
+
+def _compute_query_semantic_similarity_history(
+    query_vec: np.ndarray,
+    dataset: pd.DataFrame,
+    model: "SentenceTransformer",
+) -> pd.DataFrame:
+    for _, row in dataset.iterrows():
+        # Load transcript
+        with open(row.transcript_path, "r") as open_f:
+            transcript = Transcript.from_json(open_f.read())
+
+        # Create incremental averager for updating mean
+
+        # For each sentence in transcript,
+        # Embed and calc similarity
+        # Track min, max, and update mean
+        for sentence in transcript.sentences:
+            pass
+
+        # Convert to dataframe
+
+        # Add columns
+        # counts["session_id"] = row.session_id
+        # counts["session_datetime"] = row.session_datetime
+
+        # return counts
+
+
+def compute_query_semantic_similarity_history(
+    query: str,
+    infrastructure_slug: Union[str, List[str]],
+    start_datetime: Optional[Union[str, datetime]] = None,
+    end_datetime: Optional[Union[str, datetime]] = None,
+    cache_dir: Optional[Union[str, Path]] = None,
+    embedding_model: str = "all-mpnet-base-v2",
+) -> pd.DataFrame:
+    try:
+        from sentence_transformers import SentenceTransformer
+    except ImportError:
+        raise ImportError(
+            "This function requires additional dependencies. "
+            "To install required extras, run `pip install cdp-data[transformers]`."
+        )
+
+    # Always cast infrastructure slugs to list for easier API
+    if isinstance(infrastructure_slug, str):
+        infrastructure_slug = [infrastructure_slug]
+
+    # Get semantic embedding
+    model = SentenceTransformer(embedding_model)
+    query_vec = model.encode(query)
+
+    # Create dataframe for all histories
+    semantic_histories = []
+
+    # Start collecting datasets for each infrastructure
+    for infra_slug in tqdm(infrastructure_slug):
+        # Get the dataset
+        log.info(f"Getting session dataset for {infra_slug}")
+        infra_ds = datasets.get_session_dataset(
+            infrastructure_slug=infra_slug,
+            start_datetime=start_datetime,
+            end_datetime=end_datetime,
+            store_transcript=True,
+            cache_dir=cache_dir,
+        )
+
+        # Compute semantic similarity for infra
+        log.info(f"Computing semantic similary history for {infra_slug}")
+        infra_query_semantic_sim_history = _compute_query_semantic_similarity_history(
+            query_vec=query_vec,
+            dataset=infra_ds,
+            model=model,
+        )
+        infra_query_semantic_sim_history["infrastructure"] = infra_slug
+        semantic_histories.append(infra_query_semantic_sim_history)
+
+    # Convert gram histories to single dataframe
+    return pd.concat(semantic_histories)
