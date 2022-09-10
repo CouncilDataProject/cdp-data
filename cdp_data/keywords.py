@@ -727,7 +727,8 @@ def _compute_query_semantic_similarity_history(
         with open(row.transcript_path, "r") as open_f:
             transcript = Transcript.from_json(open_f.read())
 
-        # Create incremental averager for updating mean
+        # Create incremental stats for updating mean, min, max
+        # inc_stats = IncrementalStats()
 
         # For each sentence in transcript,
         # Embed and calc similarity

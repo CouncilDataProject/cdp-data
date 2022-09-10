@@ -6,7 +6,11 @@ from typing import List, Union
 import numpy as np
 import pytest
 
-from cdp_data.utils.incremental_average import IncrementalAverage, update_average
+from cdp_data.utils.incremental_average import (
+    IncrementalAverage,
+    IncrementalStats,
+    update_average,
+)
 
 ###############################################################################
 
@@ -103,8 +107,8 @@ def test_update_average(
     ],
 )
 def test_incremental_average(
-    additions: List[Union[int, np.ndarray]],
-    averages: List[Union[int, float, np.ndarray]],
+    additions: List[np.ndarray],
+    averages: List[np.ndarray],
 ) -> None:
     # Setup incremental averager
     inc_avg = IncrementalAverage()
@@ -114,3 +118,80 @@ def test_incremental_average(
     for i, addition in enumerate(additions):
         average = inc_avg.add(addition)
         np.testing.assert_equal(average, averages[i])
+
+
+@pytest.mark.parametrize(
+    "additions, averages, mins, maxs",
+    [
+        (
+            [
+                np.array([1, 1, 1]),
+                np.array([1, 1, 1]),
+            ],
+            [
+                np.array([1, 1, 1]),
+                np.array([1, 1, 1]),
+            ],
+            [
+                np.array([1, 1, 1]),
+                np.array([1, 1, 1]),
+            ],
+            [
+                np.array([1, 1, 1]),
+                np.array([1, 1, 1]),
+            ],
+        ),
+        (
+            [
+                np.array([2, 2, 2]),
+                np.array([3, 3, 3]),
+            ],
+            [
+                np.array([1.5, 1.5, 1.5]),
+                np.array([2, 2, 2]),
+            ],
+            [
+                np.array([1, 1, 1]),
+                np.array([1, 1, 1]),
+            ],
+            [
+                np.array([2, 2, 2]),
+                np.array([3, 3, 3]),
+            ],
+        ),
+        (
+            [
+                np.array([2, 4, 6]),
+                np.array([4, 6, 8]),
+            ],
+            [
+                np.array([1.5, 2.5, 3.5]),
+                np.array([7 / 3, 11 / 3, 5]),
+            ],
+            [
+                np.array([1, 1, 1]),
+                np.array([1, 1, 1]),
+            ],
+            [
+                np.array([2, 4, 6]),
+                np.array([4, 6, 8]),
+            ],
+        ),
+    ],
+)
+def test_incremental_stats(
+    additions: List[np.ndarray],
+    averages: List[np.ndarray],
+    mins: List[np.ndarray],
+    maxs: List[np.ndarray],
+) -> None:
+    # Setup incremental stats
+    inc_stats = IncrementalStats()
+    inc_stats.add(np.array([1, 1, 1]))
+
+    # Iter additions
+    for i, addition in enumerate(additions):
+        inc_stats.add(addition)
+        np.testing.assert_equal(inc_stats.current_mean, averages[i])
+        np.testing.assert_equal(inc_stats.current_min, mins[i])
+        np.testing.assert_equal(inc_stats.current_max, maxs[i])
