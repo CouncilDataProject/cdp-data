@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import numpy as np
 from typing import Optional, Union
+
+import numpy as np
 
 ###############################################################################
 
@@ -18,15 +19,14 @@ def update_average(
 
 
 class IncrementalAverage:
-
-    def __init__(self) -> "IncrementalAverage":
-        self._current_mean = None
-        self._current_size = 0
+    def __init__(self) -> None:
+        self._current_mean: Optional[np.ndarray] = None
+        self._current_size: int = 0
 
     @property
     def current_mean(self) -> Optional[np.ndarray]:
         return self._current_mean
-    
+
     @property
     def current_size(self) -> int:
         return self._current_size
@@ -40,7 +40,7 @@ class IncrementalAverage:
             self._current_mean = addition
             self._current_size += 1
             return self.current_mean
-        
+
         # Update if actual addition
         self._current_mean = update_average(
             self.current_mean,

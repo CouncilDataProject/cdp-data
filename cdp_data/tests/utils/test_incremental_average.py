@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pytest
 from typing import List, Union
-import numpy as np
 
-from cdp_data.utils.incremental_average import update_average, IncrementalAverage
+import numpy as np
+import pytest
+
+from cdp_data.utils.incremental_average import IncrementalAverage, update_average
 
 ###############################################################################
 
@@ -15,8 +16,8 @@ from cdp_data.utils.incremental_average import update_average, IncrementalAverag
     [
         ([1, 1, 1, 1], [1, 1, 1, 1]),
         ([2, 3, 4], [1.5, 2, 2.5]),
-        ([2, 3, 4, 5, 4, 2], [1.5, 2, 2.5, 3, 19/6, 3]),
-        ([0, 1, 0, 0, 0], [0.5, 2/3, 0.5, 0.4, 1/3]),
+        ([2, 3, 4, 5, 4, 2], [1.5, 2, 2.5, 3, 19 / 6, 3]),
+        ([0, 1, 0, 0, 0], [0.5, 2 / 3, 0.5, 0.4, 1 / 3]),
         (
             [
                 np.array([1, 1, 1]),
@@ -44,14 +45,14 @@ from cdp_data.utils.incremental_average import update_average, IncrementalAverag
             ],
             [
                 np.array([1.5, 2.5, 3.5]),
-                np.array([7/3, 11/3, 5]),
+                np.array([7 / 3, 11 / 3, 5]),
             ],
         ),
     ],
 )
 def test_update_average(
     additions: List[Union[int, np.ndarray]],
-    averages: List[Union[int, float, np.ndarray]]
+    averages: List[Union[int, float, np.ndarray]],
 ) -> None:
     size = 1
     for i, addition in enumerate(additions):
@@ -59,11 +60,12 @@ def test_update_average(
             average = update_average(1, size, addition)
         else:
             average = update_average(average, size, addition)
-        
+
         size += 1
 
         # Check that current average is correct
         np.testing.assert_equal(average, averages[i])
+
 
 @pytest.mark.parametrize(
     "additions, averages",
@@ -95,14 +97,14 @@ def test_update_average(
             ],
             [
                 np.array([1.5, 2.5, 3.5]),
-                np.array([7/3, 11/3, 5]),
+                np.array([7 / 3, 11 / 3, 5]),
             ],
         ),
     ],
 )
 def test_incremental_average(
     additions: List[Union[int, np.ndarray]],
-    averages: List[Union[int, float, np.ndarray]]
+    averages: List[Union[int, float, np.ndarray]],
 ) -> None:
     # Setup incremental averager
     inc_avg = IncrementalAverage()
