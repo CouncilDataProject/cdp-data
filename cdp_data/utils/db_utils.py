@@ -183,6 +183,7 @@ def load_model_from_pd_columns(
             )
             for _, row in data.iterrows()
         ],
+        desc=f"Fetching each model attached to {model_ref_col}",
     )
 
     # Convert to dataframe

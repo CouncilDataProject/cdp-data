@@ -451,6 +451,7 @@ def _compute_ngram_usage_history(
                 )
                 for _, row in data.iterrows()
             ],
+            desc="Counting ngrams in each transcript",
         )
     )
 
@@ -609,7 +610,9 @@ def compute_ngram_usage_history(
     gram_usage = []
 
     # Start collecting datasets for each infrastructure
-    for infra_slug in tqdm(infrastructure_slug):
+    for infra_slug in tqdm(
+        infrastructure_slug, "Counting ngrams for each infrastructure"
+    ):
         # Get the dataset
         log.info(f"Getting session dataset for {infra_slug}")
         infra_ds = datasets.get_session_dataset(
@@ -689,7 +692,7 @@ def plot_ngram_usage_histories(
     gram_histories = []
 
     # Process the grams for the infrastructure
-    for gram in tqdm(ngram):
+    for gram in tqdm(ngram, "Preparing plotting data for each ngram"):
         gram_history = _prepare_ngram_usage_history_plotting_data(
             gram,
             data=gram_usage,
@@ -773,7 +776,9 @@ def _compute_query_semantic_similarity_history(
     # Compute min, max, and mean cos_sim using the sentences
     # of each transcript
     sim_stats_list: List[pd.DataFrame] = []
-    for _, row in tqdm(data.iterrows()):
+    for _, row in tqdm(
+        data.iterrows(), "Computing semantic similarity for each transcript"
+    ):
         sim_stats_list.append(
             process_func(
                 _TranscriptProcessingParams(
@@ -841,22 +846,24 @@ def compute_query_semantic_similarity_history(
     semantic_histories = []
 
     # Start collecting datasets for each infrastructure
-    for infra_slug in tqdm(infrastructure_slug):
-        for q in tqdm(query):
-            # Get the dataset
-            log.info(f"Getting session dataset for {infra_slug}")
-            infra_ds = datasets.get_session_dataset(
-                infrastructure_slug=infra_slug,
-                start_datetime=start_datetime,
-                end_datetime=end_datetime,
-                store_transcript=True,
-                cache_dir=cache_dir,
-            )
+    for infra_slug in tqdm(
+        infrastructure_slug, "Computing semantic similarity for each infrastructure"
+    ):
+        # Get the dataset
+        log.info(f"Getting session dataset for {infra_slug}")
+        infra_ds = datasets.get_session_dataset(
+            infrastructure_slug=infra_slug,
+            start_datetime=start_datetime,
+            end_datetime=end_datetime,
+            store_transcript=True,
+            cache_dir=cache_dir,
+        )
 
+        for q in tqdm(query, "Computing semantic similarlity for each query"):
             # Get query embedding
             query_vec = model.encode(q)
 
-            # Compute semantic similarity for infra
+            # Compute semantic similarity for query
             log.info(f"Computing semantic similary history for {infra_slug}")
             infra_query_semantic_sim_history = (
                 _compute_query_semantic_similarity_history(
