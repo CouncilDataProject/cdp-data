@@ -20,6 +20,14 @@ cdp\_data.utils.fs\_utils module
    :undoc-members:
    :show-inheritance:
 
+cdp\_data.utils.incremental\_average module
+-------------------------------------------
+
+.. automodule:: cdp_data.utils.incremental_average
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

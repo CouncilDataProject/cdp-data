@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
-        <title>cdp_data.keywords - cdp-data 0.1.dev1+g9de461c documentation</title>
+    <meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+        <title>cdp_data.keywords - cdp-data 0.1.dev1+g4a09c0e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">cdp-data 0.1.dev1+g9de461c documentation</div></a>
+      <a href="../../index.html"><div class="brand">cdp-data 0.1.dev1+g4a09c0e documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">cdp-data 0.1.dev1+g9de461c documentation</span>
+  <span class="sidebar-brand-text">cdp-data 0.1.dev1+g4a09c0e documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -227,9 +227,13 @@
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">datasets</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">db_utils</span>
+<span class="kn">from</span> <span class="nn">.utils.incremental_average</span> <span class="kn">import</span> <span class="n">IncrementalStats</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+    <span class="kn">from</span> <span class="nn">matplotlib.axes</span> <span class="kn">import</span> <span class="n">SubplotBase</span>
+    <span class="kn">from</span> <span class="nn">sentence_transformers</span> <span class="kn">import</span> <span class="n">SentenceTransformer</span>
+    <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
 
 <span class="c1">###############################################################################</span>
 
@@ -241,13 +245,27 @@
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">_NgramUsageProcessingParameters</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">_TranscriptProcessingParams</span><span class="p">:</span>
     <span class="n">session_id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">session_datetime</span><span class="p">:</span> <span class="n">datetime</span>
     <span class="n">transcript_path</span><span class="p">:</span> <span class="n">Path</span>
 
 
 <span class="c1">###############################################################################</span>
+
+
+<span class="k">def</span> <span class="nf">_recurse_axes_grid_to_fix_datetimes</span><span class="p">(</span>
+    <span class="n">arr_or_subplot</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="s2">&quot;SubplotBase&quot;</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr_or_subplot</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">arr_or_subplot</span><span class="p">:</span>
+            <span class="n">_recurse_axes_grid_to_fix_datetimes</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">arr_or_subplot</span>
+        <span class="n">xticks</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xticks</span><span class="p">()</span>
+        <span class="n">xticks_dates</span> <span class="o">=</span> <span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%b %Y&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xticks</span><span class="p">]</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">xticks_dates</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_stem_n_gram</span><span class="p">(</span><span class="n">n_gram</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -530,7 +548,7 @@
 
 
 <span class="k">def</span> <span class="nf">_count_transcript_grams</span><span class="p">(</span>
-    <span class="n">processing_params</span><span class="p">:</span> <span class="n">_NgramUsageProcessingParameters</span><span class="p">,</span>
+    <span class="n">processing_params</span><span class="p">:</span> <span class="n">_TranscriptProcessingParams</span><span class="p">,</span>
     <span class="n">ngram_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
@@ -632,13 +650,14 @@
         <span class="n">process_map</span><span class="p">(</span>
             <span class="n">counter_func</span><span class="p">,</span>
             <span class="p">[</span>
-                <span class="n">_NgramUsageProcessingParameters</span><span class="p">(</span>
+                <span class="n">_TranscriptProcessingParams</span><span class="p">(</span>
                     <span class="n">session_id</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
                     <span class="n">session_datetime</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">session_datetime</span><span class="p">,</span>
                     <span class="n">transcript_path</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">transcript_path</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span>
             <span class="p">],</span>
+            <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Counting ngrams in each transcript&quot;</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span>
 
@@ -797,7 +816,9 @@
     <span class="n">gram_usage</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="c1"># Start collecting datasets for each infrastructure</span>
-    <span class="k">for</span> <span class="n">infra_slug</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">infrastructure_slug</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">infra_slug</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
+        <span class="n">infrastructure_slug</span><span class="p">,</span> <span class="s2">&quot;Counting ngrams for each infrastructure&quot;</span>
+    <span class="p">):</span>
         <span class="c1"># Get the dataset</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Getting session dataset for </span><span class="si">{</span><span class="n">infra_slug</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">infra_ds</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">get_session_dataset</span><span class="p">(</span>
@@ -862,7 +883,6 @@
 <span class="sd">        Function to generate ngram usage history DataFrame.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
-    <span class="kn">from</span> <span class="nn">matplotlib.axes</span> <span class="kn">import</span> <span class="n">SubplotBase</span>
 
     <span class="c1"># Always cast ngram to list for easier API</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ngram</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -878,7 +898,7 @@
     <span class="n">gram_histories</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="c1"># Process the grams for the infrastructure</span>
-    <span class="k">for</span> <span class="n">gram</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">ngram</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">gram</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">ngram</span><span class="p">,</span> <span class="s2">&quot;Preparing plotting data for each ngram&quot;</span><span class="p">):</span>
         <span class="n">gram_history</span> <span class="o">=</span> <span class="n">_prepare_ngram_usage_history_plotting_data</span><span class="p">(</span>
             <span class="n">gram</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">gram_usage</span><span class="p">,</span>
@@ -899,24 +919,272 @@
         <span class="o">**</span><span class="n">lmplot_kws</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_recurse_axes_grid_to_fix_datetimes</span><span class="p">(</span>
-        <span class="n">arr_or_subplot</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">SubplotBase</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr_or_subplot</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">arr_or_subplot</span><span class="p">:</span>
-                <span class="n">_recurse_axes_grid_to_fix_datetimes</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">ax</span> <span class="o">=</span> <span class="n">arr_or_subplot</span>
-            <span class="n">xticks</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xticks</span><span class="p">()</span>
-            <span class="n">xticks_dates</span> <span class="o">=</span> <span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%b %Y&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xticks</span><span class="p">]</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">xticks_dates</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-
     <span class="c1"># Fix the axes to actual date formats</span>
     <span class="n">_recurse_axes_grid_to_fix_datetimes</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">axes</span><span class="p">)</span>
 
     <span class="c1"># Set axis labels</span>
     <span class="n">grid</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">&quot;Date&quot;</span><span class="p">,</span> <span class="s2">&quot;Ngram Usage (percent)&quot;</span><span class="p">)</span>
+    <span class="n">grid</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">grid</span></div>
+
+
+<span class="k">def</span> <span class="nf">_compute_transcript_sim_stats</span><span class="p">(</span>
+    <span class="n">processing_params</span><span class="p">:</span> <span class="n">_TranscriptProcessingParams</span><span class="p">,</span>
+    <span class="n">query_vec</span><span class="p">:</span> <span class="s2">&quot;Tensor&quot;</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span> <span class="s2">&quot;SentenceTransformer&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">sentence_transformers.util</span> <span class="kn">import</span> <span class="n">cos_sim</span>
+
+    <span class="c1"># Load transcript</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">processing_params</span><span class="o">.</span><span class="n">transcript_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">open_f</span><span class="p">:</span>
+        <span class="n">transcript</span> <span class="o">=</span> <span class="n">Transcript</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">open_f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+    <span class="c1"># Create incremental stats for updating mean, min, max</span>
+    <span class="n">inc_stats</span> <span class="o">=</span> <span class="n">IncrementalStats</span><span class="p">()</span>
+
+    <span class="c1"># For each sentence in transcript,</span>
+    <span class="c1"># Embed and calc similarity</span>
+    <span class="c1"># Track min, max, and update mean</span>
+    <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">transcript</span><span class="o">.</span><span class="n">sentences</span><span class="p">:</span>
+        <span class="n">sentence_enc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">sentence</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">query_sim</span> <span class="o">=</span> <span class="n">cos_sim</span><span class="p">(</span>
+            <span class="n">query_vec</span><span class="p">,</span> <span class="n">sentence_enc</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>  <span class="c1"># cos_sim returns a 2d tensor</span>
+        <span class="n">inc_stats</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">query_sim</span><span class="p">)</span>
+
+    <span class="c1"># Convert to dataframe</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;session_id&quot;</span><span class="p">:</span> <span class="n">processing_params</span><span class="o">.</span><span class="n">session_id</span><span class="p">,</span>
+                <span class="s2">&quot;session_datetime&quot;</span><span class="p">:</span> <span class="n">processing_params</span><span class="o">.</span><span class="n">session_datetime</span><span class="p">,</span>
+                <span class="s2">&quot;similarity_min&quot;</span><span class="p">:</span> <span class="n">inc_stats</span><span class="o">.</span><span class="n">current_min</span><span class="p">,</span>
+                <span class="s2">&quot;similarity_max&quot;</span><span class="p">:</span> <span class="n">inc_stats</span><span class="o">.</span><span class="n">current_max</span><span class="p">,</span>
+                <span class="s2">&quot;similarity_mean&quot;</span><span class="p">:</span> <span class="n">inc_stats</span><span class="o">.</span><span class="n">current_mean</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_compute_query_semantic_similarity_history</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">query_vec</span><span class="p">:</span> <span class="s2">&quot;Tensor&quot;</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span> <span class="s2">&quot;SentenceTransformer&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="c1"># Construct partial for threaded counter func</span>
+    <span class="n">process_func</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+        <span class="n">_compute_transcript_sim_stats</span><span class="p">,</span>
+        <span class="n">query_vec</span><span class="o">=</span><span class="n">query_vec</span><span class="p">,</span>
+        <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Compute min, max, and mean cos_sim using the sentences</span>
+    <span class="c1"># of each transcript</span>
+    <span class="n">sim_stats_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">iterrows</span><span class="p">(),</span> <span class="s2">&quot;Computing semantic similarity for each transcript&quot;</span>
+    <span class="p">):</span>
+        <span class="n">sim_stats_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">process_func</span><span class="p">(</span>
+                <span class="n">_TranscriptProcessingParams</span><span class="p">(</span>
+                    <span class="n">session_id</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="n">session_datetime</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">session_datetime</span><span class="p">,</span>
+                    <span class="n">transcript_path</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">transcript_path</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">query_vec</span><span class="o">=</span><span class="n">query_vec</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Concat to single</span>
+    <span class="n">sim_stats</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">sim_stats_list</span><span class="p">)</span>
+
+    <span class="c1"># Create day columns</span>
+    <span class="n">sim_stats</span><span class="p">[</span><span class="s2">&quot;session_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">sim_stats</span><span class="p">[</span><span class="s2">&quot;session_datetime&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span>
+
+    <span class="c1"># Groupby day and get min, max, and mean</span>
+    <span class="n">sim_stats</span><span class="p">[</span><span class="s2">&quot;day_similarity_min&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sim_stats</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">&quot;session_date&quot;</span><span class="p">])[</span>
+        <span class="s2">&quot;similarity_min&quot;</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="s2">&quot;min&quot;</span><span class="p">)</span>
+    <span class="n">sim_stats</span><span class="p">[</span><span class="s2">&quot;day_similarity_max&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sim_stats</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">&quot;session_date&quot;</span><span class="p">])[</span>
+        <span class="s2">&quot;similarity_max&quot;</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="s2">&quot;max&quot;</span><span class="p">)</span>
+    <span class="n">sim_stats</span><span class="p">[</span><span class="s2">&quot;day_similarity_mean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sim_stats</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">&quot;session_date&quot;</span><span class="p">])[</span>
+        <span class="s2">&quot;similarity_mean&quot;</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">sim_stats</span>
+
+
+<div class="viewcode-block" id="compute_query_semantic_similarity_history"><a class="viewcode-back" href="../../cdp_data.html#cdp_data.keywords.compute_query_semantic_similarity_history">[docs]</a><span class="k">def</span> <span class="nf">compute_query_semantic_similarity_history</span><span class="p">(</span>
+    <span class="n">query</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+    <span class="n">infrastructure_slug</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+    <span class="n">start_datetime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">datetime</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">end_datetime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">datetime</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">cache_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">embedding_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;msmarco-distilbert-base-v4&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the semantic similarity of a query against every sentence of every meeting.</span>
+<span class="sd">    The max, min, and mean semantic similarity of each meeting will be returned.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    query: Union[str, List[str]]</span>
+<span class="sd">        The query(ies) to compare each sentence against.</span>
+<span class="sd">    infrastructure_slug: Union[str, List[str]]</span>
+<span class="sd">        The CDP infrastructure(s) to connect to and pull sessions for.</span>
+<span class="sd">    start_datetime: Optional[Union[str, datetime]]</span>
+<span class="sd">        The earliest possible datetime for ngram history to be retrieved for.</span>
+<span class="sd">        If provided as a string, the datetime should be in ISO format.</span>
+<span class="sd">    end_datetime: Optional[Union[str, datetime]]</span>
+<span class="sd">        The latest possible datetime for ngram history to be retrieved for.</span>
+<span class="sd">        If provided as a string, the datetime should be in ISO format.</span>
+<span class="sd">    cache_dir: Optional[Union[str, Path]]</span>
+<span class="sd">        An optional directory path to cache the dataset. Directory is created if it</span>
+<span class="sd">        does not exist.</span>
+<span class="sd">        Default: &quot;./cdp-datasets&quot;</span>
+<span class="sd">    embedding_model: str</span>
+<span class="sd">        The sentence transformers model to use for embedding the query and</span>
+<span class="sd">        each sentence.</span>
+<span class="sd">        Default: &quot;msmarco-distilbert-base-v4&quot;</span>
+<span class="sd">        All embedding models are available here:</span>
+<span class="sd">        https://www.sbert.net/docs/pretrained-models/msmarco-v3.html</span>
+<span class="sd">        Select any of the &quot;Models tuned for cosine-similarity&quot;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame</span>
+<span class="sd">        The min, max, and mean semantic similarity for each event as compared</span>
+<span class="sd">        to the query for the events within the datetime range.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function requires additional dependencies.</span>
+<span class="sd">    Install extra requirements with: `pip install cdp-data[transformers]`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">sentence_transformers</span> <span class="kn">import</span> <span class="n">SentenceTransformer</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+            <span class="s2">&quot;This function requires additional dependencies. &quot;</span>
+            <span class="s2">&quot;To install required extras, run `pip install cdp-data[transformers]`.&quot;</span>
+        <span class="p">)</span>
+    <span class="c1"># Always cast query to list for easier API</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">[</span><span class="n">query</span><span class="p">]</span>
+
+    <span class="c1"># Always cast infrastructure slugs to list for easier API</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">infrastructure_slug</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">infrastructure_slug</span> <span class="o">=</span> <span class="p">[</span><span class="n">infrastructure_slug</span><span class="p">]</span>
+
+    <span class="c1"># Get semantic embedding</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">SentenceTransformer</span><span class="p">(</span><span class="n">embedding_model</span><span class="p">)</span>
+
+    <span class="c1"># Create dataframe for all histories</span>
+    <span class="n">semantic_histories</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Start collecting datasets for each infrastructure</span>
+    <span class="k">for</span> <span class="n">infra_slug</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
+        <span class="n">infrastructure_slug</span><span class="p">,</span> <span class="s2">&quot;Computing semantic similarity for each infrastructure&quot;</span>
+    <span class="p">):</span>
+        <span class="c1"># Get the dataset</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Getting session dataset for </span><span class="si">{</span><span class="n">infra_slug</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">infra_ds</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">get_session_dataset</span><span class="p">(</span>
+            <span class="n">infrastructure_slug</span><span class="o">=</span><span class="n">infra_slug</span><span class="p">,</span>
+            <span class="n">start_datetime</span><span class="o">=</span><span class="n">start_datetime</span><span class="p">,</span>
+            <span class="n">end_datetime</span><span class="o">=</span><span class="n">end_datetime</span><span class="p">,</span>
+            <span class="n">store_transcript</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="s2">&quot;Computing semantic similarlity for each query&quot;</span><span class="p">):</span>
+            <span class="c1"># Get query embedding</span>
+            <span class="n">query_vec</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+
+            <span class="c1"># Compute semantic similarity for query</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computing semantic similary history for </span><span class="si">{</span><span class="n">infra_slug</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">infra_query_semantic_sim_history</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">_compute_query_semantic_similarity_history</span><span class="p">(</span>
+                    <span class="n">data</span><span class="o">=</span><span class="n">infra_ds</span><span class="p">,</span>
+                    <span class="n">query_vec</span><span class="o">=</span><span class="n">query_vec</span><span class="p">,</span>
+                    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">infra_query_semantic_sim_history</span><span class="p">[</span><span class="s2">&quot;infrastructure&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">infra_slug</span>
+            <span class="n">infra_query_semantic_sim_history</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span>
+            <span class="n">semantic_histories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">infra_query_semantic_sim_history</span><span class="p">)</span>
+
+    <span class="c1"># Convert gram histories to single dataframe</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">semantic_histories</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_query_semantic_similarity_history"><a class="viewcode-back" href="../../cdp_data.html#cdp_data.keywords.plot_query_semantic_similarity_history">[docs]</a><span class="k">def</span> <span class="nf">plot_query_semantic_similarity_history</span><span class="p">(</span>
+    <span class="n">semantic_history</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">poolings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">],</span>
+    <span class="n">lmplot_kws</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;sns.FacetGrid&quot;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot pre-computed semantic similarity history data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    semantic_history: pd.DataFrame</span>
+<span class="sd">        The pre-computed semantic similarity history data.</span>
+<span class="sd">    poolings: List[str]:</span>
+<span class="sd">        Which poolings to plot (min, max, and/or mean).</span>
+<span class="sd">        Default: [&quot;min&quot;, &quot;max&quot;, &quot;mean&quot;] (plot all)</span>
+<span class="sd">    lmplot_kws: Dict[str, Any]:</span>
+<span class="sd">        Extra keyword arguments to be passed to seaborn lmplot.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    seaborn.FacetGrid</span>
+<span class="sd">        The semantic similarity history plot.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    cdp_data.keywords.compute_query_semantic_similarity_history</span>
+<span class="sd">        The function used to generate the semantic_history data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+
+    <span class="c1"># Add datetime timestamp</span>
+    <span class="n">semantic_history</span><span class="p">[</span><span class="s2">&quot;session_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">semantic_history</span><span class="p">[</span><span class="s2">&quot;session_date&quot;</span><span class="p">])</span>
+    <span class="n">semantic_history</span><span class="p">[</span><span class="s2">&quot;timestamp_posix&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">semantic_history</span><span class="p">[</span><span class="s2">&quot;session_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">timestamp</span><span class="p">:</span> <span class="n">timestamp</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Select poolings</span>
+    <span class="n">subsets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">pooling</span> <span class="ow">in</span> <span class="n">poolings</span><span class="p">:</span>
+        <span class="n">subsets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;timestamp_posix&quot;</span><span class="p">:</span> <span class="n">semantic_history</span><span class="p">[</span><span class="s2">&quot;timestamp_posix&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">semantic_history</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;infrastructure&quot;</span><span class="p">:</span> <span class="n">semantic_history</span><span class="p">[</span><span class="s2">&quot;infrastructure&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">semantic_history</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;day_similarity_</span><span class="si">{</span><span class="n">pooling</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;pooling&quot;</span><span class="p">:</span> <span class="n">pooling</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">render_ready</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">subsets</span><span class="p">)</span>
+
+    <span class="c1"># Plot all the data</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lmplot</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="s2">&quot;timestamp_posix&quot;</span><span class="p">,</span>
+        <span class="n">y</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">render_ready</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">lmplot_kws</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Fix the axes to actual date formats</span>
+    <span class="n">_recurse_axes_grid_to_fix_datetimes</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">axes</span><span class="p">)</span>
+
+    <span class="c1"># Set axis labels</span>
+    <span class="n">grid</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">&quot;Date&quot;</span><span class="p">,</span> <span class="s2">&quot;Semantic Similarity&quot;</span><span class="p">)</span>
     <span class="n">grid</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">grid</span></div>
