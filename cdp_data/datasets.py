@@ -418,6 +418,7 @@ def get_session_dataset(
                 )
                 for _, row in sessions.iterrows()
             ],
+            desc="Fetching videos",
         )
 
         # Merge fetched data back to session df
@@ -443,6 +444,7 @@ def get_session_dataset(
                 )
                 for _, row in sessions.iterrows()
             ],
+            desc="Fetching audios",
         )
 
         # Merge fetched data back to session df
@@ -470,6 +472,7 @@ def get_session_dataset(
                 )
                 for _, row in sessions.iterrows()
             ],
+            desc="Fetching transcripts",
         )
 
         # Merge fetched data back to session df

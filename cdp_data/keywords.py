@@ -21,9 +21,13 @@ from tqdm.contrib.concurrent import process_map
 
 from . import datasets
 from .utils import db_utils
+from .utils.incremental_average import IncrementalStats
 
 if TYPE_CHECKING:
     import seaborn as sns
+    from matplotlib.axes import SubplotBase
+    from sentence_transformers import SentenceTransformer
+    from torch import Tensor
 
 ###############################################################################
 
@@ -35,13 +39,27 @@ log = logging.getLogger(__name__)
 
 
 @dataclass
-class _NgramUsageProcessingParameters:
+class _TranscriptProcessingParams:
     session_id: str
     session_datetime: datetime
     transcript_path: Path
 
 
 ###############################################################################
+
+
+def _recurse_axes_grid_to_fix_datetimes(
+    arr_or_subplot: Union[np.ndarray, "SubplotBase"],
+) -> None:
+    if isinstance(arr_or_subplot, np.ndarray):
+        for item in arr_or_subplot:
+            _recurse_axes_grid_to_fix_datetimes(item)
+    else:
+        ax = arr_or_subplot
+        xticks = ax.get_xticks()
+        xticks_dates = [datetime.fromtimestamp(x).strftime("%b %Y") for x in xticks]
+        ax.set_xticklabels(xticks_dates)
+        ax.tick_params(axis="x", rotation=50)
 
 
 def _stem_n_gram(n_gram: str) -> str:
@@ -324,7 +342,7 @@ def prepare_ngram_relevancy_history_plotting_data(
 
 
 def _count_transcript_grams(
-    processing_params: _NgramUsageProcessingParameters,
+    processing_params: _TranscriptProcessingParams,
     ngram_size: int,
     strict: bool,
 ) -> pd.DataFrame:
@@ -426,13 +444,14 @@ def _compute_ngram_usage_history(
         process_map(
             counter_func,
             [
-                _NgramUsageProcessingParameters(
+                _TranscriptProcessingParams(
                     session_id=row.id,
                     session_datetime=row.session_datetime,
                     transcript_path=row.transcript_path,
                 )
                 for _, row in data.iterrows()
             ],
+            desc="Counting ngrams in each transcript",
         )
     )
 
@@ -591,7 +610,9 @@ def compute_ngram_usage_history(
     gram_usage = []
 
     # Start collecting datasets for each infrastructure
-    for infra_slug in tqdm(infrastructure_slug):
+    for infra_slug in tqdm(
+        infrastructure_slug, "Counting ngrams for each infrastructure"
+    ):
         # Get the dataset
         log.info(f"Getting session dataset for {infra_slug}")
         infra_ds = datasets.get_session_dataset(
@@ -656,7 +677,6 @@ def plot_ngram_usage_histories(
         Function to generate ngram usage history DataFrame.
     """
     import seaborn as sns
-    from matplotlib.axes import SubplotBase
 
     # Always cast ngram to list for easier API
     if isinstance(ngram, str):
@@ -672,7 +692,7 @@ def plot_ngram_usage_histories(
     gram_histories = []
 
     # Process the grams for the infrastructure
-    for gram in tqdm(ngram):
+    for gram in tqdm(ngram, "Preparing plotting data for each ngram"):
         gram_history = _prepare_ngram_usage_history_plotting_data(
             gram,
             data=gram_usage,
@@ -693,24 +713,272 @@ def plot_ngram_usage_histories(
         **lmplot_kws,
     )
 
-    def _recurse_axes_grid_to_fix_datetimes(
-        arr_or_subplot: Union[np.ndarray, SubplotBase],
-    ) -> None:
-        if isinstance(arr_or_subplot, np.ndarray):
-            for item in arr_or_subplot:
-                _recurse_axes_grid_to_fix_datetimes(item)
-        else:
-            ax = arr_or_subplot
-            xticks = ax.get_xticks()
-            xticks_dates = [datetime.fromtimestamp(x).strftime("%b %Y") for x in xticks]
-            ax.set_xticklabels(xticks_dates)
-            ax.tick_params(axis="x", rotation=50)
-
     # Fix the axes to actual date formats
     _recurse_axes_grid_to_fix_datetimes(grid.axes)
 
     # Set axis labels
     grid.set_axis_labels("Date", "Ngram Usage (percent)")
+    grid.tight_layout()
+
+    return grid
+
+
+def _compute_transcript_sim_stats(
+    processing_params: _TranscriptProcessingParams,
+    query_vec: "Tensor",
+    model: "SentenceTransformer",
+) -> pd.DataFrame:
+    from sentence_transformers.util import cos_sim
+
+    # Load transcript
+    with open(processing_params.transcript_path, "r") as open_f:
+        transcript = Transcript.from_json(open_f.read())
+
+    # Create incremental stats for updating mean, min, max
+    inc_stats = IncrementalStats()
+
+    # For each sentence in transcript,
+    # Embed and calc similarity
+    # Track min, max, and update mean
+    for sentence in transcript.sentences:
+        sentence_enc = model.encode(sentence.text)
+        query_sim = cos_sim(
+            query_vec, sentence_enc
+        ).item()  # cos_sim returns a 2d tensor
+        inc_stats.add(query_sim)
+
+    # Convert to dataframe
+    return pd.DataFrame(
+        [
+            {
+                "session_id": processing_params.session_id,
+                "session_datetime": processing_params.session_datetime,
+                "similarity_min": inc_stats.current_min,
+                "similarity_max": inc_stats.current_max,
+                "similarity_mean": inc_stats.current_mean,
+            }
+        ]
+    )
+
+
+def _compute_query_semantic_similarity_history(
+    data: pd.DataFrame,
+    query_vec: "Tensor",
+    model: "SentenceTransformer",
+) -> pd.DataFrame:
+    # Construct partial for threaded counter func
+    process_func = partial(
+        _compute_transcript_sim_stats,
+        query_vec=query_vec,
+        model=model,
+    )
+
+    # Compute min, max, and mean cos_sim using the sentences
+    # of each transcript
+    sim_stats_list: List[pd.DataFrame] = []
+    for _, row in tqdm(
+        data.iterrows(), "Computing semantic similarity for each transcript"
+    ):
+        sim_stats_list.append(
+            process_func(
+                _TranscriptProcessingParams(
+                    session_id=row.id,
+                    session_datetime=row.session_datetime,
+                    transcript_path=row.transcript_path,
+                ),
+                query_vec=query_vec,
+                model=model,
+            )
+        )
+
+    # Concat to single
+    sim_stats = pd.concat(sim_stats_list)
+
+    # Create day columns
+    sim_stats["session_date"] = pd.to_datetime(sim_stats["session_datetime"]).dt.date
+
+    # Groupby day and get min, max, and mean
+    sim_stats["day_similarity_min"] = sim_stats.groupby(["session_date"])[
+        "similarity_min"
+    ].transform("min")
+    sim_stats["day_similarity_max"] = sim_stats.groupby(["session_date"])[
+        "similarity_max"
+    ].transform("max")
+    sim_stats["day_similarity_mean"] = sim_stats.groupby(["session_date"])[
+        "similarity_mean"
+    ].transform("mean")
+
+    return sim_stats
+
+
+def compute_query_semantic_similarity_history(
+    query: Union[str, List[str]],
+    infrastructure_slug: Union[str, List[str]],
+    start_datetime: Optional[Union[str, datetime]] = None,
+    end_datetime: Optional[Union[str, datetime]] = None,
+    cache_dir: Optional[Union[str, Path]] = None,
+    embedding_model: str = "msmarco-distilbert-base-v4",
+) -> pd.DataFrame:
+    """
+    Compute the semantic similarity of a query against every sentence of every meeting.
+    The max, min, and mean semantic similarity of each meeting will be returned.
+
+    Parameters
+    ----------
+    query: Union[str, List[str]]
+        The query(ies) to compare each sentence against.
+    infrastructure_slug: Union[str, List[str]]
+        The CDP infrastructure(s) to connect to and pull sessions for.
+    start_datetime: Optional[Union[str, datetime]]
+        The earliest possible datetime for ngram history to be retrieved for.
+        If provided as a string, the datetime should be in ISO format.
+    end_datetime: Optional[Union[str, datetime]]
+        The latest possible datetime for ngram history to be retrieved for.
+        If provided as a string, the datetime should be in ISO format.
+    cache_dir: Optional[Union[str, Path]]
+        An optional directory path to cache the dataset. Directory is created if it
+        does not exist.
+        Default: "./cdp-datasets"
+    embedding_model: str
+        The sentence transformers model to use for embedding the query and
+        each sentence.
+        Default: "msmarco-distilbert-base-v4"
+        All embedding models are available here:
+        https://www.sbert.net/docs/pretrained-models/msmarco-v3.html
+        Select any of the "Models tuned for cosine-similarity".
+
+    Returns
+    -------
+    pd.DataFrame
+        The min, max, and mean semantic similarity for each event as compared
+        to the query for the events within the datetime range.
+
+    Notes
+    -----
+    This function requires additional dependencies.
+    Install extra requirements with: `pip install cdp-data[transformers]`.
+    """
+    try:
+        from sentence_transformers import SentenceTransformer
+    except ImportError:
+        raise ImportError(
+            "This function requires additional dependencies. "
+            "To install required extras, run `pip install cdp-data[transformers]`."
+        )
+    # Always cast query to list for easier API
+    if isinstance(query, str):
+        query = [query]
+
+    # Always cast infrastructure slugs to list for easier API
+    if isinstance(infrastructure_slug, str):
+        infrastructure_slug = [infrastructure_slug]
+
+    # Get semantic embedding
+    model = SentenceTransformer(embedding_model)
+
+    # Create dataframe for all histories
+    semantic_histories = []
+
+    # Start collecting datasets for each infrastructure
+    for infra_slug in tqdm(
+        infrastructure_slug, "Computing semantic similarity for each infrastructure"
+    ):
+        # Get the dataset
+        log.info(f"Getting session dataset for {infra_slug}")
+        infra_ds = datasets.get_session_dataset(
+            infrastructure_slug=infra_slug,
+            start_datetime=start_datetime,
+            end_datetime=end_datetime,
+            store_transcript=True,
+            cache_dir=cache_dir,
+        )
+
+        for q in tqdm(query, "Computing semantic similarlity for each query"):
+            # Get query embedding
+            query_vec = model.encode(q)
+
+            # Compute semantic similarity for query
+            log.info(f"Computing semantic similary history for {infra_slug}")
+            infra_query_semantic_sim_history = (
+                _compute_query_semantic_similarity_history(
+                    data=infra_ds,
+                    query_vec=query_vec,
+                    model=model,
+                )
+            )
+            infra_query_semantic_sim_history["infrastructure"] = infra_slug
+            infra_query_semantic_sim_history["query"] = q
+            semantic_histories.append(infra_query_semantic_sim_history)
+
+    # Convert gram histories to single dataframe
+    return pd.concat(semantic_histories)
+
+
+def plot_query_semantic_similarity_history(
+    semantic_history: pd.DataFrame,
+    poolings: List[str] = ["min", "max", "mean"],
+    lmplot_kws: Dict[str, Any] = {},
+) -> "sns.FacetGrid":
+    """
+    Plot pre-computed semantic similarity history data.
+
+    Parameters
+    ----------
+    semantic_history: pd.DataFrame
+        The pre-computed semantic similarity history data.
+    poolings: List[str]:
+        Which poolings to plot (min, max, and/or mean).
+        Default: ["min", "max", "mean"] (plot all)
+    lmplot_kws: Dict[str, Any]:
+        Extra keyword arguments to be passed to seaborn lmplot.
+
+    Returns
+    -------
+    seaborn.FacetGrid
+        The semantic similarity history plot.
+
+    See Also
+    --------
+    cdp_data.keywords.compute_query_semantic_similarity_history
+        The function used to generate the semantic_history data.
+    """
+    import seaborn as sns
+
+    # Add datetime timestamp
+    semantic_history["session_date"] = pd.to_datetime(semantic_history["session_date"])
+    semantic_history["timestamp_posix"] = semantic_history["session_date"].apply(
+        lambda timestamp: timestamp.timestamp()
+    )
+
+    # Select poolings
+    subsets: List[pd.DataFrame] = []
+    for pooling in poolings:
+        subsets.append(
+            pd.DataFrame(
+                {
+                    "timestamp_posix": semantic_history["timestamp_posix"],
+                    "query": semantic_history["query"],
+                    "infrastructure": semantic_history["infrastructure"],
+                    "value": semantic_history[f"day_similarity_{pooling}"],
+                    "pooling": pooling,
+                }
+            )
+        )
+    render_ready = pd.concat(subsets)
+
+    # Plot all the data
+    grid = sns.lmplot(
+        x="timestamp_posix",
+        y="value",
+        data=render_ready,
+        **lmplot_kws,
+    )
+
+    # Fix the axes to actual date formats
+    _recurse_axes_grid_to_fix_datetimes(grid.axes)
+
+    # Set axis labels
+    grid.set_axis_labels("Date", "Semantic Similarity")
     grid.tight_layout()
 
     return grid

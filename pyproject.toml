@@ -47,6 +47,9 @@ Documentation = "https://CouncilDataProject.github.io/cdp-data"
 # extra dependencies
 # https://peps.python.org/pep-0621/#dependencies-optional-dependencies
 [project.optional-dependencies]
+transformers = [
+  "sentence-transformers~=2.2.2",
+]
 plot = [
   "matplotlib>=3",
   "seaborn>=0.11.2",
