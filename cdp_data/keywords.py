@@ -820,9 +820,43 @@ def compute_query_semantic_similarity_history(
     embedding_model: str = "msmarco-distilbert-base-v4",
 ) -> pd.DataFrame:
     """
-    Embedding models available here:
-    https://www.sbert.net/docs/pretrained-models/msmarco-v3.html
-    Select any of the "Models tuned for cosine-similarity".
+    Compute the semantic similarity of a query against every sentence of every meeting.
+    The max, min, and mean semantic similarity of each meeting will be returned.
+
+    Parameters
+    ----------
+    query: Union[str, List[str]]
+        The query(ies) to compare each sentence against.
+    infrastructure_slug: Union[str, List[str]]
+        The CDP infrastructure(s) to connect to and pull sessions for.
+    start_datetime: Optional[Union[str, datetime]]
+        The earliest possible datetime for ngram history to be retrieved for.
+        If provided as a string, the datetime should be in ISO format.
+    end_datetime: Optional[Union[str, datetime]]
+        The latest possible datetime for ngram history to be retrieved for.
+        If provided as a string, the datetime should be in ISO format.
+    cache_dir: Optional[Union[str, Path]]
+        An optional directory path to cache the dataset. Directory is created if it
+        does not exist.
+        Default: "./cdp-datasets"
+    embedding_model: str
+        The sentence transformers model to use for embedding the query and
+        each sentence.
+        Default: "msmarco-distilbert-base-v4"
+        All embedding models are available here:
+        https://www.sbert.net/docs/pretrained-models/msmarco-v3.html
+        Select any of the "Models tuned for cosine-similarity".
+
+    Returns
+    -------
+    pd.DataFrame
+        The min, max, and mean semantic similarity for each event as compared
+        to the query for the events within the datetime range.
+
+    Notes
+    -----
+    This function requires additional dependencies.
+    Install extra requirements with: `pip install cdp-data[transformers]`.
     """
     try:
         from sentence_transformers import SentenceTransformer
@@ -885,6 +919,29 @@ def plot_query_semantic_similarity_history(
     poolings: List[str] = ["min", "max", "mean"],
     lmplot_kws: Dict[str, Any] = {},
 ) -> "sns.FacetGrid":
+    """
+    Plot pre-computed semantic similarity history data.
+
+    Parameters
+    ----------
+    semantic_history: pd.DataFrame
+        The pre-computed semantic similarity history data.
+    poolings: List[str]:
+        Which poolings to plot (min, max, and/or mean).
+        Default: ["min", "max", "mean"] (plot all)
+    lmplot_kws: Dict[str, Any]:
+        Extra keyword arguments to be passed to seaborn lmplot.
+
+    Returns
+    -------
+    seaborn.FacetGrid
+        The semantic similarity history plot.
+
+    See Also
+    --------
+    cdp_data.keywords.compute_query_semantic_similarity_history
+        The function used to generate the semantic_history data.
+    """
     import seaborn as sns
 
     # Add datetime timestamp
