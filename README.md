@@ -56,6 +56,32 @@ for sentence in transcript.sentences:
         print(f"{sentence.index}, {sentence.start_time}: '{sentence.text}')
 ```
 
+If you do not want to do this processing in Python or prefer to work with
+a DataFrame, you can convert transcripts to DataFrames like so:
+
+```python
+from cdp_data import datasets
+
+# assume that transcript is the same transcript as the prior code snippet
+sentences = datasets.convert_transcript_to_dataframe(transcript)
+```
+
+You can also do this conversion (and storage of the coverted transcript) for
+all transcripts in a session dataset during dataset construction with the
+`store_transcript_as_csv` parameter.
+
+```python
+from cdp_data import CDPInstances, datasets
+
+ds = datasets.get_session_dataset(
+    infrastructure_slug=CDPInstances.Seattle,
+    start_datetime="2021-01-01",
+    store_transcript=True,
+    store_transcript_as_csv=True,
+)
+```
+
+This will store the transcript for each session as both JSON and CSV.
 
 #### Voting Data
 

@@ -9,10 +9,12 @@ from typing import List, Optional, Union
 
 import pandas as pd
 from cdp_backend.database import models as db_models
+from cdp_backend.pipeline.transcript_model import Transcript
 from cdp_backend.utils.file_utils import resource_copy
 from dataclasses_json import dataclass_json
 from fireo.models import Model
 from gcsfs import GCSFileSystem
+from tqdm import tqdm
 from tqdm.contrib.concurrent import thread_map
 
 from .constants import DEFAULT_DATASET_STORAGE_DIR
@@ -334,6 +336,35 @@ def replace_dataframe_cols_with_storage_replacements(
     return df
 
 
+def convert_transcript_to_dataframe(
+    transcript: Union[str, Path, Transcript]
+) -> pd.DataFrame:
+    """
+    Create a dataframe from only the sentence data from the provided transcript.
+
+    Parameters
+    ----------
+    transcript: Union[str, Path, Transcript]
+        The transcript to pull all sentences from.
+
+    Returns
+    -------
+    pd.DataFrame:
+        The sentences of the transcript.
+    """
+    # Read transcript is need be
+    if isinstance(transcript, (str, Path)):
+        with open(transcript, "r") as open_f:
+            transcript = Transcript.from_json(open_f.read())
+
+    # Dump sentences to frame
+    sentences = pd.DataFrame(transcript.sentences)
+
+    # Drop the words col
+    sentences = sentences.drop(columns=["words"])
+    return sentences
+
+
 def get_session_dataset(
     infrastructure_slug: str,
     start_datetime: Optional[Union[str, datetime]] = None,
@@ -342,6 +373,7 @@ def get_session_dataset(
     store_full_metadata: bool = False,
     store_transcript: bool = False,
     transcript_selection: str = "confidence",
+    store_transcript_as_csv: bool = False,
     store_video: bool = False,
     store_audio: bool = False,
     cache_dir: Optional[Union[str, Path]] = None,
@@ -379,6 +411,10 @@ def get_session_dataset(
         "created" for the most recently created transcript.
         Default: "confidence" (Return the single highest confidence
         transcript per session)
+    store_transcript_as_csv: bool
+        Additionally convert and store all transcripts as CSVs.
+        Does nothing if `store_transcript` is False.
+        Default: False (do not convert and store again)
     store_video: bool
         Should the session video be requested and stored to disk and a path to the
         stored video file be added to the returned DataFrame. Note: the video is stored
@@ -591,6 +627,34 @@ def get_session_dataset(
             data_objs_key="session_key",
             df_key="key",
         )
+
+        def _wrapped_transcript_converter(transcript_path: Path) -> Path:
+            transcript_df = convert_transcript_to_dataframe(transcript_path)
+            dest = transcript_path.with_suffix(".csv")
+            transcript_df.to_csv(dest, index=False)
+            return dest
+
+        # Handle conversion of transcripts to CSVs
+        if store_transcript_as_csv:
+            log.info("Converting and storing transcripts as CSVs")
+            rows_with_csv_paths: List[pd.Series] = []
+            for _, row in tqdm(
+                sessions.iterrows(),
+                desc="Converting and storing each transcript as a CSV",
+            ):
+                # Convert
+                transcript_df = convert_transcript_to_dataframe(row["transcript_path"])
+
+                # Get storage name
+                dest = row["transcript_path"].with_suffix(".csv")
+                transcript_df.to_csv(dest, index=False)
+
+                # Update and add row
+                row["transcript_as_csv_path"] = dest
+                rows_with_csv_paths.append(row)
+
+            # Remake dataframe
+            sessions = pd.DataFrame(rows_with_csv_paths)
 
     # Replace col values with storage ready replacements
     if replace_py_objects:

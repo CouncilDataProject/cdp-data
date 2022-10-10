@@ -17,6 +17,7 @@ def test_get_session_dataset() -> None:
         store_video=True,
         store_audio=True,
         store_transcript=True,
+        store_transcript_as_csv=True,
         replace_py_objects=True,
     )
     assert len(ds) == 2
