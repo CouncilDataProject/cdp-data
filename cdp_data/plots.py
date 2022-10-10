@@ -1,20 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from typing import TYPE_CHECKING, Any, Dict, List, Union
 from datetime import datetime
+from typing import TYPE_CHECKING, Any, Dict, List, Union
 
 import numpy as np
 import pandas as pd
+import seaborn as sns
 from tqdm import tqdm
 
 from . import keywords
-import seaborn as sns
 
 if TYPE_CHECKING:
     from matplotlib.axes import SubplotBase
 
 ###############################################################################
+
 
 def set_cdp_plotting_styles() -> None:
     """
@@ -43,6 +44,7 @@ def set_cdp_plotting_styles() -> None:
         ]
     )
 
+
 def _recurse_axes_grid_to_fix_datetimes(
     arr_or_subplot: Union[np.ndarray, "SubplotBase"],
 ) -> None:
@@ -55,6 +57,7 @@ def _recurse_axes_grid_to_fix_datetimes(
         xticks_dates = [datetime.fromtimestamp(x).strftime("%b %Y") for x in xticks]
         ax.set_xticklabels(xticks_dates)
         ax.tick_params(axis="x", rotation=50)
+
 
 def _prepare_ngram_history_plotting_data(
     data: pd.DataFrame,
@@ -112,6 +115,7 @@ def _prepare_ngram_history_plotting_data(
 
     return subset
 
+
 def prepare_ngram_relevancy_history_plotting_data(
     data: pd.DataFrame,
     ngram_col: str = "query_gram",
@@ -162,6 +166,7 @@ def prepare_ngram_relevancy_history_plotting_data(
     ).replace([None])
 
     return data
+
 
 def _prepare_ngram_usage_history_plotting_data(
     ngram: str,
@@ -227,6 +232,7 @@ def _prepare_ngram_usage_history_plotting_data(
         dt_col=dt_col,
         keep_cols=["infrastructure"],
     )
+
 
 def plot_ngram_usage_histories(
     ngram: Union[str, List[str]],
@@ -310,6 +316,7 @@ def plot_ngram_usage_histories(
     grid.tight_layout()
 
     return grid
+
 
 def plot_query_semantic_similarity_history(
     semantic_history: pd.DataFrame,
