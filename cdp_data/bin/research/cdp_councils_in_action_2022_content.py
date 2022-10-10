@@ -14,7 +14,7 @@ import matplotlib as mpl
 import pandas as pd
 import seaborn as sns
 
-from cdp_data import CDPInstances, datasets, keywords
+from cdp_data import CDPInstances, datasets, keywords, plots
 from cdp_data.keywords import _stem_n_gram
 
 sns.set_theme(color_codes=True)
@@ -288,7 +288,7 @@ def generate_paper_content(
             json.dump(collected_seattle_stats, open_f, indent=4)
 
         # Plot
-        seattle_discussion_trends_grid = keywords.plot_ngram_usage_histories(
+        seattle_discussion_trends_grid = plots.plot_ngram_usage_histories(
             ngram=PLOT_NGRAMS,
             gram_usage=seattle_ngram_usage,
             strict=False,  # stem provided grams
@@ -415,7 +415,7 @@ def generate_paper_content(
             json.dump(collected_all_instance_split_stats, open_f, indent=4)
 
         # Show all instances discussion trends
-        all_instances_discussion_trends_grid = keywords.plot_ngram_usage_histories(
+        all_instances_discussion_trends_grid = plots.plot_ngram_usage_histories(
             ngram=PLOT_NGRAMS,
             gram_usage=all_instances_ngram_usage,
             strict=False,  # stem provided grams
@@ -435,19 +435,17 @@ def generate_paper_content(
         )
 
         # Show all instances discussion trends split by infra
-        all_instances_split_discussion_trends_grid = (
-            keywords.plot_ngram_usage_histories(
-                ngram=PLOT_NGRAMS,
-                gram_usage=all_instances_ngram_usage,
-                strict=False,  # stem provided grams
-                lmplot_kws=dict(  # extra plotting params
-                    col="infrastructure",
-                    hue="ngram",
-                    row="ngram",
-                    scatter_kws={"alpha": 0.2},
-                    aspect=1.6,
-                ),
-            )
+        all_instances_split_discussion_trends_grid = plots.plot_ngram_usage_histories(
+            ngram=PLOT_NGRAMS,
+            gram_usage=all_instances_ngram_usage,
+            strict=False,  # stem provided grams
+            lmplot_kws=dict(  # extra plotting params
+                col="infrastructure",
+                hue="ngram",
+                row="ngram",
+                scatter_kws={"alpha": 0.2},
+                aspect=1.6,
+            ),
         )
         all_instances_split_discussion_trends_grid.savefig(
             all_instances_split_discussion_trends_pdf,
