@@ -11,6 +11,7 @@ import pandas as pd
 from cdp_backend.database import models as db_models
 from cdp_backend.utils.file_utils import resource_copy
 from dataclasses_json import dataclass_json
+from fireo.models import Model
 from gcsfs import GCSFileSystem
 from tqdm.contrib.concurrent import thread_map
 
@@ -236,10 +237,108 @@ def _merge_dataclasses_to_df(
 ###############################################################################
 
 
+def replace_db_model_cols_with_id_cols(
+    df: pd.DataFrame,
+) -> pd.DataFrame:
+    """
+    Replace all database model column values with the model ID.
+
+    Example: an `event` column with event models, will be replaced by an
+    `event_id` column with just the event id.
+
+    Parameters
+    ----------
+    df: pd.DataFrame
+        The data to replace database models with just ids.
+
+    Returns
+    -------
+    pd.DataFrame
+        The updated DataFrame.
+    """
+    # Get a single row sample
+    sample = df.loc[0]
+
+    # Iter over cols, check type, and replace if type is a db model
+    for col in df.columns:
+        sample_col_val = sample[col]
+        if isinstance(sample_col_val, Model):
+            df[f"{sample_col_val.collection_name}_id"] = df[col].apply(lambda m: m.id)
+            df = df.drop(columns=[col])
+
+    return df
+
+
+def replace_pathlib_path_cols_with_str_path_cols(
+    df: pd.DataFrame,
+) -> pd.DataFrame:
+    """
+    Replace all pathlib Path column values with string column values.
+
+    Example: a `transcript_path` column with a pathlib Path, will be replaced
+    as a normal Python string.
+
+    Parameters
+    ----------
+    df: pd.DataFrame
+        The data to replace paths in.
+
+    Returns
+    -------
+    pd.DataFrame
+        The updated DataFrame.
+    """
+    # Get a single row sample
+    sample = df.loc[0]
+
+    # Iter over cols, check type, and replace if type is a db model
+    for col in df.columns:
+        sample_col_val = sample[col]
+        if isinstance(sample_col_val, Path):
+            df[col] = df[col].apply(lambda p: str(p))
+
+    return df
+
+
+def replace_dataframe_cols_with_storage_replacements(
+    df: pd.DataFrame,
+) -> pd.DataFrame:
+    """
+    Run various replacement functions against the dataframe to get the
+    data to a point where it can be store to disk.
+
+    Parameters
+    ----------
+    df: pd.DataFrame
+        The data to fix.
+
+    Returns
+    -------
+    pd.DataFrame
+        The updated DataFrame.
+
+    See Also
+    --------
+    replace_db_model_cols_with_id_cols
+        Function to replace database model column values with their ids.
+    replace_pathlib_path_cols_with_str_path_cols
+        Function to replace pathlib Path column values with normal Python strings.
+    """
+    # Replace everything
+    for func in (
+        replace_db_model_cols_with_id_cols,
+        replace_pathlib_path_cols_with_str_path_cols,
+    ):
+        df = func(df)
+
+    return df
+
+
 def get_session_dataset(
     infrastructure_slug: str,
     start_datetime: Optional[Union[str, datetime]] = None,
     end_datetime: Optional[Union[str, datetime]] = None,
+    replace_py_objects: bool = False,
     store_full_metadata: bool = False,
     store_transcript: bool = False,
     transcript_selection: str = "confidence",
@@ -260,6 +359,11 @@ def get_session_dataset(
     end_datetime: Optional[Union[str, datetime]]
         An optional datetime that the session dataset will end at.
         Default: None (no datetime end bound on the dataset)
+    replace_py_objects: bool
+        Replace any non-standard Python type with standard ones to
+        allow the returned data be ready for storage.
+        See 'See Also' for more details.
+        Default: False (keep Python objects in the DataFrame)
     store_full_metadata: bool
         Should a JSON file of the full event metadata be stored to disk and a
         path to the stored JSON file be added to the returned DataFrame.
@@ -331,6 +435,11 @@ def get_session_dataset(
 
     To clean a whole dataset or specific events or sessions simply delete the
     associated directory.
+
+    See Also
+    --------
+    replace_dataframe_cols_with_storage_replacements
+        The function used to clean the data of non-standard Python types.
     """
     # Connect to infra
     fs = connect_to_infrastructure(infrastructure_slug)
@@ -483,4 +592,55 @@ def get_session_dataset(
             df_key="key",
         )
 
+    # Replace col values with storage ready replacements
+    if replace_py_objects:
+        sessions = replace_dataframe_cols_with_storage_replacements(sessions)
+
     return sessions
+
+
+def save_dataset(
+    df: pd.DataFrame,
+    dest: Union[str, Path],
+) -> Path:
+    """
+    Helper function to store a dataset to disk by replacing
+    non-standard Python types with storage ready replacements.
+
+    Parameters
+    ----------
+    df: pd.DataFrame
+        The DataFrame to store.
+    dest: Union[str, Path]
+        The path to store the data. Must end in ".csv" or ".parquet".
+
+    Returns
+    -------
+    Path:
+        The path to the stored data.
+
+    See Also
+    --------
+    replace_dataframe_cols_with_storage_replacements
+        The function used to replace column values.
+    """
+    # Replace col values with storage ready replacements
+    df = replace_dataframe_cols_with_storage_replacements(df)
+
+    # Convert dest to Path
+    if isinstance(dest, str):
+        dest = Path(dest)
+
+    # Check suffix
+    if dest.suffix == ".csv":
+        df.to_csv(dest, index=False)
+        return dest
+
+    if dest.suffix == ".parquet":
+        df.to_parquet(dest)
+        return dest
+
+    raise ValueError(
+        f"Unrecognized filepath suffix: '{dest.suffix}'. "
+        f"Support storage types are 'csv' and 'parquet'."
+    )
