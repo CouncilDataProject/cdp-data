@@ -27,25 +27,25 @@ def test_ngrams() -> None:
     grid_third_order.savefig("test-generated-ngram-usage-histories-plot.pdf")
 
 
-# def test_semantic_sim() -> None:
-#     semantic_hist = keywords.compute_query_semantic_similarity_history(
-#         [
-#             "defund the police",
-#             "missing middle housing",
-#             "vision zero and traffic fatalities",
-#         ],
-#         CDPInstances.Seattle,
-#         start_datetime="2021-01-01",
-#         end_datetime="2021-01-20",
-#     )
-#     grid = plots.plot_query_semantic_similarity_history(
-#         semantic_hist,
-#     )
-#     grid.savefig("test-generated-semantic-sim-histories-plot.pdf")
+def test_semantic_sim() -> None:
+    semantic_hist = keywords.compute_query_semantic_similarity_history(
+        [
+            "defund the police",
+            "missing middle housing",
+            "vision zero and traffic fatalities",
+        ],
+        CDPInstances.Seattle,
+        start_datetime="2021-01-01",
+        end_datetime="2021-01-20",
+    )
+    grid = plots.plot_query_semantic_similarity_history(
+        semantic_hist,
+    )
+    grid.savefig("test-generated-semantic-sim-histories-plot.pdf")
 
-#     # Or with extra kwargs like order
-#     grid_third_order = plots.plot_query_semantic_similarity_history(
-#         semantic_hist,
-#         lmplot_kws={"order": 3},
-#     )
-#     grid_third_order.savefig("test-generated-semantic-sim-histories-plot.pdf")
+    # Or with extra kwargs like order
+    grid_third_order = plots.plot_query_semantic_similarity_history(
+        semantic_hist,
+        lmplot_kws={"order": 3},
+    )
+    grid_third_order.savefig("test-generated-semantic-sim-histories-plot.pdf")
