@@ -22,6 +22,7 @@ clean:
 	rm -fr .mypy_cache
 	rm -fr .tox
 	rm -fr test-generated-*
+	rm -fr test-outputs-*
 
 # install with all deps
 install:
