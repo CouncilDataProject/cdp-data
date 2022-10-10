@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cdp_data.bin package" href="cdp_data.bin.html" /><link rel="prev" title="cdp_data" href="modules.html" />
 
     <meta name="generator" content="sphinx-5.2.3, furo 2022.09.29"/>
-        <title>cdp_data package - cdp-data 0.1.dev1+gdfa5fee documentation</title>
+        <title>cdp_data package - cdp-data 0.1.dev1+gd968942 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -124,7 +124,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">cdp-data 0.1.dev1+gdfa5fee documentation</div></a>
+      <a href="index.html"><div class="brand">cdp-data 0.1.dev1+gd968942 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -147,7 +147,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">cdp-data 0.1.dev1+gdfa5fee documentation</span>
+  <span class="sidebar-brand-text">cdp-data 0.1.dev1+gd968942 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -228,6 +228,7 @@
 <li class="toctree-l2"><a class="reference internal" href="cdp_data.utils.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cdp_data.utils.html#module-cdp_data.utils.db_utils">cdp_data.utils.db_utils module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cdp_data.utils.html#cdp_data.utils.db_utils.connect_to_database"><code class="docutils literal notranslate"><span class="pre">connect_to_database()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cdp_data.utils.html#cdp_data.utils.db_utils.expand_models_from_pd_column"><code class="docutils literal notranslate"><span class="pre">expand_models_from_pd_column()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdp_data.utils.html#cdp_data.utils.db_utils.load_from_model_reference"><code class="docutils literal notranslate"><span class="pre">load_from_model_reference()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="cdp_data.utils.html#cdp_data.utils.db_utils.load_model_from_pd_columns"><code class="docutils literal notranslate"><span class="pre">load_model_from_pd_columns()</span></code></a></li>
 </ul>
@@ -370,6 +371,44 @@ content hash comparison.</p>
 </div>
 <p>To clean a whole dataset or specific events or sessions simply delete the
 associated directory.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cdp_data.datasets.get_vote_dataset">
+<span class="sig-prename descclassname"><span class="pre">cdp_data.datasets.</span></span><span class="sig-name descname"><span class="pre">get_vote_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infrastructure_slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">datetime</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace_py_objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/cdp_data/datasets.html#get_vote_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.datasets.get_vote_dataset" title="Permalink to this definition">#</a></dt>
+<dd><p>Get a dataset of votes from a CDP infrastructure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>infrastructure_slug: str</strong></dt><dd><p>The CDP infrastructure to connect to and pull votes for.</p>
+</dd>
+<dt><strong>start_datetime: Optional[Union[str, datetime]]</strong></dt><dd><p>An optional datetime that the vote dataset will start at.
+Default: None (no datetime beginning bound on the dataset)</p>
+</dd>
+<dt><strong>end_datetime: Optional[Union[str, datetime]]</strong></dt><dd><p>An optional datetime that the vote dataset will end at.
+Default: None (no datetime end bound on the dataset)</p>
+</dd>
+<dt><strong>replace_py_objects: bool</strong></dt><dd><p>Replace any non-standard Python type with standard ones to
+allow the returned data be ready for storage.
+See ‘See Also’ for more details.
+Default: False (keep Python objects in the DataFrame)</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>pd.DataFrame</dt><dd><p>The dataset requested.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#cdp_data.datasets.replace_dataframe_cols_with_storage_replacements" title="cdp_data.datasets.replace_dataframe_cols_with_storage_replacements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">replace_dataframe_cols_with_storage_replacements</span></code></a></dt><dd><p>The function used to clean the data of non-standard Python types.</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -624,7 +663,7 @@ used that day.</p>
 <dl class="simple">
 <dt><a class="reference internal" href="#cdp_data.datasets.get_session_dataset" title="cdp_data.datasets.get_session_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cdp_data.datasets.get_session_dataset</span></code></a></dt><dd><p>Function to pull or load a cached session dataset.</p>
 </dd>
-<dt><a class="reference internal" href="#cdp_data.keywords.plot_ngram_usage_histories" title="cdp_data.keywords.plot_ngram_usage_histories"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cdp_data.keywords.plot_ngram_usage_histories</span></code></a></dt><dd><p>Plot ngram usage history data.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">cdp_data.plotting.plot_ngram_usage_histories</span></code></dt><dd><p>Plot ngram usage history data.</p>
 </dd>
 </dl>
 </div>
@@ -708,7 +747,7 @@ with their values being set to zero.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_ngram_history_plotting_data</span></code></dt><dd><p>Subsets to plotting only columns and ensures values are sorted and grouped.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">cdp_data.plotting.prepare_ngram_history_plotting_data</span></code></dt><dd><p>Subsets to plotting only columns and ensures values are sorted and grouped.</p>
 </dd>
 </dl>
 </div>
@@ -759,119 +798,9 @@ the same as Google’s NGram Viewer which shows what percentage of literature
 used the term.</p>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="cdp_data.keywords.plot_ngram_usage_histories">
-<span class="sig-prename descclassname"><span class="pre">cdp_data.keywords.</span></span><span class="sig-name descname"><span class="pre">plot_ngram_usage_histories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ngram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gram_usage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmplot_kws</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">sns.FacetGrid</span></span></span><a class="reference internal" href="_modules/cdp_data/keywords.html#plot_ngram_usage_histories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.keywords.plot_ngram_usage_histories" title="Permalink to this definition">#</a></dt>
-<dd><p>Select and plot specific ngram usage histories from the provided gram usage
-DataFrame.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>ngram: Union[str, List[str]]</strong></dt><dd><p>The unigrams, bigrams, or trigrams to retrieve history for.
-Note: Must provide all unigrams, bigrams, or trigrams, cannot mix gram size, and
-the gram size should be the same as the grams stored in the provided gram_usage
-DataFrame.</p>
-</dd>
-<dt><strong>gram_usage: pd.DataFrame</strong></dt><dd><p>A pandas DataFrame of all found ngrams (stemmed and cleaned or unstemmed and
-uncleaned) from the data and their counts for each session and their percentage
-of use as a percent of their use for the day over the sum of all other ngrams
-used that day.</p>
-</dd>
-<dt><strong>strict: bool</strong></dt><dd><p>Should all ngrams be stemmed or left unstemmed for a more strict usage history.
-Default: False (stem and clean all grams in the dataset)</p>
-</dd>
-<dt><strong>lmplot_kws: Dict[str, Any]</strong></dt><dd><p>Any extra kwargs to provide to sns.lmplot.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>grid: sns.FacetGrid</dt><dd><p>The small multiples FacetGrid of all ngrams and infrastructures found in the
-provided dataset.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="#cdp_data.keywords.compute_ngram_usage_history" title="cdp_data.keywords.compute_ngram_usage_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cdp_data.keywords.compute_ngram_usage_history</span></code></a></dt><dd><p>Function to generate ngram usage history DataFrame.</p>
-</dd>
-</dl>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="cdp_data.keywords.plot_query_semantic_similarity_history">
-<span class="sig-prename descclassname"><span class="pre">cdp_data.keywords.</span></span><span class="sig-name descname"><span class="pre">plot_query_semantic_similarity_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">semantic_history</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poolings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['min',</span> <span class="pre">'max',</span> <span class="pre">'mean']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmplot_kws</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">sns.FacetGrid</span></span></span><a class="reference internal" href="_modules/cdp_data/keywords.html#plot_query_semantic_similarity_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.keywords.plot_query_semantic_similarity_history" title="Permalink to this definition">#</a></dt>
-<dd><p>Plot pre-computed semantic similarity history data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>semantic_history: pd.DataFrame</strong></dt><dd><p>The pre-computed semantic similarity history data.</p>
-</dd>
-<dt><strong>poolings: List[str]:</strong></dt><dd><p>Which poolings to plot (min, max, and/or mean).
-Default: [“min”, “max”, “mean”] (plot all)</p>
-</dd>
-<dt><strong>lmplot_kws: Dict[str, Any]:</strong></dt><dd><p>Extra keyword arguments to be passed to seaborn lmplot.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>seaborn.FacetGrid</dt><dd><p>The semantic similarity history plot.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="#cdp_data.keywords.compute_query_semantic_similarity_history" title="cdp_data.keywords.compute_query_semantic_similarity_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cdp_data.keywords.compute_query_semantic_similarity_history</span></code></a></dt><dd><p>The function used to generate the semantic_history data.</p>
-</dd>
-</dl>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="cdp_data.keywords.prepare_ngram_relevancy_history_plotting_data">
-<span class="sig-prename descclassname"><span class="pre">cdp_data.keywords.</span></span><span class="sig-name descname"><span class="pre">prepare_ngram_relevancy_history_plotting_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ngram_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'query_gram'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'event_datetime'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/cdp_data/keywords.html#prepare_ngram_relevancy_history_plotting_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cdp_data.keywords.prepare_ngram_relevancy_history_plotting_data" title="Permalink to this definition">#</a></dt>
-<dd><p>Prepare an ngram relevancy history DataFrame specifically for plotting.
-This function will subset the DataFrame to just the provided columns and
-will only store a single value for each day if there are multiple
-(keeping the max value).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>data: pd.DataFrame</strong></dt><dd><p>The data to prepare for plotting.</p>
-</dd>
-<dt><strong>ngram_col: str</strong></dt><dd><p>The column name for which the “ngram” is stored.
-Default: “query_gram”</p>
-</dd>
-<dt><strong>value_col: str</strong></dt><dd><p>The column name for which the value of each ngram is stored.
-Default: “value”</p>
-</dd>
-<dt><strong>dt_col: str</strong></dt><dd><p>The column name for which the datetime is stored.
-Default: “event_datetime”</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>prepared: pd.DataFrame</dt><dd><p>The subset and max selected dataset reading for plotting.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="#cdp_data.keywords.get_ngram_relevancy_history" title="cdp_data.keywords.get_ngram_relevancy_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ngram_relevancy_history</span></code></a></dt><dd><p>The dataset retrival function which should generally paired with this function.</p>
-</dd>
-</dl>
-</div>
-</dd></dl>
-
+</section>
+<section id="cdp-data-plots-module">
+<h2>cdp_data.plots module<a class="headerlink" href="#cdp-data-plots-module" title="Permalink to this heading">#</a></h2>
 </section>
 <section id="module-cdp_data">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cdp_data" title="Permalink to this heading">#</a></h2>
@@ -1041,6 +970,7 @@ Default: “event_datetime”</p>
 <li><a class="reference internal" href="#module-cdp_data.constants">cdp_data.constants module</a></li>
 <li><a class="reference internal" href="#module-cdp_data.datasets">cdp_data.datasets module</a><ul>
 <li><a class="reference internal" href="#cdp_data.datasets.get_session_dataset"><code class="docutils literal notranslate"><span class="pre">get_session_dataset()</span></code></a></li>
+<li><a class="reference internal" href="#cdp_data.datasets.get_vote_dataset"><code class="docutils literal notranslate"><span class="pre">get_vote_dataset()</span></code></a></li>
 <li><a class="reference internal" href="#cdp_data.datasets.replace_dataframe_cols_with_storage_replacements"><code class="docutils literal notranslate"><span class="pre">replace_dataframe_cols_with_storage_replacements()</span></code></a></li>
 <li><a class="reference internal" href="#cdp_data.datasets.replace_db_model_cols_with_id_cols"><code class="docutils literal notranslate"><span class="pre">replace_db_model_cols_with_id_cols()</span></code></a></li>
 <li><a class="reference internal" href="#cdp_data.datasets.replace_pathlib_path_cols_with_str_path_cols"><code class="docutils literal notranslate"><span class="pre">replace_pathlib_path_cols_with_str_path_cols()</span></code></a></li>
@@ -1075,11 +1005,9 @@ Default: “event_datetime”</p>
 <li><a class="reference internal" href="#cdp_data.keywords.compute_query_semantic_similarity_history"><code class="docutils literal notranslate"><span class="pre">compute_query_semantic_similarity_history()</span></code></a></li>
 <li><a class="reference internal" href="#cdp_data.keywords.fill_history_data_with_zeros"><code class="docutils literal notranslate"><span class="pre">fill_history_data_with_zeros()</span></code></a></li>
 <li><a class="reference internal" href="#cdp_data.keywords.get_ngram_relevancy_history"><code class="docutils literal notranslate"><span class="pre">get_ngram_relevancy_history()</span></code></a></li>
-<li><a class="reference internal" href="#cdp_data.keywords.plot_ngram_usage_histories"><code class="docutils literal notranslate"><span class="pre">plot_ngram_usage_histories()</span></code></a></li>
-<li><a class="reference internal" href="#cdp_data.keywords.plot_query_semantic_similarity_history"><code class="docutils literal notranslate"><span class="pre">plot_query_semantic_similarity_history()</span></code></a></li>
-<li><a class="reference internal" href="#cdp_data.keywords.prepare_ngram_relevancy_history_plotting_data"><code class="docutils literal notranslate"><span class="pre">prepare_ngram_relevancy_history_plotting_data()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#cdp-data-plots-module">cdp_data.plots module</a></li>
 <li><a class="reference internal" href="#module-cdp_data">Module contents</a><ul>
 <li><a class="reference internal" href="#cdp_data.CDPInstances"><code class="docutils literal notranslate"><span class="pre">CDPInstances</span></code></a><ul>
 <li><a class="reference internal" href="#cdp_data.CDPInstances.Alameda"><code class="docutils literal notranslate"><span class="pre">CDPInstances.Alameda</span></code></a></li>

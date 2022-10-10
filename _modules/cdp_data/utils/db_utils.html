@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <meta name="generator" content="sphinx-5.2.3, furo 2022.09.29"/>
-        <title>cdp_data.utils.db_utils - cdp-data 0.1.dev1+gdfa5fee documentation</title>
+        <title>cdp_data.utils.db_utils - cdp-data 0.1.dev1+gd968942 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">cdp-data 0.1.dev1+gdfa5fee documentation</div></a>
+      <a href="../../../index.html"><div class="brand">cdp-data 0.1.dev1+gd968942 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">cdp-data 0.1.dev1+gdfa5fee documentation</span>
+  <span class="sidebar-brand-text">cdp-data 0.1.dev1+gd968942 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -209,6 +209,7 @@
 
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">fireo</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -216,6 +217,7 @@
 <span class="kn">from</span> <span class="nn">fireo.models</span> <span class="kn">import</span> <span class="n">Model</span>
 <span class="kn">from</span> <span class="nn">google.auth.credentials</span> <span class="kn">import</span> <span class="n">AnonymousCredentials</span>
 <span class="kn">from</span> <span class="nn">google.cloud.firestore</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">from</span> <span class="nn">tqdm.contrib.concurrent</span> <span class="kn">import</span> <span class="n">thread_map</span>
 
 <span class="c1">###############################################################################</span>
@@ -409,6 +411,28 @@
         <span class="n">joined</span> <span class="o">=</span> <span class="n">joined</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="n">model_ref_col</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">joined</span></div>
+
+
+<div class="viewcode-block" id="expand_models_from_pd_column"><a class="viewcode-back" href="../../../cdp_data.utils.html#cdp_data.utils.db_utils.expand_models_from_pd_column">[docs]</a><span class="k">def</span> <span class="nf">expand_models_from_pd_column</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">model_col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">model_attr_rename_lut</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="c1"># Store individual rows</span>
+    <span class="n">expanded_data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Iter rows and unpack</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">iterrows</span><span class="p">(),</span>
+        <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Expanding </span><span class="si">{</span><span class="n">model_col</span><span class="si">}</span><span class="s2"> models&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">for</span> <span class="n">model_attr_name</span><span class="p">,</span> <span class="n">attr_replace_name</span> <span class="ow">in</span> <span class="n">model_attr_rename_lut</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">row</span><span class="p">[</span><span class="n">attr_replace_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">model_col</span><span class="p">],</span> <span class="n">model_attr_name</span><span class="p">)</span>
+
+        <span class="n">expanded_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+    <span class="c1"># New dataframe with expanded data</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">expanded_data</span><span class="p">)</span></div>
 </pre></div>
         </article>
       </div>

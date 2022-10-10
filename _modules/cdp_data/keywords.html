@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <meta name="generator" content="sphinx-5.2.3, furo 2022.09.29"/>
-        <title>cdp_data.keywords - cdp-data 0.1.dev1+gdfa5fee documentation</title>
+        <title>cdp_data.keywords - cdp-data 0.1.dev1+gd968942 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">cdp-data 0.1.dev1+gdfa5fee documentation</div></a>
+      <a href="../../index.html"><div class="brand">cdp-data 0.1.dev1+gd968942 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">cdp-data 0.1.dev1+gdfa5fee documentation</span>
+  <span class="sidebar-brand-text">cdp-data 0.1.dev1+gd968942 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -213,9 +213,8 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">cdp_backend.database</span> <span class="kn">import</span> <span class="n">models</span> <span class="k">as</span> <span class="n">db_models</span>
 <span class="kn">from</span> <span class="nn">cdp_backend.pipeline.transcript_model</span> <span class="kn">import</span> <span class="n">Transcript</span>
@@ -230,8 +229,6 @@
 <span class="kn">from</span> <span class="nn">.utils.incremental_average</span> <span class="kn">import</span> <span class="n">IncrementalStats</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
-    <span class="kn">from</span> <span class="nn">matplotlib.axes</span> <span class="kn">import</span> <span class="n">SubplotBase</span>
     <span class="kn">from</span> <span class="nn">sentence_transformers</span> <span class="kn">import</span> <span class="n">SentenceTransformer</span>
     <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
 
@@ -252,20 +249,6 @@
 
 
 <span class="c1">###############################################################################</span>
-
-
-<span class="k">def</span> <span class="nf">_recurse_axes_grid_to_fix_datetimes</span><span class="p">(</span>
-    <span class="n">arr_or_subplot</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="s2">&quot;SubplotBase&quot;</span><span class="p">],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr_or_subplot</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">arr_or_subplot</span><span class="p">:</span>
-            <span class="n">_recurse_axes_grid_to_fix_datetimes</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">ax</span> <span class="o">=</span> <span class="n">arr_or_subplot</span>
-        <span class="n">xticks</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xticks</span><span class="p">()</span>
-        <span class="n">xticks_dates</span> <span class="o">=</span> <span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%b %Y&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xticks</span><span class="p">]</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">xticks_dates</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_stem_n_gram</span><span class="p">(</span><span class="n">n_gram</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -383,63 +366,6 @@
     <span class="k">return</span> <span class="n">ngram_history</span></div>
 
 
-<span class="k">def</span> <span class="nf">_prepare_ngram_history_plotting_data</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-    <span class="n">ngram_col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">value_col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">dt_col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">keep_cols</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A utility function to prepare ngram history data for plotting.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    data: pd.DataFrame</span>
-<span class="sd">        The data to prepare for plotting.</span>
-<span class="sd">    ngram_col: str</span>
-<span class="sd">        The column name for which the &quot;ngram&quot; is stored.</span>
-<span class="sd">        Generally this is the column for which plots are split to small multiples.</span>
-<span class="sd">        For example, a single plot for &quot;police&quot;, &quot;housing&quot;, etc.</span>
-<span class="sd">    value_col: str</span>
-<span class="sd">        The column name for which the value of each ngram is stored.</span>
-<span class="sd">    dt_col: str</span>
-<span class="sd">        The column name for which the datetime is stored.</span>
-<span class="sd">    keep_cols: List[str]</span>
-<span class="sd">        Any extra columns to keep.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    plot_data: pd.DataFrame</span>
-<span class="sd">        The grouped, sorted, and datetime formatted data ready for plotting.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    prepare_ngram_relevancy_history_plotting_data</span>
-<span class="sd">        Function to prepare specifically ngram relevancy history data for plotting.</span>
-<span class="sd">    prepare_ngram_usage_history_plotting_data</span>
-<span class="sd">        Function to prepare specifically ngram usage history data for plotting.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Select down to just the columns we want</span>
-    <span class="c1"># Reset index</span>
-    <span class="c1"># Sort values by datetime</span>
-    <span class="n">subset</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">data</span><span class="p">[[</span><span class="n">ngram_col</span><span class="p">,</span> <span class="n">value_col</span><span class="p">,</span> <span class="n">dt_col</span><span class="p">,</span> <span class="o">*</span><span class="n">keep_cols</span><span class="p">]]</span>
-        <span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="n">ngram_col</span><span class="p">,</span> <span class="n">dt_col</span><span class="p">])</span>
-        <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="p">)</span>
-
-    <span class="c1"># Ensure the date col is a datetime / pd.Timestamp</span>
-    <span class="n">subset</span><span class="p">[</span><span class="n">dt_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">subset</span><span class="p">[</span><span class="n">dt_col</span><span class="p">])</span>
-
-    <span class="c1"># Also create a column of the timestamp value</span>
-    <span class="n">subset</span><span class="p">[</span><span class="s2">&quot;timestamp_posix&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subset</span><span class="p">[</span><span class="n">dt_col</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-        <span class="k">lambda</span> <span class="n">timestamp</span><span class="p">:</span> <span class="n">timestamp</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
-    <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">subset</span>
-
-
 <div class="viewcode-block" id="fill_history_data_with_zeros"><a class="viewcode-back" href="../../cdp_data.html#cdp_data.keywords.fill_history_data_with_zeros">[docs]</a><span class="k">def</span> <span class="nf">fill_history_data_with_zeros</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">ngram_col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -465,7 +391,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    prepare_ngram_history_plotting_data</span>
+<span class="sd">    cdp_data.plotting.prepare_ngram_history_plotting_data</span>
 <span class="sd">        Subsets to plotting only columns and ensures values are sorted and grouped.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Fill missing dates with zeros for each query gram</span>
@@ -493,58 +419,6 @@
         <span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">ngram_col</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
     <span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="prepare_ngram_relevancy_history_plotting_data"><a class="viewcode-back" href="../../cdp_data.html#cdp_data.keywords.prepare_ngram_relevancy_history_plotting_data">[docs]</a><span class="k">def</span> <span class="nf">prepare_ngram_relevancy_history_plotting_data</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-    <span class="n">ngram_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;query_gram&quot;</span><span class="p">,</span>
-    <span class="n">value_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>
-    <span class="n">dt_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;event_datetime&quot;</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Prepare an ngram relevancy history DataFrame specifically for plotting.</span>
-<span class="sd">    This function will subset the DataFrame to just the provided columns and</span>
-<span class="sd">    will only store a single value for each day if there are multiple</span>
-<span class="sd">    (keeping the max value).</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    data: pd.DataFrame</span>
-<span class="sd">        The data to prepare for plotting.</span>
-<span class="sd">    ngram_col: str</span>
-<span class="sd">        The column name for which the &quot;ngram&quot; is stored.</span>
-<span class="sd">        Default: &quot;query_gram&quot;</span>
-<span class="sd">    value_col: str</span>
-<span class="sd">        The column name for which the value of each ngram is stored.</span>
-<span class="sd">        Default: &quot;value&quot;</span>
-<span class="sd">    dt_col: str</span>
-<span class="sd">        The column name for which the datetime is stored.</span>
-<span class="sd">        Default: &quot;event_datetime&quot;</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    prepared: pd.DataFrame</span>
-<span class="sd">        The subset and max selected dataset reading for plotting.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    get_ngram_relevancy_history</span>
-<span class="sd">        The dataset retrival function which should generally paired with this function.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Basic preparation</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">_prepare_ngram_history_plotting_data</span><span class="p">(</span>
-        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
-        <span class="n">ngram_col</span><span class="o">=</span><span class="n">ngram_col</span><span class="p">,</span>
-        <span class="n">value_col</span><span class="o">=</span><span class="n">value_col</span><span class="p">,</span>
-        <span class="n">dt_col</span><span class="o">=</span><span class="n">dt_col</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="c1"># Keep max for date</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="n">ngram_col</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Grouper</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">dt_col</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">)])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="kc">None</span><span class="p">])</span>
-
-    <span class="k">return</span> <span class="n">data</span></div>
 
 
 <span class="k">def</span> <span class="nf">_count_transcript_grams</span><span class="p">(</span>
@@ -682,72 +556,6 @@
     <span class="k">return</span> <span class="n">counts</span>
 
 
-<span class="k">def</span> <span class="nf">_prepare_ngram_usage_history_plotting_data</span><span class="p">(</span>
-    <span class="n">ngram</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-    <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">ngram_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ngram&quot;</span><span class="p">,</span>
-    <span class="n">percent_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;day_ngram_percent_usage&quot;</span><span class="p">,</span>
-    <span class="n">dt_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;session_date&quot;</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Prepare an ngram usage history DataFrame specifically for plotting.</span>
-<span class="sd">    This function will stem and clean the provided ngram, subset to just the data</span>
-<span class="sd">    of interest, and prepare the rest of the data for plotting.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    ngram: str</span>
-<span class="sd">        A single ngram of interest to plot.</span>
-<span class="sd">    data: pd.DataFrame</span>
-<span class="sd">        The data to prepare for plotting.</span>
-<span class="sd">    strict: bool</span>
-<span class="sd">        Should the provided ngram be stemmed or left unstemmed for a more</span>
-<span class="sd">        strict usage history.</span>
-<span class="sd">        Default: False (stem and clean the provided ngram)</span>
-<span class="sd">    ngram_col: str</span>
-<span class="sd">        The column name for which the &quot;ngram&quot; is stored.</span>
-<span class="sd">        Default: &quot;ngram&quot;</span>
-<span class="sd">    percent_col: str</span>
-<span class="sd">        The column name for which the percent usage of each ngram is stored.</span>
-<span class="sd">        Default: &quot;day_ngram_percent_usage&quot;</span>
-<span class="sd">    dt_col: str</span>
-<span class="sd">        The column name for which the date is stored.</span>
-<span class="sd">        Default: &quot;session_date&quot;</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    prepared: pd.DataFrame</span>
-<span class="sd">        The subset and prepared for plotting dataset.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    compute_ngram_usage_history</span>
-<span class="sd">        The dataset loading function which should generally paired with this function.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Prepare ngram for user</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">strict</span><span class="p">:</span>
-        <span class="n">ngram</span> <span class="o">=</span> <span class="n">_stem_n_gram</span><span class="p">(</span><span class="n">ngram</span><span class="p">)</span>
-
-    <span class="c1"># Select down to just the ngram we want</span>
-    <span class="n">subset</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="n">ngram_col</span><span class="p">]</span> <span class="o">==</span> <span class="n">ngram</span><span class="p">]</span>
-
-    <span class="c1"># Check subset length for better error</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subset</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Provided (or stemmed) ngram (&#39;</span><span class="si">{</span><span class="n">ngram</span><span class="si">}</span><span class="s2">&#39;) resulted in &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;zero matching rows for plotting.&quot;</span>
-        <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">_prepare_ngram_history_plotting_data</span><span class="p">(</span>
-        <span class="n">data</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span>
-        <span class="n">ngram_col</span><span class="o">=</span><span class="n">ngram_col</span><span class="p">,</span>
-        <span class="n">value_col</span><span class="o">=</span><span class="n">percent_col</span><span class="p">,</span>
-        <span class="n">dt_col</span><span class="o">=</span><span class="n">dt_col</span><span class="p">,</span>
-        <span class="n">keep_cols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;infrastructure&quot;</span><span class="p">],</span>
-    <span class="p">)</span>
-
-
 <div class="viewcode-block" id="compute_ngram_usage_history"><a class="viewcode-back" href="../../cdp_data.html#cdp_data.keywords.compute_ngram_usage_history">[docs]</a><span class="k">def</span> <span class="nf">compute_ngram_usage_history</span><span class="p">(</span>
     <span class="n">infrastructure_slug</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">ngram_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
@@ -793,7 +601,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    cdp_data.datasets.get_session_dataset</span>
 <span class="sd">        Function to pull or load a cached session dataset.</span>
-<span class="sd">    cdp_data.keywords.plot_ngram_usage_histories</span>
+<span class="sd">    cdp_data.plotting.plot_ngram_usage_histories</span>
 <span class="sd">        Plot ngram usage history data.</span>
 
 <span class="sd">    Notes</span>
@@ -841,92 +649,6 @@
 
     <span class="c1"># Convert gram histories to single dataframe</span>
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">gram_usage</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="plot_ngram_usage_histories"><a class="viewcode-back" href="../../cdp_data.html#cdp_data.keywords.plot_ngram_usage_histories">[docs]</a><span class="k">def</span> <span class="nf">plot_ngram_usage_histories</span><span class="p">(</span>
-    <span class="n">ngram</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
-    <span class="n">gram_usage</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-    <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">lmplot_kws</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;sns.FacetGrid&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Select and plot specific ngram usage histories from the provided gram usage</span>
-<span class="sd">    DataFrame.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    ngram: Union[str, List[str]]</span>
-<span class="sd">        The unigrams, bigrams, or trigrams to retrieve history for.</span>
-<span class="sd">        Note: Must provide all unigrams, bigrams, or trigrams, cannot mix gram size, and</span>
-<span class="sd">        the gram size should be the same as the grams stored in the provided gram_usage</span>
-<span class="sd">        DataFrame.</span>
-<span class="sd">    gram_usage: pd.DataFrame</span>
-<span class="sd">        A pandas DataFrame of all found ngrams (stemmed and cleaned or unstemmed and</span>
-<span class="sd">        uncleaned) from the data and their counts for each session and their percentage</span>
-<span class="sd">        of use as a percent of their use for the day over the sum of all other ngrams</span>
-<span class="sd">        used that day.</span>
-<span class="sd">    strict: bool</span>
-<span class="sd">        Should all ngrams be stemmed or left unstemmed for a more strict usage history.</span>
-<span class="sd">        Default: False (stem and clean all grams in the dataset)</span>
-<span class="sd">    lmplot_kws: Dict[str, Any]</span>
-<span class="sd">        Any extra kwargs to provide to sns.lmplot.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    grid: sns.FacetGrid</span>
-<span class="sd">        The small multiples FacetGrid of all ngrams and infrastructures found in the</span>
-<span class="sd">        provided dataset.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    cdp_data.keywords.compute_ngram_usage_history</span>
-<span class="sd">        Function to generate ngram usage history DataFrame.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
-
-    <span class="c1"># Always cast ngram to list for easier API</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ngram</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">ngram</span> <span class="o">=</span> <span class="p">[</span><span class="n">ngram</span><span class="p">]</span>
-
-    <span class="c1"># TODO:</span>
-    <span class="c1"># Assert all ngrams are the same size</span>
-
-    <span class="c1"># TODO:</span>
-    <span class="c1"># Add keyword grouping??</span>
-
-    <span class="c1"># Store prepared subsets</span>
-    <span class="n">gram_histories</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="c1"># Process the grams for the infrastructure</span>
-    <span class="k">for</span> <span class="n">gram</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">ngram</span><span class="p">,</span> <span class="s2">&quot;Preparing plotting data for each ngram&quot;</span><span class="p">):</span>
-        <span class="n">gram_history</span> <span class="o">=</span> <span class="n">_prepare_ngram_usage_history_plotting_data</span><span class="p">(</span>
-            <span class="n">gram</span><span class="p">,</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">gram_usage</span><span class="p">,</span>
-            <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="c1"># Attach this gram history to all</span>
-        <span class="n">gram_histories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gram_history</span><span class="p">)</span>
-
-    <span class="c1"># Convert histories to dataframe</span>
-    <span class="n">gram_histories</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">gram_histories</span><span class="p">)</span>
-
-    <span class="c1"># Plot all the data</span>
-    <span class="n">grid</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lmplot</span><span class="p">(</span>
-        <span class="n">x</span><span class="o">=</span><span class="s2">&quot;timestamp_posix&quot;</span><span class="p">,</span>
-        <span class="n">y</span><span class="o">=</span><span class="s2">&quot;day_ngram_percent_usage&quot;</span><span class="p">,</span>
-        <span class="n">data</span><span class="o">=</span><span class="n">gram_histories</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">lmplot_kws</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="c1"># Fix the axes to actual date formats</span>
-    <span class="n">_recurse_axes_grid_to_fix_datetimes</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">axes</span><span class="p">)</span>
-
-    <span class="c1"># Set axis labels</span>
-    <span class="n">grid</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">&quot;Date&quot;</span><span class="p">,</span> <span class="s2">&quot;Ngram Usage (percent)&quot;</span><span class="p">)</span>
-    <span class="n">grid</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">grid</span></div>
 
 
 <span class="k">def</span> <span class="nf">_compute_transcript_sim_stats</span><span class="p">(</span>
@@ -1118,76 +840,6 @@
 
     <span class="c1"># Convert gram histories to single dataframe</span>
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">semantic_histories</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="plot_query_semantic_similarity_history"><a class="viewcode-back" href="../../cdp_data.html#cdp_data.keywords.plot_query_semantic_similarity_history">[docs]</a><span class="k">def</span> <span class="nf">plot_query_semantic_similarity_history</span><span class="p">(</span>
-    <span class="n">semantic_history</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-    <span class="n">poolings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">],</span>
-    <span class="n">lmplot_kws</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;sns.FacetGrid&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Plot pre-computed semantic similarity history data.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    semantic_history: pd.DataFrame</span>
-<span class="sd">        The pre-computed semantic similarity history data.</span>
-<span class="sd">    poolings: List[str]:</span>
-<span class="sd">        Which poolings to plot (min, max, and/or mean).</span>
-<span class="sd">        Default: [&quot;min&quot;, &quot;max&quot;, &quot;mean&quot;] (plot all)</span>
-<span class="sd">    lmplot_kws: Dict[str, Any]:</span>
-<span class="sd">        Extra keyword arguments to be passed to seaborn lmplot.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    seaborn.FacetGrid</span>
-<span class="sd">        The semantic similarity history plot.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    cdp_data.keywords.compute_query_semantic_similarity_history</span>
-<span class="sd">        The function used to generate the semantic_history data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
-
-    <span class="c1"># Add datetime timestamp</span>
-    <span class="n">semantic_history</span><span class="p">[</span><span class="s2">&quot;session_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">semantic_history</span><span class="p">[</span><span class="s2">&quot;session_date&quot;</span><span class="p">])</span>
-    <span class="n">semantic_history</span><span class="p">[</span><span class="s2">&quot;timestamp_posix&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">semantic_history</span><span class="p">[</span><span class="s2">&quot;session_date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-        <span class="k">lambda</span> <span class="n">timestamp</span><span class="p">:</span> <span class="n">timestamp</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
-    <span class="p">)</span>
-
-    <span class="c1"># Select poolings</span>
-    <span class="n">subsets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">pooling</span> <span class="ow">in</span> <span class="n">poolings</span><span class="p">:</span>
-        <span class="n">subsets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-                <span class="p">{</span>
-                    <span class="s2">&quot;timestamp_posix&quot;</span><span class="p">:</span> <span class="n">semantic_history</span><span class="p">[</span><span class="s2">&quot;timestamp_posix&quot;</span><span class="p">],</span>
-                    <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">semantic_history</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">],</span>
-                    <span class="s2">&quot;infrastructure&quot;</span><span class="p">:</span> <span class="n">semantic_history</span><span class="p">[</span><span class="s2">&quot;infrastructure&quot;</span><span class="p">],</span>
-                    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">semantic_history</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;day_similarity_</span><span class="si">{</span><span class="n">pooling</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
-                    <span class="s2">&quot;pooling&quot;</span><span class="p">:</span> <span class="n">pooling</span><span class="p">,</span>
-                <span class="p">}</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-    <span class="n">render_ready</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">subsets</span><span class="p">)</span>
-
-    <span class="c1"># Plot all the data</span>
-    <span class="n">grid</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lmplot</span><span class="p">(</span>
-        <span class="n">x</span><span class="o">=</span><span class="s2">&quot;timestamp_posix&quot;</span><span class="p">,</span>
-        <span class="n">y</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">,</span>
-        <span class="n">data</span><span class="o">=</span><span class="n">render_ready</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">lmplot_kws</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="c1"># Fix the axes to actual date formats</span>
-    <span class="n">_recurse_axes_grid_to_fix_datetimes</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">axes</span><span class="p">)</span>
-
-    <span class="c1"># Set axis labels</span>
-    <span class="n">grid</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">&quot;Date&quot;</span><span class="p">,</span> <span class="s2">&quot;Semantic Similarity&quot;</span><span class="p">)</span>
-    <span class="n">grid</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">grid</span></div>
 </pre></div>
         </article>
       </div>

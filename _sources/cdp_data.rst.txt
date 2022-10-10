@@ -45,6 +45,14 @@ cdp\_data.keywords module
    :undoc-members:
    :show-inheritance:
 
+cdp\_data.plots module
+----------------------
+
+.. automodule:: cdp_data.plots
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
