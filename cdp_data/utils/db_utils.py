@@ -3,6 +3,7 @@
 
 from dataclasses import dataclass
 from functools import lru_cache
+from typing import Dict, List
 
 import fireo
 import pandas as pd
@@ -10,6 +11,7 @@ from dataclasses_json import dataclass_json
 from fireo.models import Model
 from google.auth.credentials import AnonymousCredentials
 from google.cloud.firestore import Client
+from tqdm import tqdm
 from tqdm.contrib.concurrent import thread_map
 
 ###############################################################################
@@ -203,3 +205,25 @@ def load_model_from_pd_columns(
         joined = joined.drop([model_ref_col], axis=1)
 
     return joined
+
+
+def expand_models_from_pd_column(
+    data: pd.DataFrame,
+    model_col: str,
+    model_attr_rename_lut: Dict[str, str],
+) -> pd.DataFrame:
+    # Store individual rows
+    expanded_data: List[pd.Series] = []
+
+    # Iter rows and unpack
+    for _, row in tqdm(
+        data.iterrows(),
+        desc=f"Expanding {model_col} models",
+    ):
+        for model_attr_name, attr_replace_name in model_attr_rename_lut.items():
+            row[attr_replace_name] = getattr(row[model_col], model_attr_name)
+
+        expanded_data.append(row)
+
+    # New dataframe with expanded data
+    return pd.DataFrame(expanded_data)

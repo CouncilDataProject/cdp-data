@@ -644,3 +644,221 @@ def save_dataset(
         f"Unrecognized filepath suffix: '{dest.suffix}'. "
         f"Support storage types are 'csv' and 'parquet'."
     )
+
+
+def _get_votes_for_event(key: str) -> pd.DataFrame:
+    return pd.DataFrame(
+        [
+            v.to_dict()
+            for v in db_models.Vote.collection.filter(
+                "event_ref",
+                "==",
+                key,
+            ).fetch()
+        ]
+    )
+
+
+def get_vote_dataset(
+    infrastructure_slug: str,
+    start_datetime: Optional[Union[str, datetime]] = None,
+    end_datetime: Optional[Union[str, datetime]] = None,
+    replace_py_objects: bool = False,
+) -> pd.DataFrame:
+    """
+    Get a dataset of votes from a CDP infrastructure.
+
+    Parameters
+    ----------
+    infrastructure_slug: str
+        The CDP infrastructure to connect to and pull votes for.
+    start_datetime: Optional[Union[str, datetime]]
+        An optional datetime that the vote dataset will start at.
+        Default: None (no datetime beginning bound on the dataset)
+    end_datetime: Optional[Union[str, datetime]]
+        An optional datetime that the vote dataset will end at.
+        Default: None (no datetime end bound on the dataset)
+    replace_py_objects: bool
+        Replace any non-standard Python type with standard ones to
+        allow the returned data be ready for storage.
+        See 'See Also' for more details.
+        Default: False (keep Python objects in the DataFrame)
+
+    Returns
+    -------
+    pd.DataFrame
+        The dataset requested.
+
+    See Also
+    --------
+    replace_dataframe_cols_with_storage_replacements
+        The function used to clean the data of non-standard Python types.
+    """
+    # Connect to infra
+    connect_to_infrastructure(infrastructure_slug)
+
+    # Begin partial query
+    query = db_models.Event.collection
+
+    # Add datetime filters
+    if start_datetime:
+        if isinstance(start_datetime, str):
+            start_datetime = datetime.fromisoformat(start_datetime)
+
+        query = query.filter("event_datetime", ">=", start_datetime)
+    if end_datetime:
+        if isinstance(end_datetime, str):
+            end_datetime = datetime.fromisoformat(end_datetime)
+
+        query = query.filter("event_datetime", "<=", end_datetime)
+
+    # Query for events
+    events = list(query.fetch())
+
+    # Thread fetch votes for each event
+    log.info("Fetching votes for each event")
+    fetched_votes_frames = thread_map(
+        _get_votes_for_event,
+        [e.key for e in events],
+        desc="Fetching votes for each event",
+    )
+    votes = pd.concat(fetched_votes_frames)
+
+    # If no votes are found, return empty dataset
+    if len(votes) == 0:
+        return pd.DataFrame(
+            columns=[
+                "decision",
+                "in_majority",
+                "external_source_id",
+                "id",
+                "key",
+                "event_id",
+                "event_key",
+                "event_datetime",
+                "agenda_uri",
+                "minutes_uri",
+                "matter_id",
+                "matter_key",
+                "matter_name",
+                "matter_type",
+                "matter_title",
+                "event_minutes_item_id",
+                "event_minutes_item_key",
+                "event_minutes_item_index_in_meeting",
+                "event_minutes_item_overall_decision",
+                "person_id",
+                "person_key",
+                "person_name",
+                "body_id",
+                "body_key",
+                "body_name",
+            ],
+        )
+
+    # Thread fetch events for each vote
+    log.info("Attaching event metadata to each vote datum")
+    votes = db_utils.load_model_from_pd_columns(
+        votes,
+        join_id_col="id",
+        model_ref_col="event_ref",
+    )
+
+    # Thread fetch matters for each vote
+    log.info("Attaching matter metadata to each vote datum")
+    votes = db_utils.load_model_from_pd_columns(
+        votes,
+        join_id_col="id",
+        model_ref_col="matter_ref",
+    )
+
+    # Thread fetch event minutes items for each vote
+    log.info("Attaching event minutes item metadata to each vote datum")
+    votes = db_utils.load_model_from_pd_columns(
+        votes,
+        join_id_col="id",
+        model_ref_col="event_minutes_item_ref",
+    )
+
+    # Thread fetch people for each vote
+    log.info("Attaching person metadata to each vote datum")
+    votes = db_utils.load_model_from_pd_columns(
+        votes,
+        join_id_col="id",
+        model_ref_col="person_ref",
+    )
+
+    # Expand event models
+    votes = db_utils.expand_models_from_pd_column(
+        votes,
+        model_col="event",
+        model_attr_rename_lut={
+            "id": "event_id",
+            "key": "event_key",
+            "body_ref": "body_ref",
+            "event_datetime": "event_datetime",
+            "agenda_uri": "agenda_uri",
+            "minutes_uri": "minutes_uri",
+        },
+    )
+
+    # Expand matter models
+    votes = db_utils.expand_models_from_pd_column(
+        votes,
+        model_col="matter",
+        model_attr_rename_lut={
+            "id": "matter_id",
+            "key": "matter_key",
+            "name": "matter_name",
+            "matter_type": "matter_type",
+            "title": "matter_title",
+        },
+    )
+
+    # Expand event minutes item models
+    votes = db_utils.expand_models_from_pd_column(
+        votes,
+        model_col="event_minutes_item",
+        model_attr_rename_lut={
+            "id": "event_minutes_item_id",
+            "key": "event_minutes_item_key",
+            "index": "event_minutes_item_index_in_meeting",
+            "decision": "event_minutes_item_overall_decision",
+        },
+    )
+
+    # Expand person models
+    votes = db_utils.expand_models_from_pd_column(
+        votes,
+        model_col="person",
+        model_attr_rename_lut={
+            "id": "person_id",
+            "key": "person_key",
+            "name": "person_name",
+        },
+    )
+
+    # Thread fetch body for each vote
+    log.info("Attaching body metadata to each vote datum")
+    votes = db_utils.load_model_from_pd_columns(
+        votes,
+        join_id_col="id",
+        model_ref_col="body_ref",
+    )
+
+    # Expand body models
+    votes = db_utils.expand_models_from_pd_column(
+        votes,
+        model_col="body",
+        model_attr_rename_lut={
+            "id": "body_id",
+            "key": "body_key",
+            "name": "body_name",
+        },
+    )
+
+    # Replace col values with storage ready replacements
+    if replace_py_objects:
+        votes = replace_dataframe_cols_with_storage_replacements(votes)
+
+    return votes

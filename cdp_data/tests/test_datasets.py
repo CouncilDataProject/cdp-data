@@ -30,3 +30,23 @@ def test_get_session_dataset() -> None:
     datasets.save_dataset(ds, "test-outputs-session-dataset.parquet")
     with assert_raises(ValueError):
         datasets.save_dataset(ds, "blah.bad-suffix")
+
+
+def test_get_vote_dataset() -> None:
+    ds = datasets.get_vote_dataset(
+        CDPInstances.Seattle,
+        start_datetime="2022-10-01",
+        end_datetime="2022-10-10",
+        replace_py_objects=True,
+    )
+    assert len(ds) == 207
+
+    # Assert that no columns are objects
+    for col in ds.columns:
+        assert not isinstance(ds.loc[0][col], Model)
+
+    # Store
+    datasets.save_dataset(ds, "test-outputs-vote-dataset.csv")
+    datasets.save_dataset(ds, "test-outputs-vote-dataset.parquet")
+    with assert_raises(ValueError):
+        datasets.save_dataset(ds, "blah.bad-suffix")
