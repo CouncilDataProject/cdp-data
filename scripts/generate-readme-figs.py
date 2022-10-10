@@ -43,20 +43,20 @@ grid = plots.plot_ngram_usage_histories(
 grid.savefig("seattle-keywords-over-time.png")
 
 # Compute semantic sim for just Seattle
-print("Generating Seattle semantic sim")
-semantic_hist = keywords.compute_query_semantic_similarity_history(
-    ["defund the police", "missing middle housing"],
-    CDPInstances.Seattle,
-    start_datetime=START_DATETIME,
-    end_datetime=END_DATETIME,
-)
-grid = plots.plot_query_semantic_similarity_history(
-    semantic_hist,
-    lmplot_kws=dict(  # extra plotting params
-        col="query",
-        hue="query",
-        scatter_kws={"alpha": 0.2},
-        aspect=1.6,
-    ),
-)
-grid.savefig("seattle-semantic-sim-over-time.png")
+# print("Generating Seattle semantic sim")
+# semantic_hist = keywords.compute_query_semantic_similarity_history(
+#     ["defund the police", "missing middle housing"],
+#     CDPInstances.Seattle,
+#     start_datetime=START_DATETIME,
+#     end_datetime=END_DATETIME,
+# )
+# grid = plots.plot_query_semantic_similarity_history(
+#     semantic_hist,
+#     lmplot_kws=dict(  # extra plotting params
+#         col="query",
+#         hue="pooling",
+#         scatter_kws={"alpha": 0.2},
+#         aspect=1.6,
+#     ),
+# )
+# grid.savefig("seattle-semantic-sim-over-time.png")

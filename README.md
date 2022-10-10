@@ -141,31 +141,6 @@ grid.savefig("seattle-keywords-over-time.png")
 
 ![Seattle keyword usage over time](https://raw.githubusercontent.com/CouncilDataProject/cdp-data/main/docs/_static/seattle-keywords-over-time.png)
 
-#### Semantic Similarity over Time
-
-```python
-from cdp_data import CDPInstances, keywords, plots
-
-semantic_hist = keywords.compute_query_semantic_similarity_history(
-    ["defund the police", "missing middle housing"],
-    CDPInstances.Seattle,
-    start_datetime="2022-03-01",
-    end_datetime="2022-10-01",
-)
-grid = plots.plot_query_semantic_similarity_history(
-    semantic_hist,
-    lmplot_kws=dict(  # extra plotting params
-        col="query",
-        hue="query",
-        scatter_kws={"alpha": 0.2},
-        aspect=1.6,
-    ),
-)
-grid.savefig("seattle-semantic-sim-over-time.png")
-```
-
-![Seattle semantic similarity over time](https://raw.githubusercontent.com/CouncilDataProject/cdp-data/main/docs/_static/seattle-semantic-sim-over-time.png)
-
 ## Development
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for information related to developing the code.
