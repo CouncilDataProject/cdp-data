@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <meta name="generator" content="sphinx-5.2.3, furo 2022.09.29"/>
-        <title>cdp_data.datasets - cdp-data 0.1.dev1+g515c532 documentation</title>
+        <title>cdp_data.datasets - cdp-data 0.1.dev1+gdfa5fee documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">cdp-data 0.1.dev1+g515c532 documentation</div></a>
+      <a href="../../index.html"><div class="brand">cdp-data 0.1.dev1+gdfa5fee documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">cdp-data 0.1.dev1+g515c532 documentation</span>
+  <span class="sidebar-brand-text">cdp-data 0.1.dev1+gdfa5fee documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -217,6 +217,7 @@
 <span class="kn">from</span> <span class="nn">cdp_backend.database</span> <span class="kn">import</span> <span class="n">models</span> <span class="k">as</span> <span class="n">db_models</span>
 <span class="kn">from</span> <span class="nn">cdp_backend.utils.file_utils</span> <span class="kn">import</span> <span class="n">resource_copy</span>
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span>
+<span class="kn">from</span> <span class="nn">fireo.models</span> <span class="kn">import</span> <span class="n">Model</span>
 <span class="kn">from</span> <span class="nn">gcsfs</span> <span class="kn">import</span> <span class="n">GCSFileSystem</span>
 <span class="kn">from</span> <span class="nn">tqdm.contrib.concurrent</span> <span class="kn">import</span> <span class="n">thread_map</span>
 
@@ -442,10 +443,108 @@
 <span class="c1">###############################################################################</span>
 
 
+<div class="viewcode-block" id="replace_db_model_cols_with_id_cols"><a class="viewcode-back" href="../../cdp_data.html#cdp_data.datasets.replace_db_model_cols_with_id_cols">[docs]</a><span class="k">def</span> <span class="nf">replace_db_model_cols_with_id_cols</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Replace all database model column values with the model ID.</span>
+
+<span class="sd">    Example: an `event` column with event models, will be replaced by an</span>
+<span class="sd">    `event_id` column with just the event id.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df: pd.DataFrame</span>
+<span class="sd">        The data to replace database models with just ids.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame</span>
+<span class="sd">        The updated DataFrame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get a single row sample</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Iter over cols, check type, and replace if type is a db model</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">sample_col_val</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample_col_val</span><span class="p">,</span> <span class="n">Model</span><span class="p">):</span>
+            <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sample_col_val</span><span class="o">.</span><span class="n">collection_name</span><span class="si">}</span><span class="s2">_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="replace_pathlib_path_cols_with_str_path_cols"><a class="viewcode-back" href="../../cdp_data.html#cdp_data.datasets.replace_pathlib_path_cols_with_str_path_cols">[docs]</a><span class="k">def</span> <span class="nf">replace_pathlib_path_cols_with_str_path_cols</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Replace all pathlib Path column values with string column values.</span>
+
+<span class="sd">    Example: a `transcript_path` column with a pathlib Path, will be replaced</span>
+<span class="sd">    as a normal Python string.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df: pd.DataFrame</span>
+<span class="sd">        The data to replace paths in.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame</span>
+<span class="sd">        The updated DataFrame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get a single row sample</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Iter over cols, check type, and replace if type is a db model</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">sample_col_val</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample_col_val</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="replace_dataframe_cols_with_storage_replacements"><a class="viewcode-back" href="../../cdp_data.html#cdp_data.datasets.replace_dataframe_cols_with_storage_replacements">[docs]</a><span class="k">def</span> <span class="nf">replace_dataframe_cols_with_storage_replacements</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run various replacement functions against the dataframe to get the</span>
+<span class="sd">    data to a point where it can be store to disk.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df: pd.DataFrame</span>
+<span class="sd">        The data to fix.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame</span>
+<span class="sd">        The updated DataFrame.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    replace_db_model_cols_with_id_cols</span>
+<span class="sd">        Function to replace database model column values with their ids.</span>
+<span class="sd">    replace_pathlib_path_cols_with_str_path_cols</span>
+<span class="sd">        Function to replace pathlib Path column values with normal Python strings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Replace everything</span>
+    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="p">(</span>
+        <span class="n">replace_db_model_cols_with_id_cols</span><span class="p">,</span>
+        <span class="n">replace_pathlib_path_cols_with_str_path_cols</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
 <div class="viewcode-block" id="get_session_dataset"><a class="viewcode-back" href="../../cdp_data.html#cdp_data.datasets.get_session_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_session_dataset</span><span class="p">(</span>
     <span class="n">infrastructure_slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">start_datetime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">datetime</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">end_datetime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">datetime</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">replace_py_objects</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">store_full_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">store_transcript</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">transcript_selection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;confidence&quot;</span><span class="p">,</span>
@@ -466,6 +565,11 @@
 <span class="sd">    end_datetime: Optional[Union[str, datetime]]</span>
 <span class="sd">        An optional datetime that the session dataset will end at.</span>
 <span class="sd">        Default: None (no datetime end bound on the dataset)</span>
+<span class="sd">    replace_py_objects: bool</span>
+<span class="sd">        Replace any non-standard Python type with standard ones to</span>
+<span class="sd">        allow the returned data be ready for storage.</span>
+<span class="sd">        See &#39;See Also&#39; for more details.</span>
+<span class="sd">        Default: False (keep Python objects in the DataFrame)</span>
 <span class="sd">    store_full_metadata: bool</span>
 <span class="sd">        Should a JSON file of the full event metadata be stored to disk and a</span>
 <span class="sd">        path to the stored JSON file be added to the returned DataFrame.</span>
@@ -537,6 +641,11 @@
 
 <span class="sd">    To clean a whole dataset or specific events or sessions simply delete the</span>
 <span class="sd">    associated directory.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    replace_dataframe_cols_with_storage_replacements</span>
+<span class="sd">        The function used to clean the data of non-standard Python types.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Connect to infra</span>
     <span class="n">fs</span> <span class="o">=</span> <span class="n">connect_to_infrastructure</span><span class="p">(</span><span class="n">infrastructure_slug</span><span class="p">)</span>
@@ -689,7 +798,58 @@
             <span class="n">df_key</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
+    <span class="c1"># Replace col values with storage ready replacements</span>
+    <span class="k">if</span> <span class="n">replace_py_objects</span><span class="p">:</span>
+        <span class="n">sessions</span> <span class="o">=</span> <span class="n">replace_dataframe_cols_with_storage_replacements</span><span class="p">(</span><span class="n">sessions</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">sessions</span></div>
+
+
+<div class="viewcode-block" id="save_dataset"><a class="viewcode-back" href="../../cdp_data.html#cdp_data.datasets.save_dataset">[docs]</a><span class="k">def</span> <span class="nf">save_dataset</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">dest</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function to store a dataset to disk by replacing</span>
+<span class="sd">    non-standard Python types with storage ready replacements.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df: pd.DataFrame</span>
+<span class="sd">        The DataFrame to store.</span>
+<span class="sd">    dest: Union[str, Path]</span>
+<span class="sd">        The path to store the data. Must end in &quot;.csv&quot; or &quot;.parquet&quot;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Path:</span>
+<span class="sd">        The path to the stored data.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    replace_dataframe_cols_with_storage_replacements</span>
+<span class="sd">        The function used to replace column values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Replace col values with storage ready replacements</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">replace_dataframe_cols_with_storage_replacements</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+    <span class="c1"># Convert dest to Path</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
+
+    <span class="c1"># Check suffix</span>
+    <span class="k">if</span> <span class="n">dest</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.csv&quot;</span><span class="p">:</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dest</span>
+
+    <span class="k">if</span> <span class="n">dest</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.parquet&quot;</span><span class="p">:</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dest</span>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Unrecognized filepath suffix: &#39;</span><span class="si">{</span><span class="n">dest</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;Support storage types are &#39;csv&#39; and &#39;parquet&#39;.&quot;</span>
+    <span class="p">)</span></div>
 </pre></div>
         </article>
       </div>
