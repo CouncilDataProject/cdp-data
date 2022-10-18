@@ -10,10 +10,10 @@ def test_ngrams() -> None:
     ngram_usage = keywords.compute_ngram_usage_history(
         CDPInstances.Seattle,
         start_datetime="2021-01-01",
-        end_datetime="2021-02-01",
+        end_datetime="2021-01-10",
     )
     grid = plots.plot_ngram_usage_histories(
-        ["police", "housing", "transportation"],
+        ["police", "housing"],
         ngram_usage,
     )
     grid.savefig("test-generated-ngram-usage-histories-plot.pdf")
@@ -32,11 +32,10 @@ def test_semantic_sim() -> None:
         [
             "defund the police",
             "missing middle housing",
-            "vision zero and traffic fatalities",
         ],
         CDPInstances.Seattle,
         start_datetime="2021-01-01",
-        end_datetime="2021-01-20",
+        end_datetime="2021-01-10",
     )
     grid = plots.plot_query_semantic_similarity_history(
         semantic_hist,
