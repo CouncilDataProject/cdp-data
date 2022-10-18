@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from functools import partial
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 import pandas as pd
 from cdp_backend.database import models as db_models
@@ -264,6 +264,7 @@ def _compute_ngram_usage_history(
     data: pd.DataFrame,
     ngram_size: int = 1,
     strict: bool = False,
+    tqdm_kws: Dict[str, Any] = {},
 ) -> pd.DataFrame:
     """
     Compute all ngrams usage history for the provided session dataset.
@@ -280,6 +281,9 @@ def _compute_ngram_usage_history(
     strict: bool
         Should all ngrams be stemmed or left unstemmed for a more strict usage history.
         Default: False (stem and clean all grams in the dataset)
+    tqdm_kws: Dict[str, Any]
+        A dictionary with extra keyword arguments to provide to tqdm progress
+        bars. Must not include the `desc` keyword argument.
 
     Returns
     -------
@@ -326,6 +330,7 @@ def _compute_ngram_usage_history(
                 for _, row in data.iterrows()
             ],
             desc="Counting ngrams in each transcript",
+            **tqdm_kws,
         )
     )
 
@@ -357,6 +362,7 @@ def compute_ngram_usage_history(
     start_datetime: Optional[Union[str, datetime]] = None,
     end_datetime: Optional[Union[str, datetime]] = None,
     cache_dir: Optional[Union[str, Path]] = None,
+    tqdm_kws: Dict[str, Any] = {},
 ) -> pd.DataFrame:
     """
     Pull the minimal data needed for a session dataset for the provided infrastructure
@@ -382,6 +388,9 @@ def compute_ngram_usage_history(
         An optional directory path to cache the dataset. Directory is created if it
         does not exist.
         Default: "./cdp-datasets"
+    tqdm_kws: Dict[str, Any]
+        A dictionary with extra keyword arguments to provide to tqdm progress
+        bars. Must not include the `desc` keyword argument.
 
     Returns
     -------
@@ -419,7 +428,9 @@ def compute_ngram_usage_history(
 
     # Start collecting datasets for each infrastructure
     for infra_slug in tqdm(
-        infrastructure_slug, "Counting ngrams for each infrastructure"
+        infrastructure_slug,
+        desc="Counting ngrams for each infrastructure",
+        **tqdm_kws,
     ):
         # Get the dataset
         log.info(f"Getting session dataset for {infra_slug}")
@@ -429,6 +440,7 @@ def compute_ngram_usage_history(
             end_datetime=end_datetime,
             store_transcript=True,
             cache_dir=cache_dir,
+            tqdm_kws=tqdm_kws,
         )
 
         # Compute ngram usages for infra
@@ -437,6 +449,7 @@ def compute_ngram_usage_history(
             infra_ds,
             ngram_size=ngram_size,
             strict=strict,
+            tqdm_kws=tqdm_kws,
         )
         infra_gram_usage["infrastructure"] = infra_slug
         gram_usage.append(infra_gram_usage)
@@ -487,6 +500,7 @@ def _compute_query_semantic_similarity_history(
     data: pd.DataFrame,
     query_vec: "Tensor",
     model: "SentenceTransformer",
+    tqdm_kws: Dict[str, Any] = {},
 ) -> pd.DataFrame:
     # Construct partial for threaded counter func
     process_func = partial(
@@ -499,7 +513,9 @@ def _compute_query_semantic_similarity_history(
     # of each transcript
     sim_stats_list: List[pd.DataFrame] = []
     for _, row in tqdm(
-        data.iterrows(), "Computing semantic similarity for each transcript"
+        data.iterrows(),
+        desc="Computing semantic similarity for each transcript",
+        **tqdm_kws,
     ):
         sim_stats_list.append(
             process_func(
@@ -540,6 +556,7 @@ def compute_query_semantic_similarity_history(
     end_datetime: Optional[Union[str, datetime]] = None,
     cache_dir: Optional[Union[str, Path]] = None,
     embedding_model: str = "msmarco-distilbert-base-v4",
+    tqdm_kws: Dict[str, Any] = {},
 ) -> pd.DataFrame:
     """
     Compute the semantic similarity of a query against every sentence of every meeting.
@@ -567,7 +584,10 @@ def compute_query_semantic_similarity_history(
         Default: "msmarco-distilbert-base-v4"
         All embedding models are available here:
         https://www.sbert.net/docs/pretrained-models/msmarco-v3.html
-        Select any of the "Models tuned for cosine-similarity".
+        Select any of the "Models tuned for cosine-similarity".'
+    tqdm_kws: Dict[str, Any]
+        A dictionary with extra keyword arguments to provide to tqdm progress
+        bars. Must not include the `desc` keyword argument.
 
     Returns
     -------
@@ -603,7 +623,9 @@ def compute_query_semantic_similarity_history(
 
     # Start collecting datasets for each infrastructure
     for infra_slug in tqdm(
-        infrastructure_slug, "Computing semantic similarity for each infrastructure"
+        infrastructure_slug,
+        desc="Computing semantic similarity for each infrastructure",
+        **tqdm_kws,
     ):
         # Get the dataset
         log.info(f"Getting session dataset for {infra_slug}")
@@ -613,9 +635,14 @@ def compute_query_semantic_similarity_history(
             end_datetime=end_datetime,
             store_transcript=True,
             cache_dir=cache_dir,
+            tqdm_kws=tqdm_kws,
         )
 
-        for q in tqdm(query, "Computing semantic similarlity for each query"):
+        for q in tqdm(
+            query,
+            desc="Computing semantic similarlity for each query",
+            **tqdm_kws,
+        ):
             # Get query embedding
             query_vec = model.encode(q)
 
@@ -626,6 +653,7 @@ def compute_query_semantic_similarity_history(
                     data=infra_ds,
                     query_vec=query_vec,
                     model=model,
+                    tqdm_kws=tqdm_kws,
                 )
             )
             infra_query_semantic_sim_history["infrastructure"] = infra_slug

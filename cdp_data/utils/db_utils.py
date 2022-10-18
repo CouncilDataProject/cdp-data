@@ -3,7 +3,7 @@
 
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import Dict, List
+from typing import Any, Dict, List
 
 import fireo
 import pandas as pd
@@ -117,6 +117,7 @@ def load_model_from_pd_columns(
     join_id_col: str,
     model_ref_col: str,
     drop_original_model_ref: bool = True,
+    tqdm_kws: Dict[str, Any] = {},
 ) -> pd.DataFrame:
     """
     Load a model reference and attach the loaded model back to the original DataFrame.
@@ -135,6 +136,9 @@ def load_model_from_pd_columns(
         After loading and joining all models to the DataFrame, should the original
         `model_ref_col` be dropped.
         Default: True (drop the original `model_ref_column`)
+    tqdm_kws: Dict[str, Any]
+        A dictionary with extra keyword arguments to provide to tqdm progress
+        bars. Must not include the `desc` keyword argument.
 
     Returns
     -------
@@ -186,6 +190,7 @@ def load_model_from_pd_columns(
             for _, row in data.iterrows()
         ],
         desc=f"Fetching each model attached to {model_ref_col}",
+        **tqdm_kws,
     )
 
     # Convert to dataframe
@@ -211,6 +216,7 @@ def expand_models_from_pd_column(
     data: pd.DataFrame,
     model_col: str,
     model_attr_rename_lut: Dict[str, str],
+    tqdm_kws: Dict[str, Any] = {},
 ) -> pd.DataFrame:
     # Store individual rows
     expanded_data: List[pd.Series] = []
@@ -219,6 +225,7 @@ def expand_models_from_pd_column(
     for _, row in tqdm(
         data.iterrows(),
         desc=f"Expanding {model_col} models",
+        **tqdm_kws,
     ):
         for model_attr_name, attr_replace_name in model_attr_rename_lut.items():
             row[attr_replace_name] = getattr(row[model_col], model_attr_name)

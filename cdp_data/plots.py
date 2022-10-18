@@ -239,6 +239,7 @@ def plot_ngram_usage_histories(
     gram_usage: pd.DataFrame,
     strict: bool = False,
     lmplot_kws: Dict[str, Any] = {},
+    tqdm_kws: Dict[str, Any] = {},
 ) -> "sns.FacetGrid":
     """
     Select and plot specific ngram usage histories from the provided gram usage
@@ -261,6 +262,9 @@ def plot_ngram_usage_histories(
         Default: False (stem and clean all grams in the dataset)
     lmplot_kws: Dict[str, Any]
         Any extra kwargs to provide to sns.lmplot.
+    tqdm_kws: Dict[str, Any]
+        A dictionary with extra keyword arguments to provide to tqdm progress
+        bars. Must not include the `desc` keyword argument.
 
     Returns
     -------
@@ -287,7 +291,11 @@ def plot_ngram_usage_histories(
     gram_histories = []
 
     # Process the grams for the infrastructure
-    for gram in tqdm(ngram, "Preparing plotting data for each ngram"):
+    for gram in tqdm(
+        ngram,
+        desc="Preparing plotting data for each ngram",
+        **tqdm_kws,
+    ):
         gram_history = _prepare_ngram_usage_history_plotting_data(
             gram,
             data=gram_usage,

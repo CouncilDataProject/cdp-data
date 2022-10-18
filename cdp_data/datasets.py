@@ -5,7 +5,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 from cdp_backend.database import models as db_models
@@ -377,6 +377,8 @@ def get_session_dataset(
     store_video: bool = False,
     store_audio: bool = False,
     cache_dir: Optional[Union[str, Path]] = None,
+    raise_on_error: bool = False,
+    tqdm_kws: Dict[str, Any] = {},
 ) -> pd.DataFrame:
     """
     Get a dataset of sessions from a CDP infrastructure.
@@ -428,6 +430,9 @@ def get_session_dataset(
         An optional directory path to cache the dataset. Directory is created if it
         does not exist.
         Default: "./cdp-datasets"
+    tqdm_kws: Dict[str, Any]
+        A dictionary with extra keyword arguments to provide to tqdm progress
+        bars. Must not include the `desc` keyword argument.
 
     Returns
     -------
@@ -520,6 +525,7 @@ def get_session_dataset(
         sessions,
         join_id_col="id",
         model_ref_col="event_ref",
+        tqdm_kws=tqdm_kws,
     )
 
     # We only need to handle cache dir and more if any extras are True
@@ -564,6 +570,7 @@ def get_session_dataset(
                 for _, row in sessions.iterrows()
             ],
             desc="Fetching videos",
+            **tqdm_kws,
         )
 
         # Merge fetched data back to session df
@@ -590,6 +597,7 @@ def get_session_dataset(
                 for _, row in sessions.iterrows()
             ],
             desc="Fetching audios",
+            **tqdm_kws,
         )
 
         # Merge fetched data back to session df
@@ -618,6 +626,7 @@ def get_session_dataset(
                 for _, row in sessions.iterrows()
             ],
             desc="Fetching transcripts",
+            **tqdm_kws,
         )
 
         # Merge fetched data back to session df
@@ -641,6 +650,7 @@ def get_session_dataset(
             for _, row in tqdm(
                 sessions.iterrows(),
                 desc="Converting and storing each transcript as a CSV",
+                **tqdm_kws,
             ):
                 # Convert
                 transcript_df = convert_transcript_to_dataframe(row["transcript_path"])
@@ -728,6 +738,7 @@ def get_vote_dataset(
     start_datetime: Optional[Union[str, datetime]] = None,
     end_datetime: Optional[Union[str, datetime]] = None,
     replace_py_objects: bool = False,
+    tqdm_kws: Dict[str, Any] = {},
 ) -> pd.DataFrame:
     """
     Get a dataset of votes from a CDP infrastructure.
@@ -747,6 +758,9 @@ def get_vote_dataset(
         allow the returned data be ready for storage.
         See 'See Also' for more details.
         Default: False (keep Python objects in the DataFrame)
+    tqdm_kws: Dict[str, Any]
+        A dictionary with extra keyword arguments to provide to tqdm progress
+        bars. Must not include the `desc` keyword argument.
 
     Returns
     -------
@@ -785,6 +799,7 @@ def get_vote_dataset(
         _get_votes_for_event,
         [e.key for e in events],
         desc="Fetching votes for each event",
+        **tqdm_kws,
     )
     votes = pd.concat(fetched_votes_frames)
 
@@ -826,6 +841,7 @@ def get_vote_dataset(
         votes,
         join_id_col="id",
         model_ref_col="event_ref",
+        tqdm_kws=tqdm_kws,
     )
 
     # Thread fetch matters for each vote
@@ -834,6 +850,7 @@ def get_vote_dataset(
         votes,
         join_id_col="id",
         model_ref_col="matter_ref",
+        tqdm_kws=tqdm_kws,
     )
 
     # Thread fetch event minutes items for each vote
@@ -842,6 +859,7 @@ def get_vote_dataset(
         votes,
         join_id_col="id",
         model_ref_col="event_minutes_item_ref",
+        tqdm_kws=tqdm_kws,
     )
 
     # Thread fetch people for each vote
@@ -850,6 +868,7 @@ def get_vote_dataset(
         votes,
         join_id_col="id",
         model_ref_col="person_ref",
+        tqdm_kws=tqdm_kws,
     )
 
     # Expand event models
@@ -864,6 +883,7 @@ def get_vote_dataset(
             "agenda_uri": "agenda_uri",
             "minutes_uri": "minutes_uri",
         },
+        tqdm_kws=tqdm_kws,
     )
 
     # Expand matter models
@@ -877,6 +897,7 @@ def get_vote_dataset(
             "matter_type": "matter_type",
             "title": "matter_title",
         },
+        tqdm_kws=tqdm_kws,
     )
 
     # Expand event minutes item models
@@ -889,6 +910,7 @@ def get_vote_dataset(
             "index": "event_minutes_item_index_in_meeting",
             "decision": "event_minutes_item_overall_decision",
         },
+        tqdm_kws=tqdm_kws,
     )
 
     # Expand person models
@@ -900,6 +922,7 @@ def get_vote_dataset(
             "key": "person_key",
             "name": "person_name",
         },
+        tqdm_kws=tqdm_kws,
     )
 
     # Thread fetch body for each vote
@@ -908,6 +931,7 @@ def get_vote_dataset(
         votes,
         join_id_col="id",
         model_ref_col="body_ref",
+        tqdm_kws=tqdm_kws,
     )
 
     # Expand body models
@@ -919,6 +943,7 @@ def get_vote_dataset(
             "key": "body_key",
             "name": "body_name",
         },
+        tqdm_kws=tqdm_kws,
     )
 
     # Replace col values with storage ready replacements
