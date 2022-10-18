@@ -362,6 +362,7 @@ def compute_ngram_usage_history(
     start_datetime: Optional[Union[str, datetime]] = None,
     end_datetime: Optional[Union[str, datetime]] = None,
     cache_dir: Optional[Union[str, Path]] = None,
+    raise_on_error: bool = True,
     tqdm_kws: Dict[str, Any] = {},
 ) -> pd.DataFrame:
     """
@@ -388,6 +389,9 @@ def compute_ngram_usage_history(
         An optional directory path to cache the dataset. Directory is created if it
         does not exist.
         Default: "./cdp-datasets"
+    raise_on_error: bool
+        Should any failure to pull files result in an error or be ignored.
+        Default: True (raise on any failure)
     tqdm_kws: Dict[str, Any]
         A dictionary with extra keyword arguments to provide to tqdm progress
         bars. Must not include the `desc` keyword argument.
@@ -440,6 +444,7 @@ def compute_ngram_usage_history(
             end_datetime=end_datetime,
             store_transcript=True,
             cache_dir=cache_dir,
+            raise_on_error=raise_on_error,
             tqdm_kws=tqdm_kws,
         )
 
@@ -556,6 +561,7 @@ def compute_query_semantic_similarity_history(
     end_datetime: Optional[Union[str, datetime]] = None,
     cache_dir: Optional[Union[str, Path]] = None,
     embedding_model: str = "msmarco-distilbert-base-v4",
+    raise_on_error: bool = True,
     tqdm_kws: Dict[str, Any] = {},
 ) -> pd.DataFrame:
     """
@@ -585,6 +591,9 @@ def compute_query_semantic_similarity_history(
         All embedding models are available here:
         https://www.sbert.net/docs/pretrained-models/msmarco-v3.html
         Select any of the "Models tuned for cosine-similarity".'
+    raise_on_error: bool
+        Should any failure to pull files result in an error or be ignored.
+        Default: True (raise on any failure)
     tqdm_kws: Dict[str, Any]
         A dictionary with extra keyword arguments to provide to tqdm progress
         bars. Must not include the `desc` keyword argument.
@@ -635,6 +644,7 @@ def compute_query_semantic_similarity_history(
             end_datetime=end_datetime,
             store_transcript=True,
             cache_dir=cache_dir,
+            raise_on_error=raise_on_error,
             tqdm_kws=tqdm_kws,
         )
 
