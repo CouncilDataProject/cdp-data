@@ -31,3 +31,6 @@ class CDPInstances:
     Richmond = "cdp-richmond-a3d06941"
     Louisville = "cdp-louisville-6fd32a38"
     Atlanta = "cdp-atlanta-37e7dd70"
+
+    all_instances = [Seattle, KingCounty, Portland, Missoula, Denver, Alameda, Boston, Oakland, Charlotte, SanJose,
+                     MountainView, Milwaukee, LongBeach, Albuquerque, Richmond, Louisville, Atlanta]
