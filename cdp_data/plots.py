@@ -13,6 +13,8 @@ from . import keywords
 
 if TYPE_CHECKING:
     from matplotlib.axes import SubplotBase
+    from bokeh.plotting._figure import figure
+
 
 ###############################################################################
 
@@ -392,3 +394,75 @@ def plot_query_semantic_similarity_history(
     grid.tight_layout()
 
     return grid
+
+
+###############################################################################
+
+DEFAULT_TOOLTIP_FORMATTER = """
+<div style="max-width: 400px; word-wrap: break-word;">
+    <span style="color: blue;font-weight: bold;">text: </span>@text...
+</div>
+"""
+
+###############################################################################
+
+
+def umap_text(
+    texts: List[str],
+    model: str = "all-distilroberta-v1",
+    tooltip_text_limit: int = 256,
+    figure_kws: Dict[str, Any] = dict(
+        width=900,
+        height=800,
+        tooltips=DEFAULT_TOOLTIP_FORMATTER,
+    ),
+    scatter_kws: Dict[str, Any] = dict(
+        size=3,
+        alpha=0.8,
+    ),
+    output_to_notebook: bool = True,
+) -> "figure":
+    try:
+        from bokeh.models import ColumnDataSource
+        from bokeh.plotting import figure, output_notebook, show
+        from sentence_transformers import SentenceTransformer
+        from umap import UMAP
+    except ImportError:
+        raise ImportError(
+            "This function requires additional dependencies. "
+            "To install required extras, run `pip install cdp-data[transformers,plot]`."
+        )
+
+    # Preload model
+    model = SentenceTransformer("all-distilroberta-v1")
+
+    # Encode texts
+    X = model.encode(texts)
+
+    # UMAP
+    umap = UMAP()
+    Xtfm = umap.fit_transform(X)
+
+    # Convert to DataFrame for easy plotting
+    df = pd.DataFrame()
+    df["x"] = Xtfm[:, 0]
+    df["y"] = Xtfm[:, 1]
+    df["text_full"] = texts
+    df["text"] = [t[:tooltip_text_limit] for t in texts]
+
+    # Create data source for plot
+    source = ColumnDataSource(df)
+
+    # Create fig
+    p = figure(**figure_kws)
+    p.scatter(x="x", y="y", source=source, **scatter_kws)
+    p.xaxis[0].axis_label = "X"
+    p.yaxis[0].axis_label = "Y"
+
+    # Render
+    if output_to_notebook:
+        output_notebook()
+        show(p)
+    
+    # Always return
+    return p

@@ -49,8 +49,10 @@ Documentation = "https://CouncilDataProject.github.io/cdp-data"
 [project.optional-dependencies]
 transformers = [
   "sentence-transformers~=2.2.2",
+  "umap-learn>=0.5.3",
 ]
 plot = [
+  "bokeh>=3",
   "matplotlib>=3",
   "seaborn>=0.11.2",
   # Support
