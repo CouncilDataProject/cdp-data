@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import logging
 from collections import Counter
@@ -221,7 +220,7 @@ def _count_transcript_grams(
     strict: bool,
 ) -> pd.DataFrame:
     # Load transcript
-    with open(processing_params.transcript_path, "r") as open_f:
+    with open(processing_params.transcript_path) as open_f:
         transcript = Transcript.from_json(open_f.read())
 
     # Start a counter
@@ -264,7 +263,7 @@ def _compute_ngram_usage_history(
     data: pd.DataFrame,
     ngram_size: int = 1,
     strict: bool = False,
-    tqdm_kws: Dict[str, Any] = {},
+    tqdm_kws: Union[Dict[str, Any], None] = None,
 ) -> pd.DataFrame:
     """
     Compute all ngrams usage history for the provided session dataset.
@@ -293,6 +292,10 @@ def _compute_ngram_usage_history(
         of use as a percent of their use for the day over the sum of all other ngrams
         used that day.
     """
+    # Handle default dict
+    if not tqdm_kws:
+        tqdm_kws = {}
+
     # Ensure stopwords are downloaded
     # Do this once to ensure that we don't enter a race condition
     # with multiple workers trying to download / read overtop one another
@@ -363,7 +366,7 @@ def compute_ngram_usage_history(
     end_datetime: Optional[Union[str, datetime]] = None,
     cache_dir: Optional[Union[str, Path]] = None,
     raise_on_error: bool = True,
-    tqdm_kws: Dict[str, Any] = {},
+    tqdm_kws: Union[Dict[str, Any], None] = None,
 ) -> pd.DataFrame:
     """
     Pull the minimal data needed for a session dataset for the provided infrastructure
@@ -423,6 +426,10 @@ def compute_ngram_usage_history(
     It is recommended to cache this dataset after computation because it may take a
     while depending on machine resources and available.
     """
+    # Handle default dict
+    if not tqdm_kws:
+        tqdm_kws = {}
+
     # Always cast infrastructure slugs to list for easier API
     if isinstance(infrastructure_slug, str):
         infrastructure_slug = [infrastructure_slug]
@@ -471,7 +478,7 @@ def _compute_transcript_sim_stats(
     from sentence_transformers.util import cos_sim
 
     # Load transcript
-    with open(processing_params.transcript_path, "r") as open_f:
+    with open(processing_params.transcript_path) as open_f:
         transcript = Transcript.from_json(open_f.read())
 
     # Create incremental stats for updating mean, min, max
@@ -505,8 +512,12 @@ def _compute_query_semantic_similarity_history(
     data: pd.DataFrame,
     query_vec: "Tensor",
     model: "SentenceTransformer",
-    tqdm_kws: Dict[str, Any] = {},
+    tqdm_kws: Union[Dict[str, Any], None] = None,
 ) -> pd.DataFrame:
+    # Handle default dict
+    if not tqdm_kws:
+        tqdm_kws = {}
+
     # Construct partial for threaded counter func
     process_func = partial(
         _compute_transcript_sim_stats,
@@ -562,7 +573,7 @@ def compute_query_semantic_similarity_history(
     cache_dir: Optional[Union[str, Path]] = None,
     embedding_model: str = "msmarco-distilbert-base-v4",
     raise_on_error: bool = True,
-    tqdm_kws: Dict[str, Any] = {},
+    tqdm_kws: Union[Dict[str, Any], None] = None,
 ) -> pd.DataFrame:
     """
     Compute the semantic similarity of a query against every sentence of every meeting.
@@ -611,11 +622,16 @@ def compute_query_semantic_similarity_history(
     """
     try:
         from sentence_transformers import SentenceTransformer
-    except ImportError:
+    except ImportError as e:
         raise ImportError(
             "This function requires additional dependencies. "
             "To install required extras, run `pip install cdp-data[transformers]`."
-        )
+        ) from e
+
+    # Handle default dict
+    if not tqdm_kws:
+        tqdm_kws = {}
+
     # Always cast query to list for easier API
     if isinstance(query, str):
         query = [query]

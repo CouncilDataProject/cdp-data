@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 from fireo.models import Model
 from numpy.testing import assert_raises

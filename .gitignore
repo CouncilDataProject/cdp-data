@@ -115,6 +115,7 @@ ENV/
 # Cached datasets
 cdp-datasets/
 cdp-councils-in-action-2022/
+cdp-minutes-item-generation-dataset/
 
 # Project specific
 *keyword_usage.parquet

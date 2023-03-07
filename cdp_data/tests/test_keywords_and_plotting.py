@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 from cdp_data import CDPInstances, keywords, plots
 

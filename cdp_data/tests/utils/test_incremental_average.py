@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 from typing import List, Union
 
@@ -11,6 +10,7 @@ from cdp_data.utils.incremental_average import (
     IncrementalStats,
     update_average,
 )
+
 
 ###############################################################################
 

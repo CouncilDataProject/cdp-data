@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, List, Union
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Union
 
 import numpy as np
 import pandas as pd
@@ -18,9 +17,7 @@ if TYPE_CHECKING:
 
 
 def set_cdp_plotting_styles() -> None:
-    """
-    Set the standard CDP plotting styles.
-    """
+    """Set the standard CDP plotting styles."""
     sns.set_context("paper")
     sns.set_theme(
         style="ticks", rc={"axes.spines.right": False, "axes.spines.top": False}
@@ -64,7 +61,7 @@ def _prepare_ngram_history_plotting_data(
     ngram_col: str,
     value_col: str,
     dt_col: str,
-    keep_cols: List[str] = [],
+    keep_cols: Union[List[str], None] = None,
 ) -> pd.DataFrame:
     """
     A utility function to prepare ngram history data for plotting.
@@ -96,6 +93,10 @@ def _prepare_ngram_history_plotting_data(
     prepare_ngram_usage_history_plotting_data
         Function to prepare specifically ngram usage history data for plotting.
     """
+    # Handle empty keep cols
+    if not keep_cols:
+        keep_cols = []
+
     # Select down to just the columns we want
     # Reset index
     # Sort values by datetime
@@ -238,8 +239,8 @@ def plot_ngram_usage_histories(
     ngram: Union[str, List[str]],
     gram_usage: pd.DataFrame,
     strict: bool = False,
-    lmplot_kws: Dict[str, Any] = {},
-    tqdm_kws: Dict[str, Any] = {},
+    lmplot_kws: Union[Dict[str, Any], None] = None,
+    tqdm_kws: Union[Dict[str, Any], None] = None,
 ) -> "sns.FacetGrid":
     """
     Select and plot specific ngram usage histories from the provided gram usage
@@ -277,6 +278,12 @@ def plot_ngram_usage_histories(
     cdp_data.keywords.compute_ngram_usage_history
         Function to generate ngram usage history DataFrame.
     """
+    # Handle default dicts
+    if not lmplot_kws:
+        lmplot_kws = {}
+    if not tqdm_kws:
+        tqdm_kws = {}
+
     # Always cast ngram to list for easier API
     if isinstance(ngram, str):
         ngram = [ngram]
@@ -328,8 +335,8 @@ def plot_ngram_usage_histories(
 
 def plot_query_semantic_similarity_history(
     semantic_history: pd.DataFrame,
-    poolings: List[str] = ["min", "max", "mean"],
-    lmplot_kws: Dict[str, Any] = {},
+    poolings: Iterable[str] = ("min", "max", "mean"),
+    lmplot_kws: Union[Dict[str, Any], None] = None,
 ) -> "sns.FacetGrid":
     """
     Plot pre-computed semantic similarity history data.
@@ -354,6 +361,10 @@ def plot_query_semantic_similarity_history(
     cdp_data.keywords.compute_query_semantic_similarity_history
         The function used to generate the semantic_history data.
     """
+    # Handle default dict
+    if not lmplot_kws:
+        lmplot_kws = {}
+
     # Add datetime timestamp
     semantic_history["session_date"] = pd.to_datetime(semantic_history["session_date"])
     semantic_history["timestamp_posix"] = semantic_history["session_date"].apply(

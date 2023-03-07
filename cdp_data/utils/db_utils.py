@@ -1,9 +1,8 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 
 import fireo
 import pandas as pd
@@ -117,7 +116,7 @@ def load_model_from_pd_columns(
     join_id_col: str,
     model_ref_col: str,
     drop_original_model_ref: bool = True,
-    tqdm_kws: Dict[str, Any] = {},
+    tqdm_kws: Union[Dict[str, Any], None] = None,
 ) -> pd.DataFrame:
     """
     Load a model reference and attach the loaded model back to the original DataFrame.
@@ -179,6 +178,10 @@ def load_model_from_pd_columns(
     ...     model_ref_col="event_ref",
     ... )
     """
+    # Handle default dict
+    if not tqdm_kws:
+        tqdm_kws = {}
+
     # Get models
     loaded_models = thread_map(
         _load_model_from_reference_joiner,
@@ -216,8 +219,12 @@ def expand_models_from_pd_column(
     data: pd.DataFrame,
     model_col: str,
     model_attr_rename_lut: Dict[str, str],
-    tqdm_kws: Dict[str, Any] = {},
+    tqdm_kws: Union[Dict[str, Any], None] = None,
 ) -> pd.DataFrame:
+    # Handle default dict
+    if not tqdm_kws:
+        tqdm_kws = {}
+
     # Store individual rows
     expanded_data: List[pd.Series] = []
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import argparse
 import json
@@ -98,7 +97,7 @@ class Args(argparse.Namespace):
 ###############################################################################
 
 
-def generate_paper_content(
+def generate_paper_content(  # noqa: C901
     storage_directory: Union[str, Path],
     clean_archived_data: bool,
     clean_content: bool,
@@ -292,13 +291,13 @@ def generate_paper_content(
             ngram=PLOT_NGRAMS,
             gram_usage=seattle_ngram_usage,
             strict=False,  # stem provided grams
-            lmplot_kws=dict(  # extra plotting params
-                col="ngram",
-                hue="ngram",
-                col_wrap=2,
-                scatter_kws={"alpha": 0.2},
-                aspect=1.6,
-            ),
+            lmplot_kws={  # extra plotting params
+                "col": "ngram",
+                "hue": "ngram",
+                "col_wrap": 2,
+                "scatter_kws": {"alpha": 0.2},
+                "aspect": 1.6,
+            },
         )
         seattle_discussion_trends_grid.savefig(seattle_discussion_trends_pdf)
         seattle_discussion_trends_grid.savefig(seattle_discussion_trends_png)
@@ -419,13 +418,13 @@ def generate_paper_content(
             ngram=PLOT_NGRAMS,
             gram_usage=all_instances_ngram_usage,
             strict=False,  # stem provided grams
-            lmplot_kws=dict(  # extra plotting params
-                col="ngram",
-                hue="ngram",
-                col_wrap=2,
-                scatter_kws={"alpha": 0.2},
-                aspect=1.6,
-            ),
+            lmplot_kws={  # extra plotting params
+                "col": "ngram",
+                "hue": "ngram",
+                "col_wrap": 2,
+                "scatter_kws": {"alpha": 0.2},
+                "aspect": 1.6,
+            },
         )
         all_instances_discussion_trends_grid.savefig(
             all_instances_discussion_trends_pdf,
@@ -439,13 +438,13 @@ def generate_paper_content(
             ngram=PLOT_NGRAMS,
             gram_usage=all_instances_ngram_usage,
             strict=False,  # stem provided grams
-            lmplot_kws=dict(  # extra plotting params
-                col="infrastructure",
-                hue="ngram",
-                row="ngram",
-                scatter_kws={"alpha": 0.2},
-                aspect=1.6,
-            ),
+            lmplot_kws={  # extra plotting params
+                "col": "infrastructure",
+                "hue": "ngram",
+                "row": "ngram",
+                "scatter_kws": {"alpha": 0.2},
+                "aspect": 1.6,
+            },
         )
         all_instances_split_discussion_trends_grid.savefig(
             all_instances_split_discussion_trends_pdf,

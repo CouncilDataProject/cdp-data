@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import logging
 from dataclasses import dataclass
@@ -83,7 +82,7 @@ def _get_matching_video(
             video_path=save_path,
         )
 
-    except Exception:
+    except Exception as e:
         if fetch_params.raise_on_error:
             raise FileNotFoundError(
                 f"Something went wrong while fetching the video for session: "
@@ -94,7 +93,7 @@ def _get_matching_video(
                 f"please create a new one. "
                 f"In the meantime, please try rerunning your request with "
                 f"`raise_on_error=False`"
-            )
+            ) from e
 
         return _MatchingVideo(
             session_key=fetch_params.session_key,
@@ -174,7 +173,7 @@ def _get_matching_audio(
             audio_path=save_path,
         )
 
-    except Exception:
+    except Exception as e:
         if fetch_params.raise_on_error:
             raise FileNotFoundError(
                 f"Something went wrong while fetching the video for session: "
@@ -185,7 +184,7 @@ def _get_matching_audio(
                 f"please create a new one. "
                 f"In the meantime, please try rerunning your request with "
                 f"`raise_on_error=False`"
-            )
+            ) from e
 
         return _MatchingAudio(
             session_key=fetch_params.session_key,
@@ -262,7 +261,7 @@ def _get_matching_db_transcript(
             transcript_path=save_path,
         )
 
-    except Exception:
+    except Exception as e:
         if fetch_params.raise_on_error:
             raise FileNotFoundError(
                 f"Something went wrong while fetching the video for session: "
@@ -273,7 +272,7 @@ def _get_matching_db_transcript(
                 f"please create a new one. "
                 f"In the meantime, please try rerunning your request with "
                 f"`raise_on_error=False`"
-            )
+            ) from e
 
         return _MatchingTranscript(
             session_key=fetch_params.session_key,
@@ -416,7 +415,7 @@ def convert_transcript_to_dataframe(
     """
     # Read transcript is need be
     if isinstance(transcript, (str, Path)):
-        with open(transcript, "r") as open_f:
+        with open(transcript) as open_f:
             transcript = Transcript.from_json(open_f.read())
 
     # Dump sentences to frame
@@ -427,7 +426,7 @@ def convert_transcript_to_dataframe(
     return sentences
 
 
-def get_session_dataset(
+def get_session_dataset(  # noqa: C901
     infrastructure_slug: str,
     start_datetime: Optional[Union[str, datetime]] = None,
     end_datetime: Optional[Union[str, datetime]] = None,
@@ -440,7 +439,7 @@ def get_session_dataset(
     store_audio: bool = False,
     cache_dir: Optional[Union[str, Path]] = None,
     raise_on_error: bool = True,
-    tqdm_kws: Dict[str, Any] = {},
+    tqdm_kws: Union[Dict[str, Any], None] = None,
 ) -> pd.DataFrame:
     """
     Get a dataset of sessions from a CDP infrastructure.
@@ -517,27 +516,27 @@ def get_session_dataset(
         {cache-dir}/
         └── {infrastructure_slug}
             ├── event-{event-id-0}
-            │   ├── metadata.json
-            │   └── session-{session-id-0}
-            │       ├── audio.wav
-            │       ├── transcript.json
-            │       └── video
+            │   ├── metadata.json
+            │   └── session-{session-id-0}
+            │       ├── audio.wav
+            │       ├── transcript.json
+            │       └── video
             ├── event-{event-id-1}
-            │   ├── metadata.json
-            │   └── session-{session-id-0}
-            │       ├── audio.wav
-            │       ├── transcript.json
-            │       └── video
+            │   ├── metadata.json
+            │   └── session-{session-id-0}
+            │       ├── audio.wav
+            │       ├── transcript.json
+            │       └── video
             ├── event-{event-id-2}
-            │   ├── metadata.json
-            │   └── session-{session-id-0}
-            │       ├── audio.wav
-            │       ├── transcript.json
-            │       └── video
-            │   └── session-{session-id-1}
-            │       ├── audio.wav
-            │       ├── transcript.json
-            │       └── video
+            │   ├── metadata.json
+            │   └── session-{session-id-0}
+            │       ├── audio.wav
+            │       ├── transcript.json
+            │       └── video
+            │   └── session-{session-id-1}
+            │       ├── audio.wav
+            │       ├── transcript.json
+            │       └── video
 
     To clean a whole dataset or specific events or sessions simply delete the
     associated directory.
@@ -547,6 +546,10 @@ def get_session_dataset(
     replace_dataframe_cols_with_storage_replacements
         The function used to clean the data of non-standard Python types.
     """
+    # Handle default dict
+    if not tqdm_kws:
+        tqdm_kws = {}
+
     # Connect to infra
     fs = connect_to_infrastructure(infrastructure_slug)
 
@@ -801,7 +804,7 @@ def get_vote_dataset(
     start_datetime: Optional[Union[str, datetime]] = None,
     end_datetime: Optional[Union[str, datetime]] = None,
     replace_py_objects: bool = False,
-    tqdm_kws: Dict[str, Any] = {},
+    tqdm_kws: Union[Dict[str, Any], None] = None,
 ) -> pd.DataFrame:
     """
     Get a dataset of votes from a CDP infrastructure.
@@ -835,6 +838,9 @@ def get_vote_dataset(
     replace_dataframe_cols_with_storage_replacements
         The function used to clean the data of non-standard Python types.
     """
+    if not tqdm_kws:
+        tqdm_kws = {}
+
     # Connect to infra
     connect_to_infrastructure(infrastructure_slug)
 
