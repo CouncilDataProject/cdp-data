@@ -26,7 +26,7 @@ clean:
 
 # install with all deps
 install:
-	pip install -e '.[plot,lint,test,docs,dev]'
+	pip install -e '.[transformers,plot,lint,test,docs,dev]'
 
 # lint, format, and check all files
 lint:
