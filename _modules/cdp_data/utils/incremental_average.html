@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
-        <title>cdp_data.utils.incremental_average - cdp-data 0.1.dev1+g68cc2df documentation</title>
+    <!-- Generated with Sphinx 6.1.3 and Furo 2022.12.07 -->
+        <title>cdp_data.utils.incremental_average - cdp-data 0.1.dev1+g902bbb7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">cdp-data 0.1.dev1+g68cc2df documentation</div></a>
+      <a href="../../../index.html"><div class="brand">cdp-data 0.1.dev1+g902bbb7 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,10 +146,10 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">cdp-data 0.1.dev1+g68cc2df documentation</span>
+  <span class="sidebar-brand-text">cdp-data 0.1.dev1+g902bbb7 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -205,7 +205,6 @@
         <article role="main">
           <h1>Source code for cdp_data.utils.incremental_average</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
-<span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -233,16 +232,19 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">current_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AverageableType</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current mean.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mean</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">current_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of objects that have been averaged.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_size</span>
 
 <div class="viewcode-block" id="IncrementalAverage.add"><a class="viewcode-back" href="../../../cdp_data.utils.html#cdp_data.utils.incremental_average.IncrementalAverage.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">addition</span><span class="p">:</span> <span class="n">AverageableType</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AverageableType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a new value to the average.&quot;&quot;&quot;</span>
         <span class="c1"># Store initial if nothing yet</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_mean</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_current_mean</span> <span class="o">=</span> <span class="n">addition</span>
@@ -259,9 +261,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_mean</span></div>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print details.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;IncrementalAverage [current_size: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_size</span><span class="si">}</span><span class="s2">]&gt;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the object representation.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
@@ -274,24 +278,29 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">current_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AverageableType</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current mean.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mean</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">current_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of objects that have been managed.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_size</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">current_max</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AverageableType</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current max.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_max</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">current_min</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AverageableType</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current min.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_min</span>
 
 <div class="viewcode-block" id="IncrementalStats.add"><a class="viewcode-back" href="../../../cdp_data.utils.html#cdp_data.utils.incremental_average.IncrementalStats.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">addition</span><span class="p">:</span> <span class="n">AverageableType</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;IncrementalStats&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a new value to mean (and check for new max and min).&quot;&quot;&quot;</span>
         <span class="c1"># Store initial mean if not set or update</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_mean</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_current_mean</span> <span class="o">=</span> <span class="n">addition</span>
@@ -320,9 +329,11 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print details.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;IncrementalStats [current_size: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_size</span><span class="si">}</span><span class="s2">]&gt;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the object representation.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 </pre></div>
         </article>
@@ -344,9 +355,7 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         
@@ -359,9 +368,6 @@
     </aside>
   </div>
 </div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
