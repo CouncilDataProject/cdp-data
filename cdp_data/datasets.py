@@ -433,7 +433,7 @@ def get_session_dataset(  # noqa: C901
     replace_py_objects: bool = False,
     store_full_metadata: bool = False,
     store_transcript: bool = False,
-    transcript_selection: str = "confidence",
+    transcript_selection: str = "created",
     store_transcript_as_csv: bool = False,
     store_video: bool = False,
     store_audio: bool = False,
@@ -470,9 +470,7 @@ def get_session_dataset(  # noqa: C901
         Default: False (do not request extra data and do not store the transcript)
     transcript_selection: str
         How should the single transcript be selected.
-        Options: "confidence" for transcript with the highest confidence value,
-        "created" for the most recently created transcript.
-        Default: "confidence" (Return the single highest confidence
+        Default: "created" (Return the most recently created
         transcript per session)
     store_transcript_as_csv: bool
         Additionally convert and store all transcripts as CSVs.
