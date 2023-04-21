@@ -13,7 +13,7 @@ from cdp_backend.utils.file_utils import resource_copy
 from dataclasses_json import dataclass_json
 from fireo.models import Model
 from gcsfs import GCSFileSystem
-from tqdm.contrib.concurrent import thread_map, process_map
+from tqdm.contrib.concurrent import process_map, thread_map
 
 from .constants import DEFAULT_DATASET_STORAGE_DIR
 from .utils import connect_to_infrastructure, db_utils
@@ -280,7 +280,6 @@ def _get_matching_db_transcript(
         )
 
 
-
 @dataclass_json
 @dataclass
 class _TranscriptConversionParams:
@@ -289,6 +288,7 @@ class _TranscriptConversionParams:
     fs: GCSFileSystem
     transcript_path: Path
     raise_on_error: bool
+
 
 @dataclass_json
 @dataclass
