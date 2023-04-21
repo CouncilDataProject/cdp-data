@@ -19,7 +19,7 @@ def test_get_session_dataset() -> None:
         store_transcript_as_csv=True,
         replace_py_objects=True,
     )
-    assert len(ds) == 2
+    assert len(ds) == 3
 
     # Assert that no columns are objects
     for col in ds.columns:
