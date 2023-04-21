@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 6.1.3 and Furo 2022.12.07 -->
-        <title>cdp_data.datasets - cdp-data 0.1.dev1+gaaec581 documentation</title>
+    <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.27 -->
+        <title>cdp_data.datasets - cdp-data 0.1.dev1+g5f7fe59 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">cdp-data 0.1.dev1+gaaec581 documentation</div></a>
+      <a href="../../index.html"><div class="brand">cdp-data 0.1.dev1+g5f7fe59 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">cdp-data 0.1.dev1+gaaec581 documentation</span>
+  <span class="sidebar-brand-text">cdp-data 0.1.dev1+g5f7fe59 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -219,8 +219,7 @@
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span>
 <span class="kn">from</span> <span class="nn">fireo.models</span> <span class="kn">import</span> <span class="n">Model</span>
 <span class="kn">from</span> <span class="nn">gcsfs</span> <span class="kn">import</span> <span class="n">GCSFileSystem</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
-<span class="kn">from</span> <span class="nn">tqdm.contrib.concurrent</span> <span class="kn">import</span> <span class="n">thread_map</span>
+<span class="kn">from</span> <span class="nn">tqdm.contrib.concurrent</span> <span class="kn">import</span> <span class="n">process_map</span><span class="p">,</span> <span class="n">thread_map</span>
 
 <span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">DEFAULT_DATASET_STORAGE_DIR</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">connect_to_infrastructure</span><span class="p">,</span> <span class="n">db_utils</span>
@@ -470,7 +469,7 @@
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">fetch_params</span><span class="o">.</span><span class="n">raise_on_error</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Something went wrong while fetching the video for session: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Something went wrong while fetching the transcript for session: &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">session_id</span><span class="si">}</span><span class="s2">&#39; from &#39;</span><span class="si">{</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">fs</span><span class="o">.</span><span class="n">project</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;Please check if a report has already been made to GitHub &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;(https://github.com/CouncilDataProject/cdp-data/issues). &quot;</span>
@@ -484,6 +483,66 @@
             <span class="n">session_key</span><span class="o">=</span><span class="n">fetch_params</span><span class="o">.</span><span class="n">session_key</span><span class="p">,</span>
             <span class="n">transcript</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">transcript_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">_TranscriptConversionParams</span><span class="p">:</span>
+    <span class="n">session_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">session_key</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="n">GCSFileSystem</span>
+    <span class="n">transcript_path</span><span class="p">:</span> <span class="n">Path</span>
+    <span class="n">raise_on_error</span><span class="p">:</span> <span class="nb">bool</span>
+
+
+<span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">_ConvertedTranscript</span><span class="p">:</span>
+    <span class="n">session_key</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">transcript_as_csv_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_convert_transcript_to_csv</span><span class="p">(</span>
+    <span class="n">convert_params</span><span class="p">:</span> <span class="n">_TranscriptConversionParams</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_ConvertedTranscript</span><span class="p">:</span>
+    <span class="c1"># Safety around conversion, any error, we return None and that will be dropped</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Get storage name</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="n">convert_params</span><span class="o">.</span><span class="n">transcript_path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.csv&quot;</span><span class="p">)</span>
+
+        <span class="c1"># If this path already exists, just attach and return</span>
+        <span class="k">if</span> <span class="n">dest</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">_ConvertedTranscript</span><span class="p">(</span>
+                <span class="n">session_key</span><span class="o">=</span><span class="n">convert_params</span><span class="o">.</span><span class="n">session_key</span><span class="p">,</span>
+                <span class="n">transcript_as_csv_path</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># The path doesn&#39;t exist, convert</span>
+        <span class="n">transcript_df</span> <span class="o">=</span> <span class="n">convert_transcript_to_dataframe</span><span class="p">(</span><span class="n">convert_params</span><span class="o">.</span><span class="n">transcript_path</span><span class="p">)</span>
+        <span class="n">transcript_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_ConvertedTranscript</span><span class="p">(</span>
+            <span class="n">session_key</span><span class="o">=</span><span class="n">convert_params</span><span class="o">.</span><span class="n">session_key</span><span class="p">,</span>
+            <span class="n">transcript_as_csv_path</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">convert_params</span><span class="o">.</span><span class="n">raise_on_error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Something went wrong while converting the transcript for a session: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">convert_params</span><span class="o">.</span><span class="n">session_id</span><span class="si">}</span><span class="s2">&#39; from &#39;</span><span class="si">{</span><span class="n">convert_params</span><span class="o">.</span><span class="n">fs</span><span class="o">.</span><span class="n">project</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Please check if a report has already been made to GitHub &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;(https://github.com/CouncilDataProject/cdp-data/issues). &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;If you cannot find an open issue for this session, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;please create a new one. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;In the meantime, please try rerunning your request with &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;`raise_on_error=False`&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+        <span class="k">return</span> <span class="n">_ConvertedTranscript</span><span class="p">(</span>
+            <span class="n">session_key</span><span class="o">=</span><span class="n">convert_params</span><span class="o">.</span><span class="n">session_key</span><span class="p">,</span>
+            <span class="n">transcript_as_csv_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
 
 
@@ -916,25 +975,31 @@
         <span class="c1"># Handle conversion of transcripts to CSVs</span>
         <span class="k">if</span> <span class="n">store_transcript_as_csv</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Converting and storing transcripts as CSVs&quot;</span><span class="p">)</span>
-            <span class="n">rows_with_csv_paths</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
-                <span class="n">sessions</span><span class="o">.</span><span class="n">iterrows</span><span class="p">(),</span>
-                <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Converting and storing each transcript as a CSV&quot;</span><span class="p">,</span>
+
+            <span class="c1"># Threaded processing of transcript conversion</span>
+            <span class="n">converted_transcript_infos</span> <span class="o">=</span> <span class="n">process_map</span><span class="p">(</span>
+                <span class="n">_convert_transcript_to_csv</span><span class="p">,</span>
+                <span class="p">[</span>
+                    <span class="n">_TranscriptConversionParams</span><span class="p">(</span>
+                        <span class="n">session_id</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                        <span class="n">session_key</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                        <span class="n">fs</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span>
+                        <span class="n">transcript_path</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">transcript_path</span><span class="p">,</span>
+                        <span class="n">raise_on_error</span><span class="o">=</span><span class="n">raise_on_error</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">sessions</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span>
+                <span class="p">],</span>
+                <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Converting transcripts&quot;</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">tqdm_kws</span><span class="p">,</span>
-            <span class="p">):</span>
-                <span class="c1"># Convert</span>
-                <span class="n">transcript_df</span> <span class="o">=</span> <span class="n">convert_transcript_to_dataframe</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;transcript_path&quot;</span><span class="p">])</span>
+            <span class="p">)</span>
 
-                <span class="c1"># Get storage name</span>
-                <span class="n">dest</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;transcript_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.csv&quot;</span><span class="p">)</span>
-                <span class="n">transcript_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-                <span class="c1"># Update and add row</span>
-                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;transcript_as_csv_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dest</span>
-                <span class="n">rows_with_csv_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-
-            <span class="c1"># Remake dataframe</span>
-            <span class="n">sessions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows_with_csv_paths</span><span class="p">)</span>
+            <span class="c1"># Merge fetched data back to session df</span>
+            <span class="n">sessions</span> <span class="o">=</span> <span class="n">_merge_dataclasses_to_df</span><span class="p">(</span>
+                <span class="n">data_objs</span><span class="o">=</span><span class="n">converted_transcript_infos</span><span class="p">,</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">sessions</span><span class="p">,</span>
+                <span class="n">data_objs_key</span><span class="o">=</span><span class="s2">&quot;session_key&quot;</span><span class="p">,</span>
+                <span class="n">df_key</span><span class="o">=</span><span class="s2">&quot;key&quot;</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;transcript_as_csv_path&quot;</span><span class="p">])</span>
 
     <span class="c1"># Replace col values with storage ready replacements</span>
     <span class="k">if</span> <span class="n">replace_py_objects</span><span class="p">:</span>
