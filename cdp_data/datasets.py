@@ -13,8 +13,7 @@ from cdp_backend.utils.file_utils import resource_copy
 from dataclasses_json import dataclass_json
 from fireo.models import Model
 from gcsfs import GCSFileSystem
-from tqdm import tqdm
-from tqdm.contrib.concurrent import thread_map
+from tqdm.contrib.concurrent import thread_map, process_map
 
 from .constants import DEFAULT_DATASET_STORAGE_DIR
 from .utils import connect_to_infrastructure, db_utils
@@ -264,7 +263,7 @@ def _get_matching_db_transcript(
     except Exception as e:
         if fetch_params.raise_on_error:
             raise FileNotFoundError(
-                f"Something went wrong while fetching the video for session: "
+                f"Something went wrong while fetching the transcript for session: "
                 f"'{fetch_params.session_id}' from '{fetch_params.fs.project}' "
                 f"Please check if a report has already been made to GitHub "
                 f"(https://github.com/CouncilDataProject/cdp-data/issues). "
@@ -278,6 +277,66 @@ def _get_matching_db_transcript(
             session_key=fetch_params.session_key,
             transcript=None,
             transcript_path=None,
+        )
+
+
+
+@dataclass_json
+@dataclass
+class _TranscriptConversionParams:
+    session_id: str
+    session_key: str
+    fs: GCSFileSystem
+    transcript_path: Path
+    raise_on_error: bool
+
+@dataclass_json
+@dataclass
+class _ConvertedTranscript:
+    session_key: str
+    transcript_as_csv_path: Optional[Path]
+
+
+def _convert_transcript_to_csv(
+    convert_params: _TranscriptConversionParams,
+) -> _ConvertedTranscript:
+    # Safety around conversion, any error, we return None and that will be dropped
+    try:
+        # Get storage name
+        dest = convert_params.transcript_path.with_suffix(".csv")
+
+        # If this path already exists, just attach and return
+        if dest.exists():
+            return _ConvertedTranscript(
+                session_key=convert_params.session_key,
+                transcript_as_csv_path=dest,
+            )
+
+        # The path doesn't exist, convert
+        transcript_df = convert_transcript_to_dataframe(convert_params.transcript_path)
+        transcript_df.to_csv(dest, index=False)
+
+        return _ConvertedTranscript(
+            session_key=convert_params.session_key,
+            transcript_as_csv_path=dest,
+        )
+
+    except Exception as e:
+        if convert_params.raise_on_error:
+            raise ValueError(
+                f"Something went wrong while converting the transcript for a session: "
+                f"'{convert_params.session_id}' from '{convert_params.fs.project}' "
+                f"Please check if a report has already been made to GitHub "
+                f"(https://github.com/CouncilDataProject/cdp-data/issues). "
+                f"If you cannot find an open issue for this session, "
+                f"please create a new one. "
+                f"In the meantime, please try rerunning your request with "
+                f"`raise_on_error=False`"
+            ) from e
+
+        return _ConvertedTranscript(
+            session_key=convert_params.session_key,
+            transcript_as_csv_path=None,
         )
 
 
@@ -710,25 +769,31 @@ def get_session_dataset(  # noqa: C901
         # Handle conversion of transcripts to CSVs
         if store_transcript_as_csv:
             log.info("Converting and storing transcripts as CSVs")
-            rows_with_csv_paths: List[pd.Series] = []
-            for _, row in tqdm(
-                sessions.iterrows(),
-                desc="Converting and storing each transcript as a CSV",
+
+            # Threaded processing of transcript conversion
+            converted_transcript_infos = process_map(
+                _convert_transcript_to_csv,
+                [
+                    _TranscriptConversionParams(
+                        session_id=row.id,
+                        session_key=row.key,
+                        fs=fs,
+                        transcript_path=row.transcript_path,
+                        raise_on_error=raise_on_error,
+                    )
+                    for _, row in sessions.iterrows()
+                ],
+                desc="Converting transcripts",
                 **tqdm_kws,
-            ):
-                # Convert
-                transcript_df = convert_transcript_to_dataframe(row["transcript_path"])
+            )
 
-                # Get storage name
-                dest = row["transcript_path"].with_suffix(".csv")
-                transcript_df.to_csv(dest, index=False)
-
-                # Update and add row
-                row["transcript_as_csv_path"] = dest
-                rows_with_csv_paths.append(row)
-
-            # Remake dataframe
-            sessions = pd.DataFrame(rows_with_csv_paths)
+            # Merge fetched data back to session df
+            sessions = _merge_dataclasses_to_df(
+                data_objs=converted_transcript_infos,
+                df=sessions,
+                data_objs_key="session_key",
+                df_key="key",
+            ).dropna(subset=["transcript_as_csv_path"])
 
     # Replace col values with storage ready replacements
     if replace_py_objects:
