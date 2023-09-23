@@ -489,6 +489,7 @@ def get_session_dataset(  # noqa: C901
     infrastructure_slug: str,
     start_datetime: Optional[Union[str, datetime]] = None,
     end_datetime: Optional[Union[str, datetime]] = None,
+    sample: Optional[Union[int, float]] = None,
     replace_py_objects: bool = False,
     store_full_metadata: bool = False,
     store_transcript: bool = False,
@@ -513,6 +514,10 @@ def get_session_dataset(  # noqa: C901
     end_datetime: Optional[Union[str, datetime]]
         An optional datetime that the session dataset will end at.
         Default: None (no datetime end bound on the dataset)
+    sample: Optional[Union[int, float]]
+        An optional sample of the dataset to return. If an int, the number of
+        rows to return. If a float, the percentage of rows to return.
+        Default: None (return all rows)
     replace_py_objects: bool
         Replace any non-standard Python type with standard ones to
         allow the returned data be ready for storage.
@@ -643,6 +648,18 @@ def get_session_dataset(  # noqa: C901
                 "event",
             ]
         )
+
+    # Handle sample
+    if sample:
+        if isinstance(sample, int):
+            sessions = sessions.sample(sample)
+        elif isinstance(sample, float):
+            sessions = sessions.sample(frac=sample)
+        else:
+            raise ValueError(
+                f"Unrecognized sample type: '{type(sample)}'. "
+                f"Must be either an int or a float."
+            )
 
     # Handle basic event metadata attachment
     log.info("Attaching event metadata to each session datum")
