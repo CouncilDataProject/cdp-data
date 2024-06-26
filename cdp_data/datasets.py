@@ -680,9 +680,7 @@ def get_session_dataset(  # noqa: C901
     )
 
     # Store minutes item uri
-    sessions["minutes_pdf_url"] = sessions["event"].apply(
-        lambda e: e.minutes_uri
-    )
+    sessions["minutes_pdf_url"] = sessions["event"].apply(lambda e: e.minutes_uri)
 
     # We only need to handle cache dir and more if any extras are True
     if not any(
