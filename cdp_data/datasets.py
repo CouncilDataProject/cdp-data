@@ -670,6 +670,20 @@ def get_session_dataset(  # noqa: C901
         tqdm_kws=tqdm_kws,
     )
 
+    # Add body_ref from event to col to then unpack
+    sessions["body_ref"] = sessions["event"].apply(lambda e: e.body_ref)
+    sessions = db_utils.load_model_from_pd_columns(
+        sessions,
+        join_id_col="id",
+        model_ref_col="body_ref",
+        tqdm_kws=tqdm_kws,
+    )
+
+    # Store minutes item uri
+    sessions["minutes_pdf_url"] = sessions["event"].apply(
+        lambda e: e.minutes_uri
+    )
+
     # We only need to handle cache dir and more if any extras are True
     if not any(
         [
